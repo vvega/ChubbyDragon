@@ -1,0 +1,14 @@
+CACHE MANIFEST
+
+#e0fe6d06937542118a4ff8fb90b2d611 version 1398498769748&0.9642012044787407
+
+CACHE:
+spritesheets/resources-images0.png
+spritesheets/resources-images1.png
+index.html
+native-ios.js
+
+FALLBACK:
+
+NETWORK:
+*
