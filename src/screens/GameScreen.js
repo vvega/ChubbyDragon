@@ -28,21 +28,7 @@ exports = Class(ui.ImageView, function (supr){
     this.build = function(){
         
         this.on('app:start', bind(this, start_game_flow));
-        
-        this._scoreboard = new ui.TextView({
-            superview: this,
-            x: 0,
-            y: 15,
-            width: 100,
-            height: 50,
-            autoSize: false,
-            size: 38,
-            backgroundColor: "black",
-            verticalAlign: 'middle',
-            horizontalAlign: 'center',
-            wrap: false,
-            color: '#fff'
-        });
+       
     };
     
     this.addToScoreboard = function(additionalValue) {

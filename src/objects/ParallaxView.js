@@ -266,6 +266,17 @@ ParallaxView.Layer = Class(ui.View, function (supr) {
 		opts = opts || {};
 		var poolKey = ctor.name + (opts.group || "");
 		
+                            
+                //added to account for game start and to encapsulate randomization when
+                //obtaining a view from the pool
+                //@ Veronica V.
+               
+                if(viewOpts.group === "terrain") {
+                     viewOpts._started = (this.getSuperview().getSuperview().gameStarted()) ? true : false;
+                     viewOpts._harmful = (Math.random() > .7) ? true : false;
+                }
+              
+                
 		var pool;
 		if (!(pool = this._pools[poolKey])) { 
 			pool = this._pools[poolKey] = new ui.ViewPool({
@@ -291,16 +302,29 @@ ParallaxView.Layer = Class(ui.View, function (supr) {
 				}
 			}.bind(this));
 		}
-
+                
+                //added in order to prevent multiple hits per view on successive ticks
+                // @ Veronica V.
+                v.flaggedForRemoval = false;
+                
 		return v;
 	}
-        
+
         //added in order to release specific views when necessary
-        // @Veronica Vega - Apr 2014
-        this.getViewPool = function() {
-            console.log("this._pools");
-            return this._pools;
-        }
+        // @Veronica V.
+        this.releaseLayerView = function(v){
+            v._pool.releaseView(v);
+        };
+        
+        //for extra utility when needed
+        // @Veronica V.
+        this.getOriginalWidth = function() {
+            return this.getSuperview().style.width;
+        };
+	
+        this.getOriginalHeight = function() {
+            return this.getSuperview().style.height;
+        };
 	
 	/**
 	 * Override this function (or pass `populate` in opts) to populate the view

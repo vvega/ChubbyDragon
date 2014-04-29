@@ -1,11 +1,13 @@
 import ui.ImageView as ImageView;
 import math.geom.Circle as Circle;
 import math.geom.intersect as intersect;
+import ui.ViewPool;
 
 exports = Class(ImageView, function(supr) {
 
     var badItemModifier = .5;
-    var parent, boundingCircle, character;
+    var parent, boundingCircle, character, started;
+ 
     
     this.init = function(opts) {       
         opts = merge(opts, {
@@ -15,8 +17,14 @@ exports = Class(ImageView, function(supr) {
         supr(this, 'init', [opts]);
         parent = opts.superview;
         character = opts.character;
+        
+       /* character.on("character:ready", function() {
+            started = true;
+        });*/
        
-         boundingCircle = new Circle(this.style.x, this.style.y, this.style.width/2);
+       //initialize collision detection elements
+        boundingCircle = new Circle(this.style.x, parent.style.height - this.style.y, this.style.width/2);             
+        this.flaggedForRemoval = false;
         
         this.build();
     };
@@ -36,27 +44,30 @@ exports = Class(ImageView, function(supr) {
                 backgroundColor: "red"
             });
         }  
+  
     };
     
-    this.render = function(ctx) {
-       
-       //update boundingCircle
-       boundingCircle.x = this.getPosition().x;
-       boundingCircle.y = this.getPosition().y;
-     //   console.log(character.collisionLine);
-       //console.log(boundingCircle.x);
-       //console.log(character.collisionLine);
-        boundingCircle = new Circle(this.getPosition().x, this.getPosition().y, this.style.width/2);
+    this.tick = function(dt) {
+       //only proceed if this item hasn't already detected a collision
+       if(!character.isImmune() && !this.flaggedForRemoval) {
+       //    console.log("tracking..");
+           boundingCircle = null;
+           
+           //scale the x/y coordinates based on parent layer transformations
+           boundingCircle = new Circle(this.getPosition().x /this.getPosition().scale, 
+                this.getPosition().y /this.getPosition().scale,
+                this.style.width/2);
+            
+            //check for collision between this item's bounding circle and the character's collision line
+            if(intersect.circleAndLine(boundingCircle, character.collisionLine) === true) {
+              
+                //remove this view from the layer and add use the item's value to adjust the world speed
+                 parent.releaseLayerView(this);
+                 character.addToWeight(this.value);
 
-        if(intersect.circleAndLine(boundingCircle, character.collisionLine) === true) {
-            //console.log(parent);
-        //  var v_pool =  parent.getViewPool();
-         // console.log(v_pool);
-         // v_pool.releaseView(this);
-          //.releaseView(this);
-           console.log("adding:" + this.value);
-        // console.log(this.value);
-            character.addToWeight(this.value);
+                 //flag for removal
+                 this.flaggedForRemoval = true;
+            }
         }
     };
     

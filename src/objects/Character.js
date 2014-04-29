@@ -3,29 +3,34 @@ import math.geom.Point as Point;
 import math.geom.Rect as Rect;
 import math.geom.intersect as intersect;
 import math.geom.Line as Line;
+import animate;
 
 
 exports = Class(SpriteView, function(supr) {
-    var parent, collisionPoint;
+    var parent;
     var width, height;
-    var origY;
+    var collisionBoxWidth, origX, origY;
+    var IMMUNITY_TIMEOUT = 3000;
 
     this.init = function(opts) {       
         opts = merge(opts, {
         });
         
         parent = opts.superview;
+                
+        this.weight = 1;
+        this.immune = false;
+        
         //call to super constructor with custom class options
         supr(this, 'init', [opts]);
-        
-                   
+                      
         width = opts.width;
         height = opts.height;
-        this.origY = opts.y;
- 
-        
-        this.build(opts);
+        collisionBoxWidth = width/3;
+        origY = opts.y;
+        origX = opts.x;
 
+        this.build(opts);
     };
     
     this.build = function(opts) {
@@ -35,56 +40,98 @@ exports = Class(SpriteView, function(supr) {
         var collisionPoints = {
            startPoint: new Point({
                 x: opts.x + width/1.25,
-                y: origY
+                y: opts.y
              }),
             endPoint: new Point({
                 x: opts.x + width/1.25,
-                y: origY + height/2
+                y: opts.y + height/2
             })
         }
-        
+ 
         this.collisionLine = new Line(collisionPoints.startPoint, collisionPoints.endPoint); 
-                   
-        //this.weight = 8;
-      //  this.jumpHeight = this.weight*50;
-
+        this.collisionBox = new Rect(opts.x - width/2, opts.y, collisionBoxWidth, height);
+        
+        this.initImmunityTimeout();
+    };
+    
+    this.initImmunityTimeout = function(){
+        this.immune = true;
+        var char = this;
+        
+        var animation;
+        
+        setTimeout(function(){
+            animation.clear();
+            char.immune = false;
+            console.log("not immune anymore");
+            char.emit("character:ready");
+        }, IMMUNITY_TIMEOUT);
+        
+        animation = animate(char)
+              .now({ opacity: .4 }, IMMUNITY_TIMEOUT/4, animate.easeIn )
+              .then({ opacity: 1 }, IMMUNITY_TIMEOUT/4, animate.easeIn )
+              .then({ opacity: .4 }, IMMUNITY_TIMEOUT/4, animate.easeIn )
+              .then({ opacity: 1 }, IMMUNITY_TIMEOUT/4, animate.easeIn );
+        
     };
 
     this.updateCollisionPoints = function(){
- 
-         var differenceInY = this.origY - this.style.y;
+        
+        //update collision line (for items)
+         var differenceInY = origY - this.style.y;
          var startX = this.collisionLine.start.x, 
                endX = this.collisionLine.end.x;
        
          this.collisionLine.start = this.collisionLine.end = null;
+         this.collisionBox = null;
          
          this.collisionLine.start = new Point({
              x: startX,
-             y: this.origY - differenceInY
+             y: origY - differenceInY
          });
          
          this.collisionLine.end = new Point({
               x: endX,
-              y: (this.origY - differenceInY) + height/2
+              y: (origY - differenceInY) + height/2
          });
          
+         //update collision box (for terrain)
+         this.collisionBox = new Rect(this.style.x + collisionBoxWidth, origY - differenceInY, collisionBoxWidth, height);
+
          startX = endX = differenceInY = null;
          
     };
     
     this.addToWeight = function(value) {
          
-        if(this.weight + value > 60) {
-            //limit speed
-           console.log("limiting speed");
-            return;
-        } else if(this.weight + value < 1) {
-            console.log("too slow");
-        } else {
+        if(!(this.weight + value > 60 || this.weight + value < -7)) {
+            //limit speed max and min
             this.weight += value;
-            console.log("new weight:"+this.weight);
             parent.adjustSpeed(this.weight);
         }
+    };
+    
+    this.kill = function() {
+        var char = this;
+        char.pause();
+        animate(char)
+           .now({ y: parent.style.height/2 }, 200, animate.linear)
+           .then({ y: parent.style.height + (this.style.height) }, 200, animate.linear)
+           .then(bind(this, function() {
+               this.immune = true;
+               this.updateOpts({
+                   x: origX,
+                   y: origY
+               });
+               
+             // char.resume();
+             //  char.initImmunityTimeout();
+               
+        }));  
+    };
+    
+    this.isImmune = function() {
+        return this.immune;
     };
 });
 

@@ -20,7 +20,7 @@ exports = Class(View, function(supr) {
     var groundElevation, startX;
     var level, items, character, characterElevation;
     var TERRAIN_BLOCK_SIZE, CHARACTER_WIDTH, CHARACTER_HEIGHT;
-    var num_terrain_tiles;
+    var gameStarted;
     var flag_jump = true;
     var scrollX;
     
@@ -36,7 +36,7 @@ exports = Class(View, function(supr) {
         parent = opts.superview;
         width = opts.width;
         height = opts.height;
-        console.log(opts);
+
         //scale terrain blocks to device size
         TERRAIN_BLOCK_SIZE = height/6;
         groundElevation = height - TERRAIN_BLOCK_SIZE*2;
@@ -51,10 +51,9 @@ exports = Class(View, function(supr) {
         //sprite position based upon device width
         startX = width/9;
         
-        //number of terrain tiles to initialize on screen and to maintain during scrolling
-        num_terrain_tiles = Math.ceil(width/TERRAIN_BLOCK_SIZE);
-        
         scrollX = 0;
+        
+        gameStarted = false;
 
         supr(this, 'init', [opts]);
         this.build();
@@ -96,23 +95,7 @@ exports = Class(View, function(supr) {
       this.parallaxView.addBackgroundView(new ImageScaleView({
           scaleMethod: 'cover',
           image: 'resources/images/forest-background.png'
-      }));
-      
-     var terrainLayer = this.parallaxView.addLayer({
-          distance: 1,
-          populate: function (layer, x) {
-              var v = layer.obtainView(TerrainBlock, {
-                    group: "terrain",
-                    superview: layer,
-                    image: "resources/images/terrain_block.png",
-                    x: x,
-                    y: height - TERRAIN_BLOCK_SIZE,
-                    width: TERRAIN_BLOCK_SIZE,
-                    height: TERRAIN_BLOCK_SIZE
-             });
-             return v.style.width;
-          }
-      });
+      }));   
       
       //character
       var imageData = SpriteManager.getImageData();
@@ -130,8 +113,29 @@ exports = Class(View, function(supr) {
           }, imageData.sprites.sheetData)
         }, imageData.sprites.creature));        
             
-      character.startAnimation('run', {loop: true});
+        character.startAnimation('run', {loop: true});
+            
+        character.on("character:ready", function() {
+            gameStarted = true;
+        });
                    
+      var terrainLayer = this.parallaxView.addLayer({
+          distance: 1,
+          populate: function (layer, x) {
+              var v = layer.obtainView(TerrainBlock, {
+                    group: "terrain",
+                    character: character,
+                    superview: layer,
+                    image: "resources/images/terrain_block.png",
+                    x: x,
+                    y: height - TERRAIN_BLOCK_SIZE,
+                    width: TERRAIN_BLOCK_SIZE,
+                    height: TERRAIN_BLOCK_SIZE
+             });
+             return v.style.width;
+          }
+      });
+      
       var itemLayer = this.parallaxView.addLayer({
           distance: 1,
           populate: function (layer, x) {
@@ -147,46 +151,50 @@ exports = Class(View, function(supr) {
              //return random space between elements
              return v.style.width + Math.random()*width;
           }
-      });  
-        
+      }); 
+      
+      itemLayer.scrollTo(0,0);
+
       this.render = bind(this, function(ctx) {
           character.updateCollisionPoints();
+          
       });   
 
      this.tick = function(dt) {
          scrollX += speed;
          terrainLayer.scrollTo(scrollX, 0);
-         itemLayer.scrollTo(scrollX,0);
-       
-     };
+         if(gameStarted) {
+         itemLayer.scrollTo(scrollX,0);       
+         } else {
+            
+         }
+     };   
     };     
     
     this.on('InputStart', function() {
         
-        if(flag_jump) {
+        if(gameStarted && flag_jump) {
            //  var weight = character.getWeight();
             flag_jump = false;
             character.pause();
            
             animate(character)
-           .now({ y: 200 }, 500, animate.easeInOut)
-           .then({ y: characterElevation }, 500, animate.easeIn)
+           .now({ y: height/6 }, 500, animate.easeInOut)
+           .then({ y: characterElevation }, 750, animate.easeIn)
            .then(bind(this, function() {
                
                flag_jump = true;
                character.resume();
                
-            }));  
-            
+            }));         
         }
     });
         
     this.adjustSpeed = function(value) {
         //speed is equal to scrolling animation duration
         //it will increase with increased weight
-      
-          speed = baseSpeed + value;
-          console.log("speed is now "+speed);
+      speed = baseSpeed + value;
+
     };
     
     this.getBaseSpeed = function() {
@@ -197,8 +205,8 @@ exports = Class(View, function(supr) {
         return character;
     };
     
-    this.getItemPool = function() {
-        return this.items;
+    this.gameStarted = function() {
+        return gameStarted;
     };
 });
 
