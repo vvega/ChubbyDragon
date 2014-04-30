@@ -22,7 +22,6 @@ exports = Class(View, function (supr){
             this.build();
         };
 
-        //override build function to add new components
         this.build = function(){   
             this.on('gameover:gameover', bind(this, buildView)); 
         };
@@ -71,10 +70,17 @@ exports = Class(View, function (supr){
 
             var replayButton = new ButtonView({
                 superview: buttonGrid,
-                title: "Play Again",
+                text: {
+                    fontFamily: 'tiptoe',
+                    text: "Play Again",
+                    verticalAlign: "middle",
+                    horizontalAlign: "center",
+                    padding: [0,0,65,0],
+                    color: "#FFF"
+               },
                 width: 200,
                 height: 100,
-                backgroundColor: "blue",
+                backgroundColor: "#d2a734",
                 opacity: 1,
                 col: 1,
                 row: 3,
@@ -86,9 +92,16 @@ exports = Class(View, function (supr){
             });
 
             var exitButton = new ButtonView({
-                 superview: buttonGrid,
-                title: "Back to Menu",
-                backgroundColor: "blue",
+                superview: buttonGrid,
+                text: {
+                    fontFamily: 'tiptoe',
+                    text: "Back to Menu",
+                    verticalAlign: "middle",
+                    horizontalAlign: "center",
+                    padding: [0,0,65,0],
+                    color: "#FFF"
+               },
+                backgroundColor: "#d2a734",
                 opacity: 1,
                 col: 1,
                 row: 4,
@@ -98,9 +111,6 @@ exports = Class(View, function (supr){
                     }.bind(this)
                 }
             });
-
-           // this.addSubview(buttonGrid);
-           // this.addSubview(textView);
 
             animate(textView)
                .now({ y: -height/2.5, opacity: 1 }, 500, animate.easeIn)
@@ -115,11 +125,12 @@ exports = Class(View, function (supr){
   
         };
         this.writeToFile = function(score) {
-       /*  var fs = require('fs');
-         fs.writeFile('../../resources/cache/data.json', 
-           '{highscore: '+score+'}', function (err) {
-            if (err) throw err;
-            console.log('It\'s saved!');
-          });*/
+            //TODO
+        /*  var fs = require('fs');
+          fs.writeFile('../../resources/cache/data.json', 
+            '{highscore: '+score+'}', function (err) {
+             if (err) throw err;
+             console.log('It\'s saved!');
+           });*/
         };
 });

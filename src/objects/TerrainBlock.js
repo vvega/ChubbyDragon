@@ -5,7 +5,8 @@ import math.geom.Circle as Circle;
 
 
 exports = Class(ImageView, function(supr) {
-    var parent, character, boundingCircle, started;
+    
+    var parent, character, boundingCircle;
     
     this.init = function(opts) {       
         opts = merge(opts, {
@@ -14,43 +15,28 @@ exports = Class(ImageView, function(supr) {
         
         parent = opts.superview;
         character = opts.character;           
-        //call to super constructor with custom class options
+
         supr(this, 'init', [opts]);
-        boundingCircle = new Circle(this.style.x, parent.style.height - this.style.y, this.style.width/2);
         
-                
-       /* character.on("character:ready", function() {
-            started = true;
-        });*/
-
+        boundingCircle = new Circle(this.style.x, parent.style.height - this.style.y, this.style.width/2);
     };
-
+    
+    //check for collision
      this.tick = function(dt) {
         if(!character.isImmune() && this._opts._harmful === true) {
+            
+            //update bounding circle
+            boundingCircle = null;
+            
+            //scale the x/y coordinates based on parent layer transformations
+            boundingCircle = new Circle(this.getPosition().x / this.getPosition().scale, 
+               this.getPosition().y / this.getPosition().scale,
+               this.style.width/2);
 
-         boundingCircle = null;
-
-         boundingCircle = new Circle(this.getPosition().x / this.getPosition().scale, 
-            this.getPosition().y / this.getPosition().scale,
-            this.style.width/2);
-
-            if(intersect.circleAndRect(boundingCircle, character.collisionBox) === true) {
-                //kill character
-                character.kill();
-            }
-            /* The following will return false:  
-             * 
-             * var collisionBox = new Rect(100, 100, 50, 50);
-             * 
-             * var boundingBox = new Rect(collisionBox.x,
-                                      collisionBox.y,
-                                      50, 50);
-
-              if(intersect.rectAndRect(collisionBox, boundingBox) === true) {
-
-                 console.log("collision!");
-
-             }*/
+               if(intersect.circleAndRect(boundingCircle, character.collisionBox) === true) {
+                   //kill character
+                   character.kill();
+               }
         }
     };
 });

@@ -1,25 +1,23 @@
 import ui.StackView as StackView;
-import src.screens.TitleScreen as TitleScreen;
+import src.layouts.TitleScreen as TitleScreen;
 import ui.ImageScaleView as ImageScaleView;
-import src.screens.GameOverView as GameOverView;
-import src.screens.GameView as GameView;
+import src.layouts.GameOverView as GameOverView;
+import src.layouts.GameView as GameView;
 //import src.SoundController as SoundController;
 import device;
 
 //get landscape mode dimensions
 var deviceDimensions = device.getDimensions(true);
-device.screen.defaultOrientation = "landscape";
-
-//TODO: lock in landscape
 
 //calculate dimensions to scale based on deviceDimensions
 var boundsWidth = 576,
     boundsHeight = 1024,
-    baseWidth = boundsWidth,
+    baseWidth = boundsWidth;
+    
+baseWidth = deviceDimensions.width * (boundsHeight / deviceDimensions.height);
 
-    baseWidth = deviceDimensions.width * (boundsHeight / deviceDimensions.height),
-	baseHeight = boundsHeight,
-    scale = deviceDimensions.height / baseHeight;
+var baseHeight = boundsHeight;
+var scale = deviceDimensions.height / baseHeight;
 
 
 exports = Class(GC.Application, function () {
@@ -33,6 +31,7 @@ exports = Class(GC.Application, function () {
         
 	this.initUI = function () {
                 
+                //TODO: read/write mechanism for local highScore. Default is set to 0;
                 highScore = JSON.parse(CACHE['resources/cache/data.json']).highscore;                                   
             
 		this.view.style.scale = scale;               
@@ -50,15 +49,14 @@ exports = Class(GC.Application, function () {
                     height: baseHeight,
                     image: 'resources/images/forest-background.png'           
                 });
-                
-                gameView = this.getNewGameView();
                
                 titleScreen = new TitleScreen({
                     highScore: highScore,
                     width: baseWidth,
                     height: baseHeight
-                }); 
-                
+                });
+                 
+                gameView = this.getNewGameView();
                 gameOverView = this.getNewGameOverView();
                                     
                 //TODO: var sound = SoundController.getSound();
@@ -69,16 +67,17 @@ exports = Class(GC.Application, function () {
             
             //captures broadcast to start gamescreen via pushing onto the rootView
            titleScreen.on('titlescreen:start', function () {
-               gameView.emit("app:start");
+               gameView.emit("gameview:start");
                rootView.push(gameView);
            });
-                
+ 
             //push the titlescreen
             rootView.addSubview(backgroundView);
+            titleScreen.emit("app:start");
             rootView.push(titleScreen);
 	};
         
-        
+        //creates new gameview
         this.getNewGameView = function() {
 
             var newGameView = new GameView({
@@ -89,11 +88,13 @@ exports = Class(GC.Application, function () {
             newGameView.on('gameview:gameover', function (score) {
               
                 gameOverView = this.getNewGameOverView();
-    
+                
+                //push highscore if present
                 if(score > highScore) {
                     highScore = score;
                     var flag_newHighScore = true;
                 }
+                
                 gameOverView.emit("gameover:gameover", flag_newHighScore, highScore);
                 rootView.push(gameOverView);
                 
@@ -102,7 +103,7 @@ exports = Class(GC.Application, function () {
             return newGameView;
         };
         
-        
+        //creates new gameoverview
         this.getNewGameOverView = function() {
 
             var newGameOverView = new GameOverView({
@@ -123,7 +124,7 @@ exports = Class(GC.Application, function () {
                   gameView = this.getNewGameView();
                  
                   //emit start and push new view onto stack
-                  gameView.emit("app:start");
+                  gameView.emit("gameview:start");
                   rootView.push(gameView, false, true);                  
 
                  //then clear the game over view 
@@ -157,23 +158,15 @@ exports = Class(GC.Application, function () {
             return newGameOverView;
         };
         
-        
+        //clears gameview
         this.clearGameView = function() {    
              gameView.removeAllSubviews();
              gameView = null;
         };
         
-        
+        //clearsgameview
         this.clearGameOverView = function() {
             gameOverView.removeAllSubviews();
             gameOverView = null;
-        };
-        
-        this.setHighScore = function(value) {
-            highScore = value;  
-        };
-        
-        this.getHighScore = function() {
-            return highScore;  
         };
 });

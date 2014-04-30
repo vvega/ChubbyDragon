@@ -276,7 +276,12 @@ ParallaxView.Layer = Class(ui.View, function (supr) {
                      
                      //only start generating bad terrain when game has started 
                      viewOpts._harmful = (Math.random() > .95 && viewOpts._active) ? true : false;
-                     viewOpts.backgroundColor = (viewOpts._harmful) ? "red" : "";
+                 
+                     if(viewOpts._harmful) {
+                         viewOpts.image = "resources/images/terrain_block_staples.png";
+                         viewOpts.height = viewOpts.height + viewOpts.height/3;
+                         viewOpts.width = viewOpts.width + viewOpts.width/4;
+                     } 
                 }
                 
                 if(viewOpts.group === "items") {
@@ -284,12 +289,12 @@ ParallaxView.Layer = Class(ui.View, function (supr) {
                      //only start generating bad items when game has started 
                      if (Math.random() > .5 && viewOpts._active) {
                          viewOpts._harmful = true;
-                         viewOpts.backgroundColor = "red";
+                         viewOpts.image = "resources/images/cake.png";
                          viewOpts.value = -2;
                          viewOpts.pointValue = 0;
                      } else {
                          viewOpts._harmful = false;
-                         viewOpts.backgroundColor = "green";
+                         viewOpts.image = "resources/images/apple.png";
                          viewOpts.value = 1;
                          viewOpts.pointValue = 50;
                      }

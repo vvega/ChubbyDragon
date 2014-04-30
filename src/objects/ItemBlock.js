@@ -5,9 +5,7 @@ import ui.ViewPool;
 
 exports = Class(ImageView, function(supr) {
 
-    var badItemModifier = .5;
-    var parent, boundingCircle, character, started;
- 
+    var parent, character, boundingCircle;
     
     this.init = function(opts) {       
         opts = merge(opts, {
@@ -17,11 +15,7 @@ exports = Class(ImageView, function(supr) {
         supr(this, 'init', [opts]);
         parent = opts.superview;
         character = opts.character;
-        
-       /* character.on("character:ready", function() {
-            started = true;
-        });*/
-       
+
        //initialize collision detection elements
         boundingCircle = new Circle(this.style.x, parent.style.height - this.style.y, this.style.width/2);             
         this.flaggedForRemoval = false;
@@ -31,9 +25,10 @@ exports = Class(ImageView, function(supr) {
     this.tick = function(dt) {
        //only proceed if this item hasn't already detected a collision
        if(!character.isImmune() && !this.flaggedForRemoval) {
-
-           boundingCircle = null;
            
+           //update bounding circle
+           boundingCircle = null;
+
            //scale the x/y coordinates based on parent layer transformations
            boundingCircle = new Circle(this.getPosition().x /this.getPosition().scale, 
                 this.getPosition().y /this.getPosition().scale,
@@ -51,13 +46,5 @@ exports = Class(ImageView, function(supr) {
                  this.flaggedForRemoval = true;
             }
         }
-    };
-    
-    this.assignRandom = function(){
-        
-    };
-    
-    this.getValue = function() {
-        return this.value;
     };
 });

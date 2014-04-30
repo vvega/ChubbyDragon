@@ -9,7 +9,7 @@ import animate;
 exports = Class(SpriteView, function(supr) {
     var parent;
     var width, height;
-    var collisionBoxWidth, origX, origY;
+    var collisionBoxHeight, collisionBoxWidth, origX, origY;
     var IMMUNITY_TIMEOUT = 3000;
 
     this.init = function(opts) {       
@@ -28,6 +28,7 @@ exports = Class(SpriteView, function(supr) {
         width = opts.width;
         height = opts.height;
         collisionBoxWidth = width/3;
+        collisionBoxHeight = height/2;
         origY = opts.y;
         origX = opts.x;
 
@@ -50,12 +51,14 @@ exports = Class(SpriteView, function(supr) {
         }
  
         this.collisionLine = new Line(collisionPoints.startPoint, collisionPoints.endPoint); 
-        this.collisionBox = new Rect(opts.x - width/2, opts.y, collisionBoxWidth, height);
+        this.collisionBox = new Rect(opts.x + collisionBoxWidth, opts.y, collisionBoxWidth,  collisionBoxHeight);
 
         this.initImmunityTimeout();
     };
     
+    //handles immunity status
     this.initImmunityTimeout = function(){
+        
         this.immune = true;
         var char = this;
         
@@ -67,6 +70,7 @@ exports = Class(SpriteView, function(supr) {
             char.emit("character:ready");
         }, IMMUNITY_TIMEOUT);
         
+        //scales animation duration based upon timeout length
         animation = animate(char)
               .now({ opacity: .4 }, IMMUNITY_TIMEOUT/4, animate.easeIn )
               .then({ opacity: 1 }, IMMUNITY_TIMEOUT/4, animate.easeIn )
@@ -74,7 +78,7 @@ exports = Class(SpriteView, function(supr) {
               .then({ opacity: 1 }, IMMUNITY_TIMEOUT/4, animate.easeIn );
         
     };
-
+    
     this.updateCollisionPoints = function(){
         
         //update collision line (for items)
@@ -96,12 +100,13 @@ exports = Class(SpriteView, function(supr) {
          });
          
          //update collision box (for terrain)
-         this.collisionBox = new Rect(this.style.x + collisionBoxWidth, origY - differenceInY, collisionBoxWidth, height);
+         this.collisionBox = new Rect(this.style.x + collisionBoxWidth, origY - differenceInY, collisionBoxWidth,  collisionBoxHeight);
 
          startX = endX = differenceInY = null;
          
     };
     
+    //updates weight
     this.addToWeight = function(value) {
          
         if(!(this.weight + value > 60 || this.weight + value < -7)) {
@@ -111,17 +116,18 @@ exports = Class(SpriteView, function(supr) {
         }
     };
     
+    //adds score to scoreboard
     this.addToScore = function(value) {     
         parent.updateScoreBoard(this.score + value);
     };
     
+    //kills character
     this.kill = function() {
 
         this.immune = true;
         this.pause();
-        
-        var char = this;
-        animate(char)
+
+        animate(this)
            .now({ y: parent.style.height/2 }, 200, animate.linear)
            .then({ y: parent.style.height + (this.style.height) }, 500, animate.linear)
            .then(bind(this, function() {
@@ -133,12 +139,13 @@ exports = Class(SpriteView, function(supr) {
                         x: origX,
                         y: origY
                     });
-                    char.resume();
-                    char.initImmunityTimeout();
+                    this.resume();
+                    this.initImmunityTimeout();
               }             
         }));  
     };
     
+    //gets immunity status
     this.isImmune = function() {
         return this.immune;
     };

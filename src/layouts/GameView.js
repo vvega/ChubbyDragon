@@ -1,6 +1,6 @@
 import ui.View as View;
 import src.objects.TerrainBlock as TerrainBlock;
-import src.objects.ParallaxView as ParallaxView;
+import src.layouts.ParallaxView as ParallaxView;
 import src.objects.ItemBlock as ItemBlock;
 import animate;
 import src.SpriteManager as SpriteManager;
@@ -33,7 +33,7 @@ exports = Class(View, function(supr) {
         supr(this, 'init', [opts]);
 
         //scale terrain blocks to device size
-        TERRAIN_BLOCK_SIZE = height/6;
+        TERRAIN_BLOCK_SIZE = height/5;
         groundElevation = height - TERRAIN_BLOCK_SIZE*2;
         
         //character is 2 blocks wide and 1 block tall
@@ -66,7 +66,7 @@ exports = Class(View, function(supr) {
     };
     
     this.build = function(){
-        this.on('app:start', bind(this, start_game_flow)); 
+        this.on('gameview:start', bind(this, start_game_flow)); 
     };     
         
     this.adjustSpeed = function(value) {
@@ -82,10 +82,6 @@ exports = Class(View, function(supr) {
     
     this.getLives = function(){
         return lives;
-    };
-    
-    this.getBaseSpeed = function() {
-        return baseSpeed;
     };
     
     this.getChar = function() {
