@@ -19,6 +19,7 @@ exports = Class(SpriteView, function(supr) {
         parent = opts.superview;
                 
         this.weight = 1;
+        this.score = 0;
         this.immune = false;
         
         //call to super constructor with custom class options
@@ -50,7 +51,7 @@ exports = Class(SpriteView, function(supr) {
  
         this.collisionLine = new Line(collisionPoints.startPoint, collisionPoints.endPoint); 
         this.collisionBox = new Rect(opts.x - width/2, opts.y, collisionBoxWidth, height);
-        
+
         this.initImmunityTimeout();
     };
     
@@ -63,7 +64,6 @@ exports = Class(SpriteView, function(supr) {
         setTimeout(function(){
             animation.clear();
             char.immune = false;
-            console.log("not immune anymore");
             char.emit("character:ready");
         }, IMMUNITY_TIMEOUT);
         
@@ -111,22 +111,31 @@ exports = Class(SpriteView, function(supr) {
         }
     };
     
+    this.addToScore = function(value) {     
+        parent.updateScoreBoard(this.score + value);
+    };
+    
     this.kill = function() {
+
+        this.immune = true;
+        this.pause();
+        
         var char = this;
-        char.pause();
         animate(char)
            .now({ y: parent.style.height/2 }, 200, animate.linear)
-           .then({ y: parent.style.height + (this.style.height) }, 200, animate.linear)
+           .then({ y: parent.style.height + (this.style.height) }, 500, animate.linear)
            .then(bind(this, function() {
-               this.immune = true;
-               this.updateOpts({
-                   x: origX,
-                   y: origY
-               });
+              
+               this.emit("character:die");
                
-             // char.resume();
-             //  char.initImmunityTimeout();
-               
+               if(parent.getLives() > 0) {
+                    this.updateOpts({
+                        x: origX,
+                        y: origY
+                    });
+                    char.resume();
+                    char.initImmunityTimeout();
+              }             
         }));  
     };
     

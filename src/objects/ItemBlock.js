@@ -25,32 +25,13 @@ exports = Class(ImageView, function(supr) {
        //initialize collision detection elements
         boundingCircle = new Circle(this.style.x, parent.style.height - this.style.y, this.style.width/2);             
         this.flaggedForRemoval = false;
-        
-        this.build();
-    };
-    
-    this.build = function() {
-        //initialize value and image at random
-        if(this.getBGColor() === "green") {
-            this.value = 1;
-            this.pointValue = 100;
-            this.updateOpts({
-                backgroundColor: "green"
-            });
-        } else {
-            this.value = -2;
-            this.pointValue = 0;
-            this.updateOpts({
-                backgroundColor: "red"
-            });
-        }  
-  
+
     };
     
     this.tick = function(dt) {
        //only proceed if this item hasn't already detected a collision
        if(!character.isImmune() && !this.flaggedForRemoval) {
-       //    console.log("tracking..");
+
            boundingCircle = null;
            
            //scale the x/y coordinates based on parent layer transformations
@@ -63,7 +44,8 @@ exports = Class(ImageView, function(supr) {
               
                 //remove this view from the layer and add use the item's value to adjust the world speed
                  parent.releaseLayerView(this);
-                 character.addToWeight(this.value);
+                 character.addToWeight(this._opts.value);
+                 parent.getSuperview().getSuperview().updateScoreBoard(this._opts.pointValue);
 
                  //flag for removal
                  this.flaggedForRemoval = true;
@@ -73,14 +55,6 @@ exports = Class(ImageView, function(supr) {
     
     this.assignRandom = function(){
         
-    };
-    
-    this.getBGColor = function(){
-        if(Math.random() > badItemModifier) {
-            return "green";
-         } else {
-            return "red";
-        }
     };
     
     this.getValue = function() {

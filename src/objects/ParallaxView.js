@@ -270,10 +270,29 @@ ParallaxView.Layer = Class(ui.View, function (supr) {
                 //added to account for game start and to encapsulate randomization when
                 //obtaining a view from the pool
                 //@ Veronica V.
+                viewOpts._active = (!this.getSuperview().getSuperview().getChar().isImmune()) ? true : false;
                
                 if(viewOpts.group === "terrain") {
-                     viewOpts._started = (this.getSuperview().getSuperview().gameStarted()) ? true : false;
-                     viewOpts._harmful = (Math.random() > .7) ? true : false;
+                     
+                     //only start generating bad terrain when game has started 
+                     viewOpts._harmful = (Math.random() > .95 && viewOpts._active) ? true : false;
+                     viewOpts.backgroundColor = (viewOpts._harmful) ? "red" : "";
+                }
+                
+                if(viewOpts.group === "items") {
+
+                     //only start generating bad items when game has started 
+                     if (Math.random() > .5 && viewOpts._active) {
+                         viewOpts._harmful = true;
+                         viewOpts.backgroundColor = "red";
+                         viewOpts.value = -2;
+                         viewOpts.pointValue = 0;
+                     } else {
+                         viewOpts._harmful = false;
+                         viewOpts.backgroundColor = "green";
+                         viewOpts.value = 1;
+                         viewOpts.pointValue = 50;
+                     }
                 }
               
                 
@@ -324,6 +343,10 @@ ParallaxView.Layer = Class(ui.View, function (supr) {
 	
         this.getOriginalHeight = function() {
             return this.getSuperview().style.height;
+        };
+        
+        this.getRootView = function() {
+            return this.getSuperview().getSuperView();
         };
 	
 	/**

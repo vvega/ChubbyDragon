@@ -22,25 +22,9 @@ exports = Class(ImageView, function(supr) {
        /* character.on("character:ready", function() {
             started = true;
         });*/
-        
-        
-        this.build();
+
     };
-     
-    this.build = function() {
-      //  console.log(parent.getSuperview());
-      //  console.log(parent.getSuperview().gameStarted());
-        //randomization of bad terrain
-       
-        var bgColor = (this._opts._harmful) ? "red" : "green";
-        console.log(bgColor);
-         this.updateOpts({
-             backgroundColor: bgColor
-         });
-     
-    };
-     
-    
+
      this.tick = function(dt) {
         if(!character.isImmune() && this._opts._harmful === true) {
 
@@ -52,8 +36,7 @@ exports = Class(ImageView, function(supr) {
 
             if(intersect.circleAndRect(boundingCircle, character.collisionBox) === true) {
                 //kill character
-               // console.log("killed!");
-               // character.kill();
+                character.kill();
             }
             /* The following will return false:  
              * 
