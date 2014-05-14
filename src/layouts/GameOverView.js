@@ -2,135 +2,142 @@ import ui.View as View;
 import ui.TextView as TextView;
 import ui.widget.GridView as GridView;
 import ui.widget.ButtonView as ButtonView;
+import src.layouts.BaseView as BaseView;
 import animate;
 
-exports = Class(View, function (supr){
-    var width, height, parent; 
+exports = Class(BaseView, function (supr){
+
+    var _textPosX;
+    var _textPosY;
+    var _textView;
+    var _highScoreView;
+        
+    this.constructView = function(score) {
+        supr(this, 'constructView');
+
+        animate(_textView)
+            .now({ y: -HEIGHT/2.5, opacity: 1 }, 500, animate.easeIn)
+            .then(function() {
+               //insert high score view
+               if(score > GC.app.highScore) {
+                    GC.app.highScore = score;
+                    _highScoreView.setText("New High Score: "+score);
+                    animate(_highScoreView)
+                        .now({ y: -HEIGHT/6.3, opacity: 1 }, 300, animate.easeIn)
+               }
+        });   
+    };
+
+    this.resetView = function() {
+        if(supr(this, "resetView")) {
+            _textView.updateOpts({
+                x: _textPosX,
+                y: _textPosY,
+                visibility: false,
+                opacity: 0
+            });
+
+            _highScoreView.updateOpts({
+                x: _textPosX,
+                y: _textPosY,
+                visibility: false,
+                opacity: 0
+            });
+        }
+    };
+
+    this.build = function() {
+        _textView = new TextView({
+            superview: this,
+            layout: 'box',
+            fontFamily: 'tiptoe',
+            text: "Game Over!",
+            size: HEIGHT/5,
+            strokeColor: "#ffc600",
+            strokeWidth: HEIGHT/18,
+            opacity: .4,
+            color: "#FFF",
+            wrap: true
+        });
+
     
-    this.init = function(opts) {
-            opts = merge(opts, {
-                x: 0,
-                y: 0
-            });
+        _highScoreView = new TextView({
+            superview: this,
+            layout: 'box',
+            fontFamily: 'tiptoe',
+            text: "New High Score!",
+            size: HEIGHT/10,
+            strokeColor: "#FFF",
+            strokeWidth: HEIGHT/30,
+            opacity: 0,
+            color: "#ffc600",
+            wrap: true
+        });
 
-            supr(this, 'init', [opts]);
+        var buttonGrid = new GridView({
+            superview: this,
+            width: this.style.width,
+            height: this.style.height,
+            verticalMargin: 20,
+            cols: 3,
+            rows: 6
+        });
 
-            width = opts.width;
-            height = opts.height;
-            parent = opts.superview;
-
-            this.build();
-        };
-
-        this.build = function(){   
-            this.on('gameover:gameover', bind(this, buildView)); 
-        };
-        
-        function buildView(hi_score_flag, score) {
-
-            var textView = new TextView({
-                superview: this,
-                layout: 'box',
+        var replayButton = new ButtonView({
+            superview: buttonGrid,
+            text: {
                 fontFamily: 'tiptoe',
-                text: "Game Over!",
-                size: height/5,
-                strokeColor: "#ffc600",
-                strokeWidth: height/18,
-                opacity: .4,
-                color: "#FFF",
-                wrap: true
-            });
-
-            if(hi_score_flag) {
-        
-                var highScoreView = new TextView({
-                    superview: this,
-                    layout: 'box',
-                    fontFamily: 'tiptoe',
-                    text: "New High Score!",
-                    size: height/10,
-                    strokeColor: "#FFF",
-                    strokeWidth: height/30,
-                    opacity: 0,
-                    color: "#ffc600",
-                    wrap: true
-                });
-
-              //  this.writeToFile(score);
-             }
-
-            var buttonGrid = new GridView({
-                superview: this,
-                width: this.style.width,
-                height: this.style.height,
-                verticalMargin: 20,
-                cols: 3,
-                rows: 6
-            });
-
-            var replayButton = new ButtonView({
-                superview: buttonGrid,
-                text: {
-                    fontFamily: 'tiptoe',
-                    text: "Play Again",
-                    verticalAlign: "middle",
-                    horizontalAlign: "center",
-                    padding: [0,0,65,0],
-                    color: "#FFF"
-               },
-                width: 200,
-                height: 100,
-                backgroundColor: "#d2a734",
-                opacity: 1,
-                col: 1,
-                row: 3,
-                on: {
-                   up: function () {
-                       this.emit("gameover:replay");
-                    }.bind(this)
-                  }
-            });
-
-            var exitButton = new ButtonView({
-                superview: buttonGrid,
-                text: {
-                    fontFamily: 'tiptoe',
-                    text: "Back to Menu",
-                    verticalAlign: "middle",
-                    horizontalAlign: "center",
-                    padding: [0,0,65,0],
-                    color: "#FFF"
-               },
-                backgroundColor: "#d2a734",
-                opacity: 1,
-                col: 1,
-                row: 4,
-                on: {
-                   up: function () {
-                     this.emit("gameover:menu");
-                    }.bind(this)
+                text: "Play Again",
+                verticalAlign: "middle",
+                horizontalAlign: "center",
+                padding: [0,0,65,0],
+                color: "#FFF"
+           },
+            width: 200,
+            height: 100,
+            backgroundColor: "#d2a734",
+            opacity: 1,
+            col: 1,
+            row: 3,
+            on: {
+               up: function () {
+                   GC.app.transitionViews(GC.app.gameView);
                 }
-            });
+              }
+        });
 
-            animate(textView)
-               .now({ y: -height/2.5, opacity: 1 }, 500, animate.easeIn)
-               .then(function() {
-                   //insert high score view
-                   if(highScoreView) {
-                        highScoreView.setText("New High Score: "+score);
-                         animate(highScoreView)
-                         .now({ y: -height/6.3, opacity: 1 }, 300, animate.easeIn)
-                   }
-               });   
-  
-        };
-        this.writeToFile = function(score) {
-            //TODO
-        /*  var fs = require('fs');
-          fs.writeFile('../../resources/cache/data.json', 
-            '{highscore: '+score+'}', function (err) {
-             if (err) throw err;
-             console.log('It\'s saved!');
-           });*/
-        };
+        var exitButton = new ButtonView({
+            superview: buttonGrid,
+            text: {
+                fontFamily: 'tiptoe',
+                text: "Back to Menu",
+                verticalAlign: "middle",
+                horizontalAlign: "center",
+                padding: [0,0,65,0],
+                color: "#FFF"
+           },
+            backgroundColor: "#d2a734",
+            opacity: 1,
+            col: 1,
+            row: 4,
+            on: {
+               up: function () {
+                 GC.app.transitionViews(GC.app.titleScreen);
+                }
+            }
+        });
+
+        _textPosX = _textView.style.x;
+        _textPosY = _textView.style.y;
+    }
+
+    this.writeToFile = function(score) {
+        //TODO
+    /*  var fs = require('fs');
+      fs.writeFile('../../resources/cache/data.json', 
+        '{highscore: '+score+'}', function (err) {
+         if (err) throw err;
+         console.log('It\'s saved!');
+       });*/
+    };
 });

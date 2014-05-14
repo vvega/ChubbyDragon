@@ -3,244 +3,252 @@ import src.objects.TerrainBlock as TerrainBlock;
 import src.layouts.ParallaxView as ParallaxView;
 import src.objects.ItemBlock as ItemBlock;
 import animate;
-import src.SpriteManager as SpriteManager;
 import src.objects.Character as Character;
 import ui.ScoreView as ScoreView;
+import src.layouts.BaseView as BaseView;
 
-exports = Class(View, function(supr) {
-   
-    var width, 
-        height;
+exports = Class(BaseView, function(supr) {
     
-    var baseSpeed, speed;
-    var groundElevation, startX;
-    var character, characterElevation;
-    var TERRAIN_BLOCK_SIZE, CHARACTER_WIDTH, CHARACTER_HEIGHT;
-    var score, lives, scoreView, livesView;
-    var gameStarted;
-    var flag_jump;
-    var scrollX;
+    var CHARACTER_ELEVATION;
+    var GROUND_ELEVATION;
+    var TERRAIN_BLOCK_SIZE;
+    var CHARACTER_WIDTH;
+    var CHARACTER_HEIGHT;
+    var LIVES;
+    var BASE_SPEED
+    var START_X;
+ 
+    var _speed;
+    var _character;
+    var _score;
+    var _lives;
+    var _scoreView;
+    var _livesView;
+    var _gameStarted;
+    var _flag_jump;
+    var _scrollX;
+    var _itemLayer;
+    var _terrainLayer;
 
     this.init = function(opts) {   
-        opts = merge(opts, {
-            x:0,
-            y:0
-        });
-
-        width = opts.width;
-        height = opts.height;
-        
-        supr(this, 'init', [opts]);
 
         //scale terrain blocks to device size
-        TERRAIN_BLOCK_SIZE = height/5;
-        groundElevation = height - TERRAIN_BLOCK_SIZE*2;
+        TERRAIN_BLOCK_SIZE = HEIGHT/5;
+        GROUND_ELEVATION = HEIGHT - TERRAIN_BLOCK_SIZE*2;
         
         //character is 2 blocks wide and 1 block tall
         CHARACTER_WIDTH = TERRAIN_BLOCK_SIZE*3;
         CHARACTER_HEIGHT = TERRAIN_BLOCK_SIZE*1.3;
+
+        //default lives count
+        LIVES = 3;
         
         //calculate character's default y position (with some cushion)
-        characterElevation = groundElevation - (CHARACTER_HEIGHT - (TERRAIN_BLOCK_SIZE + height/56));
+        CHARACTER_ELEVATION = GROUND_ELEVATION - (CHARACTER_HEIGHT - (TERRAIN_BLOCK_SIZE + HEIGHT/56));
         
         //sprite position based upon device width
-        startX = width/9;
-        
-        //score 
-        score = 0;
-        
-        //lives
-        lives = 3;
-        
-        //initialize scroll amount
-        scrollX = 0;
-        
-        //initialize jump flag
-        flag_jump = true;
-        
-        //init speed amounts
-        baseSpeed = 8;
-        speed = baseSpeed;
+        START_X = WIDTH/9;
 
-        this.build();
+        //initialize scroll amount
+        _scrollX = 0;
+
+        //initialize speed
+        BASE_SPEED = 8;
+
+        //initialize game instance dependent variables
+        this._initGameVariables();
+
+        supr(this, 'init', [opts]);
+
+    }; 
+     
+    this._initGameVariables = function() {       
+        _score = 0;
+        _lives = LIVES;
+        _speed = BASE_SPEED;
+        _flag_jump = true;
+    };   
+
+    this._initViews = function() {
+        _scoreView.setText(_score);
+        _livesView.setText(_lives);
+        _character.style.x = START_X;
+        _character.style.y = CHARACTER_ELEVATION;
+        _character.activate();
     };
-    
-    this.build = function(){
-        this.on('gameview:start', bind(this, start_game_flow)); 
-    };     
-        
+
     this.adjustSpeed = function(value) {
-        //speed is equal to scrolling animation duration
+        //_speed is equal to scrolling animation duration
         //it will increase with increased weight
-        speed = baseSpeed + value;
+        _speed = BASE_SPEED + value;
     };
     
     this.updateScoreBoard = function(value) {
-        score += value;
-        scoreView.setText(score);
+        _score += value;
+        _scoreView.setText(_score);
     };
     
     this.getLives = function(){
-        return lives;
+        return _lives;
     };
     
     this.getChar = function() {
-        return character;
+        return _character;
     };
-    
-    function start_game_flow() {
-                
-            gameStarted = true;
-            ///PARALLAX VIEW
-            this.parallaxView = new ParallaxView({
-                superview: this,
-                width: this.style.width,
-                height: this.style.height
-            });
 
-            //character
-            var imageData = SpriteManager.getImageData();
-            character = new Character(merge({
-                superview: this,
-                name: "hero",
-                x: startX,
-                y: characterElevation,
-                width: CHARACTER_WIDTH,
-                height: CHARACTER_HEIGHT,
-                visible: false,
+    this.constructView = function() {
+        supr(this, 'constructView');
+        _gameStarted = true;
+    };
 
-                sheetData: merge({
-                  anims: imageData.sprites.hero
-                }, imageData.sprites.sheetData)
-              }, imageData.sprites.creature));        
+    this.resetView = function() {
+        if(supr(this, "resetView")) {
+            _character.resume();
+            this._initGameVariables();
+            this._initViews();
+        }
+    };
 
-              character.startAnimation('run', {loop: true});
+    this.build = function() {
+        this.parallaxView = new ParallaxView({
+            superview: this,
+            width: this.style.width,
+            height: this.style.height
+        });
 
-              character.on("character:die", function() {
-                  lives--;
-                  if(lives > 0) {
-                      livesView.setText(lives);
-                      flag_jump = true;
-                  } else {
-                      gameStarted = false;
-                      this.emit("gameview:gameover", score);
-                  }
-              }.bind(this));
+        //character
+        _character = new Character(merge({
+            superview: this,
+            name: "hero",
+            x: START_X,
+            y: CHARACTER_ELEVATION,
+            width: CHARACTER_WIDTH,
+            height: CHARACTER_HEIGHT
+        }));        
 
-
-            //TERRAIN AND ITEMS
-            var terrainLayer = this.parallaxView.addLayer({
-                distance: 1,
-                populate: function (layer, x) {
+        //TERRAIN AND ITEMS
+        _terrainLayer = this.parallaxView.addLayer({
+            distance: 1,
+            populate: function (layer, x) {
                     var v = layer.obtainView(TerrainBlock, {
                           group: "terrain",
-                          character: character,
+                          character: _character,
                           superview: layer,
                           image: "resources/images/terrain_block.png",
                           x: x,
-                          y: height - TERRAIN_BLOCK_SIZE,
+                          y: HEIGHT - TERRAIN_BLOCK_SIZE,
                           width: TERRAIN_BLOCK_SIZE,
                           height: TERRAIN_BLOCK_SIZE
                    });
                    return v.style.width;
                 }
-            });
+        });
 
-            var itemLayer = this.parallaxView.addLayer({
-                distance: 1,
-                populate: function (layer, x) {
-                    var v = layer.obtainView(ItemBlock, {
-                          group: "items",
-                          character: character,
-                          superview: layer,
-                          x: x,
-                          width: TERRAIN_BLOCK_SIZE/1.5,
-                          height: TERRAIN_BLOCK_SIZE/1.5,
-                          y: height - TERRAIN_BLOCK_SIZE*1.6
-                   });
-                   //return random space between elements
-                   return v.style.width + Math.random()*width;
-                }
-            }); 
+        _itemLayer = this.parallaxView.addLayer({
+            distance: 1,
+            populate: function (layer, x) {
+                var v = layer.obtainView(ItemBlock, {
+                    group: "items",
+                    character: _character,
+                    superview: layer,
+                    x: x,
+                    width: TERRAIN_BLOCK_SIZE/1.5,
+                    height: TERRAIN_BLOCK_SIZE/1.5,
+                    y: HEIGHT - TERRAIN_BLOCK_SIZE*1.6
+               });
+               //return random space between elements
+               return v.style.width + Math.random()*WIDTH;
+            }
+        }); 
+         
+        var svBox = new View({
+            superview: this,
+            x: WIDTH/30,
+            y: HEIGHT/32,
+            width: WIDTH/4,
+            height: HEIGHT/6
+        });
 
-            //SCORE
-              var svBox = new View({
-                  superview: this,
-                  x: width/30,
-                  y: height/32,
-                  width: width/4,
-                  height: height/6
-              });
+        var lvBox = new View({
+            superview: this,
+            x: WIDTH - HEIGHT/4,
+            y: 0,
+            width: HEIGHT/13,
+            height: HEIGHT/9
+        });
 
-              var lvBox = new View({
-                  superview: this,
-                  x: width- height/4,
-                  y: 0,
-                  width: height/13,
-                  height: height/9
-              });
+        _scoreView = new ScoreView({
+            superview: svBox,
+            x:0,
+            y:0,
+            layout: 'box',
+            text: "0",
+            characterData: this._nextCharData()
+        });
 
-              var nextCharData = function() {
-                var d = {};
-                for (var i = 0; i < 10; i++) {
-                  d[i] = {
-                    image: "resources/fonts/scoreboard/" + i + ".png"
-                  };
-                }
-                return d;
-              };
-                 
-              scoreView = new ScoreView({
-                superview: svBox,
-                x:0,
-                y:0,
-                layout: 'box',
-                text: "0",
-                characterData: nextCharData()
-              });
+        _livesView = new ScoreView({
+            superview: lvBox,
+            layout: 'box',
+            layoutHeight: HEIGHT/4,
+            layoutWidth: HEIGHT/4,
+            text: _lives,
+            characterData: this._nextCharData()
+        });
 
-              livesView = new ScoreView({
-                superview: lvBox,
-                layout: 'box',
-                layoutHeight: height/4,
-                layoutWidth: height/4,
-                text: lives,
-                characterData: nextCharData()
-              });
-              
+        _character.startAnimation('run', {loop: true});
+        
+        this._initViews();
+        this._initGameHandlers();
+    };
 
-            this.render = bind(this, function(ctx) {
-                character.updateCollisionPoints();
+    this.updateLives = function() {
+        _lives--;
+        if(_lives > 0) {
+            _livesView.setText(_lives);
+            _flag_jump = true;
+        } else {
+            _gameStarted = false;
+            GC.app.transitionViews(GC.app.gameOverView, _score);
+        }
+    };
 
-            });   
+    this._nextCharData = function() {
+        var d = {};
+        for (var i = 0; i < 10; i++) {
+            d[i] = { image: "resources/fonts/scoreboard/" + i + ".png"};
+        }
+        return d;
+    };
 
-           this.tick = function(dt) {
-               scrollX += speed;
-              if(gameStarted) {
-               terrainLayer.scrollTo(scrollX, 0);
-               itemLayer.scrollTo(scrollX,0);       
-              } 
-           };   
-           
-             this.on('InputStart', function() {
+    this._initGameHandlers = function() {
 
-                if(!character.isImmune() && flag_jump) {
+        this.tick = function(dt) {
 
-                    flag_jump = false;
-                    character.pause();
+            _scrollX += _speed;
+            if(_gameStarted) {
+                _terrainLayer.scrollTo(_scrollX, 0);
+                _itemLayer.scrollTo(_scrollX, 0);
+                _character.updateCollisionPoints();       
+            } 
+        }; 
 
-                    animate(character)
-                   .now({ y: height/6 }, 500, animate.easeInOut)
-                   .then({ y: characterElevation }, 750, animate.easeIn)
-                   .then(bind(this, function() {
+        this.on('InputStart', function() {
 
-                       flag_jump = true;
-                       character.resume();
+            if(!_character.isImmune() && _flag_jump) {
 
-                    }));         
-                }
-            });
-      }   
+                _flag_jump = false;
+                _character.pause();
+
+                animate(_character)
+                .now({ y: HEIGHT/6 }, 500, animate.easeInOut)
+                .then({ y: CHARACTER_ELEVATION }, 750, animate.easeIn)
+                .then(bind(this, function() {
+
+                    _flag_jump = true;
+                    _character.resume();
+
+                }));                     
+            }
+        });
+    };    
  });
-
-

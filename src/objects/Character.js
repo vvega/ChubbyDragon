@@ -1,36 +1,43 @@
 import ui.SpriteView as SpriteView;
+import src.SpriteManager as SpriteManager;
+import math.geom.intersect as intersect;
 import math.geom.Point as Point;
 import math.geom.Rect as Rect;
-import math.geom.intersect as intersect;
 import math.geom.Line as Line;
 import animate;
 
-
 exports = Class(SpriteView, function(supr) {
-    var parent;
-    var width, height;
-    var collisionBoxHeight, collisionBoxWidth, origX, origY;
+
+    var WIDTH, HEIGHT;
+    var ORIG_X, ORIG_Y;
+    var COLLISION_BOX_HEIGHT;
+    var COLLISION_BOX_WIDTH;
     var IMMUNITY_TIMEOUT = 3000;
 
-    this.init = function(opts) {       
+    var _parent;
+    var _startX;
+    var _endX;
+    var _differenceInY;
+
+    this.init = function(opts) {  
+
+        var imageData = SpriteManager.getImageData();
+
         opts = merge(opts, {
-        });
-        
-        parent = opts.superview;
-                
-        this.weight = 1;
-        this.score = 0;
-        this.immune = false;
-        
-        //call to super constructor with custom class options
-        supr(this, 'init', [opts]);
+            sheetData: 
+                merge({ anims: imageData.sprites.hero }, imageData.sprites.sheetData)
+        });     
+
+        _parent = opts.superview;
                       
-        width = opts.width;
-        height = opts.height;
-        collisionBoxWidth = width/3;
-        collisionBoxHeight = height/2;
-        origY = opts.y;
-        origX = opts.x;
+        WIDTH = opts.width;
+        HEIGHT = opts.height;
+        ORIG_Y = opts.y;
+        ORIG_X = opts.x;
+        COLLISION_BOX_WIDTH = WIDTH/2.5;
+        COLLISION_BOX_HEIGHT = HEIGHT/2;
+
+        supr(this, 'init', [opts]);
 
         this.build(opts);
     };
@@ -41,69 +48,61 @@ exports = Class(SpriteView, function(supr) {
         //(From top right of sprite to halfway down in height with some x-cushion)
         var collisionPoints = {
            startPoint: new Point({
-                x: opts.x + width/1.25,
+                x: opts.x + WIDTH/1.25,
                 y: opts.y
              }),
             endPoint: new Point({
-                x: opts.x + width/1.25,
-                y: opts.y + height/2
+                x: opts.x + WIDTH/1.25,
+                y: opts.y + HEIGHT/2
             })
         }
  
         this.collisionLine = new Line(collisionPoints.startPoint, collisionPoints.endPoint); 
-        this.collisionBox = new Rect(opts.x + collisionBoxWidth, opts.y, collisionBoxWidth,  collisionBoxHeight);
+        this.collisionBox = new Rect(opts.x + COLLISION_BOX_WIDTH/2, opts.y, COLLISION_BOX_WIDTH,  COLLISION_BOX_HEIGHT);
+    };
 
+    this.activate = function() {                       
+        this.weight = 1;
+        this.score = 0;
         this.initImmunityTimeout();
     };
     
     //handles immunity status
     this.initImmunityTimeout = function(){
-        
-        this.immune = true;
-        var char = this;
-        
+      
+        this.immune = true;    
         var animation;
         
-        setTimeout(function(){
-            animation.clear();
-            char.immune = false;
-            char.emit("character:ready");
-        }, IMMUNITY_TIMEOUT);
-        
         //scales animation duration based upon timeout length
-        animation = animate(char)
-              .now({ opacity: .4 }, IMMUNITY_TIMEOUT/4, animate.easeIn )
-              .then({ opacity: 1 }, IMMUNITY_TIMEOUT/4, animate.easeIn )
-              .then({ opacity: .4 }, IMMUNITY_TIMEOUT/4, animate.easeIn )
-              .then({ opacity: 1 }, IMMUNITY_TIMEOUT/4, animate.easeIn );
-        
+        animation = animate(this)
+            .now({ opacity: .4 }, IMMUNITY_TIMEOUT/4, animate.easeIn )
+            .then({ opacity: 1 }, IMMUNITY_TIMEOUT/4, animate.easeIn )
+            .then({ opacity: .4 }, IMMUNITY_TIMEOUT/4, animate.easeIn )
+            .then({ opacity: 1 }, IMMUNITY_TIMEOUT/4, animate.easeIn )
+            .then(function() {
+                animation.clear();
+                this.immune = false;
+            }.bind(this));        
     };
     
     this.updateCollisionPoints = function(){
         
         //update collision line (for items)
-         var differenceInY = origY - this.style.y;
-         var startX = this.collisionLine.start.x, 
-               endX = this.collisionLine.end.x;
+        _differenceInY = ORIG_Y - this.style.y;
+        _startX = this.collisionLine.start.x; 
+        _endX = this.collisionLine.end.x;
        
-         this.collisionLine.start = this.collisionLine.end = null;
-         this.collisionBox = null;
-         
-         this.collisionLine.start = new Point({
-             x: startX,
-             y: origY - differenceInY
-         });
-         
-         this.collisionLine.end = new Point({
-              x: endX,
-              y: (origY - differenceInY) + height/2
-         });
-         
+        this.collisionLine.start.x = _startX;
+        this.collisionLine.start.y = ORIG_Y - _differenceInY;
+ 
+        this.collisionLine.end.x = _endX;
+        this.collisionLine.end.y = (ORIG_Y - _differenceInY) + HEIGHT/2;
+        
          //update collision box (for terrain)
-         this.collisionBox = new Rect(this.style.x + collisionBoxWidth, origY - differenceInY, collisionBoxWidth,  collisionBoxHeight);
-
-         startX = endX = differenceInY = null;
-         
+        this.collisionBox.x = this.style.x + COLLISION_BOX_WIDTH/2;
+        this.collisionBox.y = ORIG_Y - _differenceInY;
+        this.collisionBox.width = COLLISION_BOX_WIDTH;
+        this.collisionBox.height = COLLISION_BOX_HEIGHT;
     };
     
     //updates weight
@@ -112,13 +111,13 @@ exports = Class(SpriteView, function(supr) {
         if(!(this.weight + value > 60 || this.weight + value < -7)) {
             //limit speed max and min
             this.weight += value;
-            parent.adjustSpeed(this.weight);
+            _parent.adjustSpeed(this.weight);
         }
     };
     
     //adds score to scoreboard
     this.addToScore = function(value) {     
-        parent.updateScoreBoard(this.score + value);
+        _parent.updateScoreBoard(this.score + value);
     };
     
     //kills character
@@ -128,16 +127,16 @@ exports = Class(SpriteView, function(supr) {
         this.pause();
 
         animate(this)
-           .now({ y: parent.style.height/2 }, 200, animate.linear)
-           .then({ y: parent.style.height + (this.style.height) }, 500, animate.linear)
+           .now({ y: _parent.style.height/2 }, 200, animate.linear)
+           .then({ y: _parent.style.height + (this.style.height) }, 500, animate.linear)
            .then(bind(this, function() {
               
-               this.emit("character:die");
+               _parent.updateLives();
                
-               if(parent.getLives() > 0) {
+               if(_parent.getLives() > 0) {
                     this.updateOpts({
-                        x: origX,
-                        y: origY
+                        x: ORIG_X,
+                        y: ORIG_Y
                     });
                     this.resume();
                     this.initImmunityTimeout();

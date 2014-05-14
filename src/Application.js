@@ -1,172 +1,100 @@
-import ui.StackView as StackView;
+import device;
+import animate;
+import ui.View as View;
 import src.layouts.TitleScreen as TitleScreen;
-import ui.ImageScaleView as ImageScaleView;
 import src.layouts.GameOverView as GameOverView;
 import src.layouts.GameView as GameView;
 //import src.SoundController as SoundController;
-import device;
-
-//get landscape mode dimensions
-var deviceDimensions = device.getDimensions(true);
-
-//calculate dimensions to scale based on deviceDimensions
-var boundsWidth = 576,
-    boundsHeight = 1024,
-    baseWidth = boundsWidth;
-    
-baseWidth = deviceDimensions.width * (boundsHeight / deviceDimensions.height);
-
-var baseHeight = boundsHeight;
-var scale = deviceDimensions.height / baseHeight;
-
 
 exports = Class(GC.Application, function () {
-        
-        var rootView, 
-            backgroundView,
-            gameView,
-            gameOverView,
-            titleScreen,
-            highScore;
+
+    Z_CURRENT = 2;
+    Z_PREV = 1;
+    TRANSITION_TIME = 300;
         
 	this.initUI = function () {
+
+        this._initDimensions();
                 
-                //TODO: read/write mechanism for local highScore. Default is set to 0;
-                highScore = JSON.parse(CACHE['resources/cache/data.json']).highscore;                                   
+        //TODO: read/write mechanism for local highScore. Default is set to 0;
+        this.highScore = JSON.parse(CACHE['resources/cache/data.json']).highscore;                                             
+        
+        this.rootView = new View({
+            superview: this.view,
+            x: 0,
+            y: 0,
+            width: WIDTH,
+            height: HEIGHT,
+            scale: SCALE
+        });
+       
+        this.titleScreen = new TitleScreen({
+            superview: this.rootView,
+            highScore: this.highScore,
+            zIndex: Z_CURRENT,
+            width: WIDTH,
+            height: HEIGHT
+        });
+         
+        this.gameView = new GameView({
+            superview: this.rootView,
+            width: WIDTH,
+            height: HEIGHT
+        });
+
+        this.gameOverView = new GameOverView({
+            superview: this.rootView,
+            width: WIDTH,
+            height: HEIGHT
+        });
+
+        //TODO: var sound = SoundController.getSound();
+    };
+        
+        
+    this.launchUI = function () {
+        //go to the title screen
+        this.transitionViews(this.titleScreen);
+    };
+        
+    this.transitionViews = function(nextView, params) {
+        //if activeView exists, fade it out and hide it
+        if(this.activeView) {
+           
+            animate(this.activeView)
+                .now({opacity:0}, TRANSITION_TIME, animate.linear)
+                .then(bind(this, function() {
+                    //reassign activeView once animation is done
+                    this.activeView.hideView();
+                    this.activeView = nextView;
+                    this.activeView.showView();                     
+            }));
+
+            nextView.resetView();
+            nextView.constructView(params);                
             
-		this.view.style.scale = scale;               
-                
-                rootView = new StackView({
-                    superview: this.view,
-                    x: 0,
-                    y: 0,
-                    width: baseWidth,
-                    height: baseHeight
-                });
-                
-                backgroundView = new ImageScaleView({
-                    width: baseWidth,
-                    height: baseHeight,
-                    image: 'resources/images/forest-background.png'           
-                });
-               
-                titleScreen = new TitleScreen({
-                    highScore: highScore,
-                    width: baseWidth,
-                    height: baseHeight
-                });
-                 
-                gameView = this.getNewGameView();
-                gameOverView = this.getNewGameOverView();
-                                    
-                //TODO: var sound = SoundController.getSound();
-        };
-        
-        
-        this.launchUI = function () {
-            
-            //captures broadcast to start gamescreen via pushing onto the rootView
-           titleScreen.on('titlescreen:start', function () {
-               gameView.emit("gameview:start");
-               rootView.push(gameView);
-           });
- 
-            //push the titlescreen
-            rootView.addSubview(backgroundView);
-            titleScreen.emit("app:start");
-            rootView.push(titleScreen);
-	};
-        
-        //creates new gameview
-        this.getNewGameView = function() {
+        } else {
+            setTimeout(function() {
+                 nextView.constructView(params); 
+                 nextView.showView(); 
+            }, TRANSITION_TIME);
+            this.activeView = nextView;
+        }
+    };
 
-            var newGameView = new GameView({
-                        width: baseWidth,
-                        height: baseHeight
-            });
-            
-            newGameView.on('gameview:gameover', function (score) {
-              
-                gameOverView = this.getNewGameOverView();
-                
-                //push highscore if present
-                if(score > highScore) {
-                    highScore = score;
-                    var flag_newHighScore = true;
-                }
-                
-                gameOverView.emit("gameover:gameover", flag_newHighScore, highScore);
-                rootView.push(gameOverView);
-                
-            }.bind(this));  
+    this._initDimensions = function() {
 
-            return newGameView;
-        };
-        
-        //creates new gameoverview
-        this.getNewGameOverView = function() {
+        //get landscape mode dimensions
+        var deviceDimensions = device.getDimensions(true);
 
-            var newGameOverView = new GameOverView({
-                        width: baseWidth,
-                        height: baseHeight
-            });
-            
-            newGameOverView.on('gameover:replay', function(){
-                  
-                  //remove and clear game layer
-                  rootView.remove(gameView);
-                  this.clearGameView();
-                  
-                  titleScreen.style.visible = false;
-                  //pop off the game over menu                 
-                  
-                  //generate a new game layer
-                  gameView = this.getNewGameView();
-                 
-                  //emit start and push new view onto stack
-                  gameView.emit("gameview:start");
-                  rootView.push(gameView, false, true);                  
+        //calculate dimensions to scale based on deviceDimensions
+        var boundsWidth = 576;
+        var boundsHeight = 1024;
 
-                 //then clear the game over view 
-                  rootView.remove(gameOverView);
-                  this.clearGameOverView();
+        WIDTH = boundsWidth;           
+        WIDTH = deviceDimensions.width * (boundsHeight / deviceDimensions.height);
+        HEIGHT = boundsHeight;
 
-                 //reinitialize
-                 gameOverView = this.getNewGameOverView();
-
-            }.bind(this));
-
-            newGameOverView.on('gameover:menu', function(){
-                  
-                  //remove and clear game layer
-                  rootView.remove(gameView);
-                  this.clearGameView();
-                  
-                  //pop the game over view off of the stack
-                  rootView.pop();
-                  
-                  //then clear the game over view
-                  rootView.remove(gameOverView);
-                  this.clearGameOverView();
-                  
-                  //reinitialize
-                  gameView = this.getNewGameView();
-                  gameOverView = this.getNewGameOverView();
-
-            }.bind(this));
-
-            return newGameOverView;
-        };
-        
-        //clears gameview
-        this.clearGameView = function() {    
-             gameView.removeAllSubviews();
-             gameView = null;
-        };
-        
-        //clearsgameview
-        this.clearGameOverView = function() {
-            gameOverView.removeAllSubviews();
-            gameOverView = null;
-        };
+        SCALE = deviceDimensions.height / HEIGHT;
+    };
 });

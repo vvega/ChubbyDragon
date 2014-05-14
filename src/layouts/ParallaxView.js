@@ -267,38 +267,38 @@ ParallaxView.Layer = Class(ui.View, function (supr) {
 		var poolKey = ctor.name + (opts.group || "");
 		
                             
-                //added to account for game start and to encapsulate randomization when
-                //obtaining a view from the pool
-                //@ Veronica V.
-                viewOpts._active = (!this.getSuperview().getSuperview().getChar().isImmune()) ? true : false;
-               
-                if(viewOpts.group === "terrain") {
-                     
-                     //only start generating bad terrain when game has started 
-                     viewOpts._harmful = (Math.random() > .95 && viewOpts._active) ? true : false;
-                 
-                     if(viewOpts._harmful) {
-                         viewOpts.image = "resources/images/terrain_block_staples.png";
-                         viewOpts.height = viewOpts.height + viewOpts.height/3;
-                         viewOpts.width = viewOpts.width + viewOpts.width/4;
-                     } 
-                }
-                
-                if(viewOpts.group === "items") {
+		//added to account for game start and to encapsulate randomization when
+		//obtaining a view from the pool
+		//@ Veronica V.
+		viewOpts._active = (!this.getSuperview().getSuperview().getChar().isImmune()) ? true : false;
 
-                     //only start generating bad items when game has started 
-                     if (Math.random() > .5 && viewOpts._active) {
-                         viewOpts._harmful = true;
-                         viewOpts.image = "resources/images/cake.png";
-                         viewOpts.value = -2;
-                         viewOpts.pointValue = 0;
-                     } else {
-                         viewOpts._harmful = false;
-                         viewOpts.image = "resources/images/apple.png";
-                         viewOpts.value = 1;
-                         viewOpts.pointValue = 50;
-                     }
-                }
+		if(viewOpts.group === "terrain") {
+		     
+			//only start generating bad terrain when game has started 
+			viewOpts._harmful = (Math.random() > .95 && viewOpts._active) ? true : false;
+
+			if(viewOpts._harmful) {
+				viewOpts.image = "resources/images/terrain_block_staples.png";
+				viewOpts.height = viewOpts.height + viewOpts.height/3;
+				viewOpts.width = viewOpts.width + viewOpts.width/4;
+			} 
+		}
+
+		if(viewOpts.group === "items") {
+
+		    //only start generating bad items when game has started 
+			if (Math.random() > .5 && viewOpts._active) {
+				viewOpts._harmful = true;
+				viewOpts.image = "resources/images/cake.png";
+				viewOpts.value = -2;
+				viewOpts.pointValue = 0;
+			} else {
+				viewOpts._harmful = false;
+				viewOpts.image = "resources/images/apple.png";
+				viewOpts.value = 1;
+				viewOpts.pointValue = 50;
+			}
+		}
               
                 
 		var pool;
@@ -327,32 +327,32 @@ ParallaxView.Layer = Class(ui.View, function (supr) {
 			}.bind(this));
 		}
                 
-                //added in order to prevent multiple hits per view on successive ticks
-                // @ Veronica V.
-                v.flaggedForRemoval = false;
+        //refresh property upon retrieval from viewpool
+        // @ Veronica V.
+        v.flaggedForRemoval = false;
                 
 		return v;
 	}
 
-        //added in order to release specific views when necessary
-        // @Veronica V.
-        this.releaseLayerView = function(v){
-            v._pool.releaseView(v);
-        };
+    //added in order to release specific views when necessary
+    // @Veronica V.
+    this.releaseLayerView = function(v){
+        v._pool.releaseView(v);
+    };
         
-        //for extra utility when needed
-        // @Veronica V.
-        this.getOriginalWidth = function() {
-            return this.getSuperview().style.width;
-        };
-	
-        this.getOriginalHeight = function() {
-            return this.getSuperview().style.height;
-        };
-        
-        this.getRootView = function() {
-            return this.getSuperview().getSuperView();
-        };
+    //for extra utility when needed
+    // @Veronica V.
+    this.getOriginalWidth = function() {
+        return this.getSuperview().style.width;
+    };
+
+    this.getOriginalHeight = function() {
+        return this.getSuperview().style.height;
+    };
+    
+    this.getRootView = function() {
+        return this.getSuperview().getSuperView();
+    };
 	
 	/**
 	 * Override this function (or pass `populate` in opts) to populate the view

@@ -6,37 +6,33 @@ import math.geom.Circle as Circle;
 
 exports = Class(ImageView, function(supr) {
     
-    var parent, character, boundingCircle;
+    var _parent;
+    var _character;
+    var _boundingCircle;
     
     this.init = function(opts) {       
         opts = merge(opts, {
              image: "resources/images/terrain_block.png"
         });
         
-        parent = opts.superview;
-        character = opts.character;           
+        _parent = opts.superview;
+        _character = opts.character;           
 
         supr(this, 'init', [opts]);
-        
-        boundingCircle = new Circle(this.style.x, parent.style.height - this.style.y, this.style.width/2);
+
+        _boundingCircle = new Circle(this.style.x, _parent.style.height - this.style.y, this.style.width/1.5);
     };
     
     //check for collision
-     this.tick = function(dt) {
-        if(!character.isImmune() && this._opts._harmful === true) {
-            
+    this.tick = function(dt) {
+        if(!_character.isImmune() && this._opts._harmful === true) {
             //update bounding circle
-            boundingCircle = null;
-            
-            //scale the x/y coordinates based on parent layer transformations
-            boundingCircle = new Circle(this.getPosition().x / this.getPosition().scale, 
-               this.getPosition().y / this.getPosition().scale,
-               this.style.width/2);
+            _boundingCircle.x = this.getPosition().x / this.getPosition().scale;
+            _boundingCircle.y = this.getPosition().y / this.getPosition().scale;
 
-               if(intersect.circleAndRect(boundingCircle, character.collisionBox) === true) {
-                   //kill character
-                   character.kill();
-               }
+            if(intersect.circleAndRect(_boundingCircle, _character.collisionBox) === true) {
+                _character.kill();
+            }
         }
     };
 });

@@ -1,0 +1,50 @@
+5/13/2014:
+	General:
+		-all layout transitions handled by GC.app.transitionViews() method
+		-emitters replaced with function calls
+		-layout width/height are now globals
+		-class-specific variables denoted as private fields with “_”
+		-constants organized and denoted by full capitalization
+		-no new features added (yet...)
+	Application.js
+		-layout dimension initialization consolidated to _initDimensions() and result in HEIGHT and WIDTH globals
+		-GameView and GameOverView separate creation functions no longer needed
+		-transitionViews()
+			>can take extra data parameter “params” to pass to nextView (used for score)
+			>calls fade-out animation for the currently active view
+			>resets/constructs the nextview
+			>shows the nextview and reassigns the active view on animation end
+			>if there is no active view, constructs and shows the nextview after transition duration
+	Layouts:
+		BaseView.js added to serve as base ImageView class for all UI views
+			-default init properties include:
+				>background image
+				>visibility set to false
+				>zIndex set to Z_PREV
+			-added BaseView.isBuilt to signify whether a UI has already built its subviews
+			-resetView() added
+				>if the view hasn’t been built yet, it will return false (no need to reset view)
+				>otherwise returns true
+				>subclasses are responsible for further implementation
+			-constructView() added
+				>calls build() on UI view if view hasnt already been built
+				>prepares view for visibility
+			-hideView() added
+				>consolidated visibility, opacity, and zIndex changes to this method
+			-showView() brings view to the top
+		GameOverView.js
+			-now inherits init function from BaseView
+		GameView.js
+			-fields organized into private/constant variables
+			-init contains initialization of game constants
+			-instance-dependent variables set within _initGameVariables()
+			-view initialization put within _initViews()
+			-tick and input assignments put within _initGameHandlers(), which is called at the end of build() (once)
+			-nextCharData() for ScoreViews separated into its own function
+			-character sprite data handling moved into Character.js
+	Objects:
+		General
+			-collision object properties no longer recreated on check
+		Character.js 
+			-merges sheet sprite data on initialization
+			-collision object properties are no longer recreated on update
