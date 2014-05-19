@@ -2,7 +2,7 @@ import ui.View as View;
 import ui.TextView as TextView;
 import ui.widget.GridView as GridView;
 import ui.widget.ButtonView as ButtonView;
-import src.layouts.BaseView as BaseView;
+import src.view.BaseView as BaseView;
 import animate;
 
 exports = Class(BaseView, function (supr){
@@ -11,7 +11,7 @@ exports = Class(BaseView, function (supr){
     var _textPosY;
     var _textView;
     var _highScoreView;
-        
+
     this.constructView = function(score) {
         supr(this, 'constructView');
 
@@ -22,28 +22,26 @@ exports = Class(BaseView, function (supr){
                if(score > GC.app.highScore) {
                     GC.app.highScore = score;
                     _highScoreView.setText("New High Score: "+score);
+                    this.writeToFile(score);
                     animate(_highScoreView)
                         .now({ y: -HEIGHT/6.3, opacity: 1 }, 300, animate.easeIn)
-               }
-        });   
+            }
+        }.bind(this));
     };
 
     this.resetView = function() {
-        if(supr(this, "resetView")) {
-            _textView.updateOpts({
-                x: _textPosX,
-                y: _textPosY,
-                visibility: false,
-                opacity: 0
-            });
-
-            _highScoreView.updateOpts({
-                x: _textPosX,
-                y: _textPosY,
-                visibility: false,
-                opacity: 0
-            });
-        }
+        _textView.updateOpts({
+            x: _textPosX,
+            y: _textPosY,
+            visibility: false,
+            opacity: 0
+        });
+        _highScoreView.updateOpts({
+            x: _textPosX,
+            y: _textPosY,
+            visibility: false,
+            opacity: 0
+        });
     };
 
     this.build = function() {
@@ -60,7 +58,6 @@ exports = Class(BaseView, function (supr){
             wrap: true
         });
 
-    
         _highScoreView = new TextView({
             superview: this,
             layout: 'box',
@@ -132,12 +129,6 @@ exports = Class(BaseView, function (supr){
     }
 
     this.writeToFile = function(score) {
-        //TODO
-    /*  var fs = require('fs');
-      fs.writeFile('../../resources/cache/data.json', 
-        '{highscore: '+score+'}', function (err) {
-         if (err) throw err;
-         console.log('It\'s saved!');
-       });*/
+        dataManager.setData(KEY_HIGH_SCORE, score);
     };
 });

@@ -264,43 +264,7 @@ ParallaxView.Layer = Class(ui.View, function (supr) {
 	 */
 	this.obtainView = function(ctor, viewOpts, opts) {
 		opts = opts || {};
-		var poolKey = ctor.name + (opts.group || "");
-		
-                            
-		//added to account for game start and to encapsulate randomization when
-		//obtaining a view from the pool
-		//@ Veronica V.
-		viewOpts._active = (!this.getSuperview().getSuperview().getChar().isImmune()) ? true : false;
-
-		if(viewOpts.group === "terrain") {
-		     
-			//only start generating bad terrain when game has started 
-			viewOpts._harmful = (Math.random() > .95 && viewOpts._active) ? true : false;
-
-			if(viewOpts._harmful) {
-				viewOpts.image = "resources/images/terrain_block_staples.png";
-				viewOpts.height = viewOpts.height + viewOpts.height/3;
-				viewOpts.width = viewOpts.width + viewOpts.width/4;
-			} 
-		}
-
-		if(viewOpts.group === "items") {
-
-		    //only start generating bad items when game has started 
-			if (Math.random() > .5 && viewOpts._active) {
-				viewOpts._harmful = true;
-				viewOpts.image = "resources/images/cake.png";
-				viewOpts.value = -2;
-				viewOpts.pointValue = 0;
-			} else {
-				viewOpts._harmful = false;
-				viewOpts.image = "resources/images/apple.png";
-				viewOpts.value = 1;
-				viewOpts.pointValue = 50;
-			}
-		}
-              
-                
+		var poolKey = ctor.name + (opts.group || "");       
 		var pool;
 		if (!(pool = this._pools[poolKey])) { 
 			pool = this._pools[poolKey] = new ui.ViewPool({
@@ -326,11 +290,6 @@ ParallaxView.Layer = Class(ui.View, function (supr) {
 				}
 			}.bind(this));
 		}
-                
-        //refresh property upon retrieval from viewpool
-        // @ Veronica V.
-        v.flaggedForRemoval = false;
-                
 		return v;
 	}
 

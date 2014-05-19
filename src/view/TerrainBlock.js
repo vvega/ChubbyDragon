@@ -5,18 +5,18 @@ import math.geom.Circle as Circle;
 
 
 exports = Class(ImageView, function(supr) {
-    
+
     var _parent;
     var _character;
     var _boundingCircle;
     
-    this.init = function(opts) {       
+    this.init = function(opts) {
         opts = merge(opts, {
              image: "resources/images/terrain_block.png"
         });
-        
         _parent = opts.superview;
-        _character = opts.character;           
+        _character = opts.character;
+        opts._active = false;
 
         supr(this, 'init', [opts]);
 
@@ -26,14 +26,11 @@ exports = Class(ImageView, function(supr) {
     //check for collision
     this.tick = function(dt) {
         if(!_character.isImmune() && this._opts._harmful === true) {
-            //update bounding circle
             _boundingCircle.x = this.getPosition().x / this.getPosition().scale;
             _boundingCircle.y = this.getPosition().y / this.getPosition().scale;
-
             if(intersect.circleAndRect(_boundingCircle, _character.collisionBox) === true) {
                 _character.kill();
             }
         }
     };
 });
-

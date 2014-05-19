@@ -2,47 +2,45 @@ import ui.View;
 import ui.ImageView;
 import ui.widget.ButtonView as ButtonView;
 import ui.TextView as TextView;
-import src.layouts.BaseView as BaseView;
+import src.view.BaseView as BaseView;
 import animate;
 
 exports = Class(BaseView, function (supr) {
-    
+
     var _textPosX;
     var _textPosY;
     var _textView;
     var _subtitleView;
+    var _highScoreView;
 
     this.constructView = function() {
         supr(this, 'constructView');
-        
+
         animate(_textView)
             .now({ y: -HEIGHT/2.5, opacity: 1 }, 500, animate.easeIn)
             .then(function() {
                 animate(_subtitleView)
-                .now({ y: -HEIGHT/6.3, opacity: 1 }, 300, animate.easeIn)    
-            });  
+                .now({ y: -HEIGHT/6.3, opacity: 1 }, 300, animate.easeIn)
+            });
     };
 
     this.resetView = function() {
-        supr(this, 'resetView');
-
         _textView.updateOpts({
             x: _textPosX,
             y: _textPosY,
             visibility: false,
             opacity: 0
         });
-
         _subtitleView.updateOpts({
             x: _textPosX,
             y: _textPosY,
             visibility: false,
             opacity: 0
         });
+        _highScoreView.setText("Current High Score: "+GC.app.highScore);
     };
-    
-    this.build = function() {
 
+    this.build = function() {
         _textView = new TextView({
             superview: this,
             layout: 'box',
@@ -55,7 +53,7 @@ exports = Class(BaseView, function (supr) {
             color: "#FFF",
             wrap: true
         });
-        
+
         _subtitleView = new TextView({
             superview: this,
             layout: 'box',
@@ -68,7 +66,22 @@ exports = Class(BaseView, function (supr) {
             color: "#FFF",
             wrap: true
         });
-          
+
+        _highScoreView = new TextView({
+            superview: this,
+            layout: 'box',
+            fontFamily: 'tiptoe',
+            text: "Current High Score: "+GC.app.highScore,
+            size: HEIGHT/12,
+            strokeColor: "#fff",
+            strokeWidth: HEIGHT/40,
+            opacity: 1,
+            color: "#ffc600",
+            wrap: true,
+            visible: true,
+            y: HEIGHT/3
+        });
+
         var buttonGrid = new GridView({
             superview: this,
             width: this.style.width,
@@ -97,7 +110,6 @@ exports = Class(BaseView, function (supr) {
                     })
                 }
         });
-
         //TODO: Make guide
         /*var guideButton = new ButtonView({
             superview: buttonGrid,
@@ -111,11 +123,7 @@ exports = Class(BaseView, function (supr) {
                 })
             }
         });*/
-
         _textPosX = _textView.style.x;
         _textPosY = _textView.style.y;
     };
 });
-
-
-

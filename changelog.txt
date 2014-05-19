@@ -1,4 +1,4 @@
-5/13/2014:
+﻿5/13/2014:
 	General:
 		-all layout transitions handled by GC.app.transitionViews() method
 		-emitters replaced with function calls
@@ -48,3 +48,60 @@
 		Character.js 
 			-merges sheet sprite data on initialization
 			-collision object properties are no longer recreated on update
+5/18/2014:
+	General:
+		-refactored file system to reflect MVC-based organization
+		-removed trailing whitespace and extra line breaks
+	Application.js:
+		-resetView() is now called during every call to transitionViews (if nextView is already built)
+		-zIndex/opacity/visibility manipulation handled within BaseView's hideView/showView for stronger semantic design
+		-_obtainData() creates data management globals for high scores and image data
+	BaseView.js:
+		-resetView implementation now completely handled by subclasses
+		-constructview will call build() if the view is not already built, and prepare visibility/opacity for seamless view transition when showView() is called
+		-showview will serve as the final step by bringing the view to the front via zIndex
+	TitleScreen.js:
+		-added "Current high score" textview
+	GameView.js:
+		-removed jump flag (replaced with character.numJumps)
+		-jump elevation reduced to account for multi-jump
+		-character allowed to jump three times in a row, with a jump reset called upon return to default y position
+		-crumbEngine added with character as view parent
+		-runtick added to tick function within gameview
+		-replaced lives scoreview with a new custom view called LivesView, which is updated upon character death and reset when the gameview is reset
+		-initViews and initGameHandlers renamed to setViews and setGameHandlers
+		-ParallaxView layer class extended to EnvironmentLayer to accomodate game-specific terrain and item generation
+		-nextChardata function pulled out of build()
+	GameOverView.js:
+		-high score is now written to local storage
+	Character.js:
+		-"weight" property changed to "speed" for stronger semantic design
+		-MAX_JUMPS, jumpCount, and resetJumps() handled within this class
+		-point values are now in direct correlation with character speed (high risk, high reward)
+		-eating too much cake (reaching lower speed limit) now results in death! (instead of forcing the player to live with a speed of 1yd/hr)
+		-added _scoreText and _speedText to visually represent game mechanics
+	EnvironmentLayer.js:
+		-subclass of ParallaxView.Layer 
+		-handles random assignment of game item properties on obtainView()
+		-"type" property added to conform to CrumbEngine
+		-bad terrain modifier now increases slightly with increased speed!
+	ItemBlock.js:
+		-crumbEngine is now passed in with opts
+		-base item elevation saved
+		-items now have a slight "bounce" while onscreen
+		-runAnimation called when view becomes visible and activeAnim property isnt true
+		-runAnimation recursive logic dependent on activeAnim property being true
+		-activeAnim set to false on initial object creation and when "eaten"
+		-items now call CrumbEngine.emitParticles(type) on collision
+	LivesView.js:
+		-view that stores a number of child imageviews equal to max number of lives
+		-creates imageviews based on an object of properties passed into opts
+		-stored as reversed array, and animated out from left to right
+	CrumbEngine.js:
+		-position based on parent character
+		-builds particles based on item type prior to calling super method emitParticles()
+		-particles adjust delta-x based upon character speed
+	
+		
+
+		
