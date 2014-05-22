@@ -1,5 +1,6 @@
 import ui.View as View;
 import ui.TextView as TextView;
+import ui.ImageView;
 import ui.widget.GridView as GridView;
 import ui.widget.ButtonView as ButtonView;
 import src.view.BaseView as BaseView;
@@ -14,7 +15,6 @@ exports = Class(BaseView, function (supr){
 
     this.constructView = function(score) {
         supr(this, 'constructView');
-
         animate(_textView)
             .now({ y: -HEIGHT/2.5, opacity: 1 }, 500, animate.easeIn)
             .then(function() {
@@ -45,6 +45,16 @@ exports = Class(BaseView, function (supr){
     };
 
     this.build = function() {
+        //add mountains
+        this.mountainView = new ui.ImageView({
+            image: "resources/images/mountains.png",
+            superview: this,
+            x: 0,
+            width: WIDTH,
+            height: HEIGHT/2,
+            y: HEIGHT - HEIGHT/2
+        });
+
         _textView = new TextView({
             superview: this,
             layout: 'box',

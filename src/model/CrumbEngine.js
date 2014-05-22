@@ -18,7 +18,7 @@ exports = Class(ui.ParticleEngine, function(supr) {
         supr(this, 'init', [opts]);
 	};
 
-    this._buildParticles = function(type) {
+    this._buildParticles = function(type, at) {
         var ttl;
         var width;
         var height;
@@ -36,13 +36,13 @@ exports = Class(ui.ParticleEngine, function(supr) {
             width = Math.random() * CRUMB_WIDTH / 3 + 2 * CRUMB_WIDTH / 3;
             height = CRUMB_HEIGHT * width / CRUMB_WIDTH;
             pObj.image = imageArr[~~(Math.random() * imageArr.length)];
-            pObj.x = this._parent.style.x + this._parent.style.width/1.5;
-            pObj.y = this._parent.style.y - this._parent.style.height*1.9;
+            pObj.x = at.start.x;
+            pObj.y = at.start.y - this._parent.style.height;
             pObj.r = CRUMB_R*Math.random();
             pObj.width = width;
             pObj.height = height;
             pObj.dx = -Math.random()*200 - wind;
-            pObj.dy = Math.random()*400 + height,
+            pObj.dy = Math.random()*(this._parent.getParent().style.height - this._parent.style.y),
             pObj.dr = Math.random()*Math.PI;
             pObj.dheight = -height;
             pObj.dwidth = -width;
@@ -52,8 +52,8 @@ exports = Class(ui.ParticleEngine, function(supr) {
         }
     };
 
-    this.emitParticles = function(type) {
-        this._buildParticles(type);
+    this.emitParticles = function(type, at) {
+        this._buildParticles(type, at);
         supr(this, 'emitParticles', [_data]);
 	};
 });

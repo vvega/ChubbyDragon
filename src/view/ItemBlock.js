@@ -50,7 +50,7 @@ exports = Class(ImageView, function(supr) {
             _boundingCircle.y = this.getPosition().y / this.getPosition().scale;
             if(intersect.circleAndLine(_boundingCircle, _character.collisionLine) === true) {
                 //remove this view from the layer and add use the item's value to adjust the world speed
-                _crumbEngine.emitParticles(this._opts.type);
+                _crumbEngine.emitParticles(this._opts.type, _character.collisionLine);
                 _character.addToScore(this._opts._pointValue);
                 _character.addToSpeed(this._opts._value);
                 this.activeAnim = false;

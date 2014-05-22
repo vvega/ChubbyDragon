@@ -14,7 +14,7 @@ exports = Class(ParallaxView.Layer, function(supr){
 
 	this.obtainView = function(ctor, viewOpts, opts) {
 		//generate terrain based on speed (increased speed = increased difficulty)
-		_badTerrainModifier = (this.parent.getChar().speed > 0) ? this.parent.getChar().speed/130 : 1/130;
+		_badTerrainModifier = (this.parent.getChar().speed > 0) ? this.parent.getChar().speed/150 : 1/150;
 		viewOpts._active = (this.parent.getChar().isImmune()) ? false : true;
 		viewOpts.opacity = 1;
 		viewOpts.scale = 1;
@@ -24,8 +24,9 @@ exports = Class(ParallaxView.Layer, function(supr){
 			//only start generating bad terrain when game has started 
 			viewOpts._harmful = (Math.random() < _badTerrainModifier && viewOpts._active) ? true : false;
 			if(viewOpts._harmful) {
-				viewOpts.image = "resources/images/terrain_block_staples.png";
+				viewOpts.image = "resources/images/terrain_block_brambles.png";
 				viewOpts.height = viewOpts.height + viewOpts.height/3;
+				viewOpts.y = viewOpts.y - viewOpts.height/6;
 				viewOpts.width = viewOpts.width + viewOpts.width/4;
 			} 
 		}
@@ -44,6 +45,16 @@ exports = Class(ParallaxView.Layer, function(supr){
 				viewOpts.type = 'apple';
 				viewOpts._value = 1;
 				viewOpts._pointValue = 10;
+			}
+		}
+
+		if(viewOpts.group === "clouds") {
+			if(Math.random() > .5) {
+				viewOpts.image = "resources/images/clouds/cloud_001.png";
+				viewOpts.height = viewOpts.height/1.5;
+			}
+			if(Math.random() > .5) {
+					viewOpts.y = viewOpts.y + viewOpts.height/2;
 			}
 		}
         return supr(this, 'obtainView', [ctor, viewOpts, opts]);

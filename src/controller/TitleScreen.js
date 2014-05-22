@@ -19,7 +19,7 @@ exports = Class(BaseView, function (supr) {
         animate(_textView)
             .now({ y: -HEIGHT/2.5, opacity: 1 }, 500, animate.easeIn)
             .then(function() {
-                animate(_subtitleView)
+                animate(_highScoreView)
                 .now({ y: -HEIGHT/6.3, opacity: 1 }, 300, animate.easeIn)
             });
     };
@@ -31,7 +31,7 @@ exports = Class(BaseView, function (supr) {
             visibility: false,
             opacity: 0
         });
-        _subtitleView.updateOpts({
+        _highScoreView.updateOpts({
             x: _textPosX,
             y: _textPosY,
             visibility: false,
@@ -41,6 +41,16 @@ exports = Class(BaseView, function (supr) {
     };
 
     this.build = function() {
+        //add mountains
+        this.mountainView = new ui.ImageView({
+            image: "resources/images/mountains.png",
+            superview: this,
+            x: 0,
+            width: WIDTH,
+            height: HEIGHT/2,
+            y: HEIGHT - HEIGHT/2
+        });
+
         _textView = new TextView({
             superview: this,
             layout: 'box',
@@ -54,19 +64,6 @@ exports = Class(BaseView, function (supr) {
             wrap: true
         });
 
-        _subtitleView = new TextView({
-            superview: this,
-            layout: 'box',
-            fontFamily: 'tiptoe',
-            text: "(Wolf)",
-            size: HEIGHT/10,
-            strokeColor: "#ffc600",
-            strokeWidth: HEIGHT/30,
-            opacity: 0,
-            color: "#FFF",
-            wrap: true
-        });
-
         _highScoreView = new TextView({
             superview: this,
             layout: 'box',
@@ -75,11 +72,9 @@ exports = Class(BaseView, function (supr) {
             size: HEIGHT/12,
             strokeColor: "#fff",
             strokeWidth: HEIGHT/40,
-            opacity: 1,
+            opacity: 0,
             color: "#ffc600",
-            wrap: true,
-            visible: true,
-            y: HEIGHT/3
+            wrap: true
         });
 
         var buttonGrid = new GridView({
@@ -110,6 +105,7 @@ exports = Class(BaseView, function (supr) {
                     })
                 }
         });
+
         //TODO: Make guide
         /*var guideButton = new ButtonView({
             superview: buttonGrid,

@@ -14,6 +14,7 @@ exports = Class(SpriteView, function(supr) {
     var COLLISION_BOX_HEIGHT;
     var COLLISION_BOX_WIDTH;
     var IMMUNITY_TIMEOUT = 3000;
+    var BASE_FR = 8;
     var MAX_JUMPS = 3;
     var SPEED_LIMIT_UPPER;
     var SPEED_LIMIT_LOWER;
@@ -24,16 +25,20 @@ exports = Class(SpriteView, function(supr) {
 
     this.init = function(opts) {  
         opts = merge(opts, {
-            sheetData: 
-                merge({ anims: imageData.sprites.hero }, imageData.sprites.sheetData)
+            frameRate: BASE_FR,
+           /* sheetData: 
+                merge({ anims: imageData.sprites.hero }, imageData.sprites.sheetData)*/
+            url: 'resources/images/dragon/dragon',
+            defaultAnimation: 'run',
+            autoStart: true
         });
         _parent = opts.superview;
         WIDTH = opts.width;
         HEIGHT = opts.height;
         ORIG_Y = opts.y;
         ORIG_X = opts.x;
-        COLLISION_BOX_WIDTH = WIDTH/2.5;
-        COLLISION_BOX_HEIGHT = HEIGHT/2;
+        COLLISION_BOX_WIDTH = WIDTH/3;
+        COLLISION_BOX_HEIGHT = HEIGHT/3;
         SPEED_LIMIT_LOWER = _parent.getBaseSpeed() + 82;
         SPEED_LIMIT_LOWER = 3 - _parent.getBaseSpeed();
         this.immune = true;
@@ -56,14 +61,14 @@ exports = Class(SpriteView, function(supr) {
             })
         }
         this.collisionLine = new Line(collisionPoints.startPoint, collisionPoints.endPoint); 
-        this.collisionBox = new Rect(opts.x + COLLISION_BOX_WIDTH/2, opts.y, COLLISION_BOX_WIDTH,  COLLISION_BOX_HEIGHT);
+        this.collisionBox = new Rect(opts.x + COLLISION_BOX_WIDTH/1.5, opts.y, COLLISION_BOX_WIDTH,  COLLISION_BOX_HEIGHT);
 
         //build speed and point messages
         _scoreText = new TextView({
             superview: this,
             layout: 'box',
             fontFamily: 'tiptoe',
-            size: HEIGHT/3,
+            size: HEIGHT/4,
             opacity: .4,
             color: "#ffc600",
             strokeColor: "#FFF",
@@ -78,27 +83,34 @@ exports = Class(SpriteView, function(supr) {
             superview: this,
             layout: 'box',
             fontFamily: 'tiptoe',
-            size: HEIGHT/4,
+            size: HEIGHT/5,
             opacity: .4,
             strokeColor: "#FFF",
             strokeWidth: HEIGHT/18,
             opacity: 0,
             visible: false,
-            x: -this.style.width/3,
-            y: -this.style.height/2
+            x: -this.style.width/15,
+            y: -this.style.height/5
         });
     };
 
     this.activate = function() {
         this.speed = 1;
         this.score = 0;
+        this.setFramerate(BASE_FR);
         this.initImmunityTimeout();
+        if(this.isPlaying) {
+            this.resume();
+        } else {
+            this.startAnimation('run', {loop: true});
+        }
     };
 
     //handles immunity status
     this.initImmunityTimeout = function(){
         this.immune = true;
         var animation;
+        this.resetAnimation();
         //scales animation duration based upon timeout length
         animation = animate(this)
             .now({ opacity: .4 }, IMMUNITY_TIMEOUT/4, animate.easeIn )
@@ -107,6 +119,7 @@ exports = Class(SpriteView, function(supr) {
             .then({ opacity: 1 }, IMMUNITY_TIMEOUT/4, animate.easeIn )
             .then(function() {
                 this.immune = false;
+                this._resetMessages();
                 this.resetJumps();
             }.bind(this));
     };
@@ -120,10 +133,8 @@ exports = Class(SpriteView, function(supr) {
         this.collisionLine.end.x = endX;
         this.collisionLine.end.y = this.style.y + HEIGHT/2;
          //update collision box (for terrain)
-        this.collisionBox.x = this.style.x + COLLISION_BOX_WIDTH/2;
+        this.collisionBox.x = this.style.x + COLLISION_BOX_WIDTH*1.3;
         this.collisionBox.y = this.style.y;
-        this.collisionBox.width = COLLISION_BOX_WIDTH;
-        this.collisionBox.height = COLLISION_BOX_HEIGHT;
     };
 
     //updates speed
@@ -134,6 +145,7 @@ exports = Class(SpriteView, function(supr) {
             _parent.adjustSpeed(this.speed);
         } else if(!(this.speed + value > SPEED_LIMIT_UPPER)) {
             this.speed += value;
+            this.setFramerate(BASE_FR + this.speed);
             _parent.adjustSpeed(this.speed);
             this._showSpeedMessage(value);
         }
@@ -142,7 +154,7 @@ exports = Class(SpriteView, function(supr) {
     //adds score to scoreboard
     this.addToScore = function(value) {
         if(value) {
-            value = (this.speed > 0) ? value + 10*this.speed : value;
+            value = (this.speed > 0) ? value + value*this.speed : value;
             _parent.updateScoreBoard(this.score + value);
             this._showPointMessage(value);
         }
@@ -191,15 +203,38 @@ exports = Class(SpriteView, function(supr) {
         if(value > 0) {
             _speedText.updateOpts({ color:'#8cb453' });
             _speedText.setText('+Speed');
+            animate(_speedText)
+                .now({opacity: 1, visible: true}, 300, animate.linear)
+                .then({opacity: 0, x: -this.style.width/3, visible: false}, 400, animate.easeOut)
+                .then(function() {
+                    _speedText.style.x = -this.style.width/15;
+                }.bind(this));
         } else {
             _speedText.updateOpts({ color:'#d8632a' });
             _speedText.setText('-Speed');
+            animate(_speedText)
+                .then({opacity: 1, visible: true, x: -this.style.width/10, y: this.style.height/15}, 600, animate.linear)
+                .then({opacity: 0, visible: false}, 300, animate.linear)
+                .then(function() {
+                    _speedText.style.x = -this.style.width/15;
+                    _speedText.style.y = -this.style.height/5;
+                }.bind(this));
         }
-        animate(_speedText)
-            .now({opacity: 1, visible: true}, 300, animate.linear)
-            .then({opacity: 0, x: -this.style.width/2, visible: false}, 400, animate.easeOut)
-            .then(function() {
-                _speedText.style.x = -this.style.width/3;
-            }.bind(this));
+        
+    };
+
+    this._resetMessages = function() {
+        _scoreText.updateOpts({
+            x: this.style.width/2 + HEIGHT/4,
+            y: -this.style.height/5
+        });
+        _speedText.updateOpts({
+            x: -this.style.width/15,
+            y: -this.style.height/5
+        });
+    };
+
+    this.getParent = function() {
+        return _parent;
     };
 });

@@ -20,9 +20,9 @@ exports = Class(ImageView, function(supr) {
 
         supr(this, 'init', [opts]);
 
-        _boundingCircle = new Circle(this.style.x, _parent.style.height - this.style.y, this.style.width/1.5);
+        _boundingCircle = new Circle(this.style.x, _parent.style.height - this.style.y, this.style.width/1.7);
     };
-    
+
     //check for collision
     this.tick = function(dt) {
         if(!_character.isImmune() && this._opts._harmful === true) {

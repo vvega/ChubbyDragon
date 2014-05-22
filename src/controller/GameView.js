@@ -1,5 +1,6 @@
 import ui.View as View;
 import ui.ImageView as ImageView;
+import src.view.ParallaxView as ParallaxView;
 import src.view.TerrainBlock as TerrainBlock;
 import src.view.ParallaxView as ParallaxView;
 import src.view.ItemBlock as ItemBlock;
@@ -22,6 +23,7 @@ exports = Class(BaseView, function(supr) {
     var BASE_SPEED
     var START_X;
     var JUMP_ELEVATION;
+    var MAX_DISTANCE;
 
     var _speed;
     var _character;
@@ -33,28 +35,31 @@ exports = Class(BaseView, function(supr) {
     var _scrollX;
     var _itemLayer;
     var _terrainLayer;
+    var _mountainLayer;
     var _jumpCount;
     var _cEngine 
 
     this.init = function(opts) {
         //scale terrain blocks to device size
-        TERRAIN_BLOCK_SIZE = HEIGHT/5;
+        TERRAIN_BLOCK_SIZE = HEIGHT/4.9;
         GROUND_ELEVATION = HEIGHT - TERRAIN_BLOCK_SIZE*2;
         //character is 3 blocks wide and ~1 block tall
-        CHARACTER_WIDTH = TERRAIN_BLOCK_SIZE*3;
-        CHARACTER_HEIGHT = TERRAIN_BLOCK_SIZE*1.3;
+        CHARACTER_WIDTH = TERRAIN_BLOCK_SIZE*4;
+        CHARACTER_HEIGHT = TERRAIN_BLOCK_SIZE*2;
         //default lives count
         LIVES = 3;
         //calculate character's default y position (with some cushion)
-        CHARACTER_ELEVATION = GROUND_ELEVATION - (CHARACTER_HEIGHT - (TERRAIN_BLOCK_SIZE + TERRAIN_BLOCK_SIZE/10));
+        CHARACTER_ELEVATION = GROUND_ELEVATION - (CHARACTER_HEIGHT - (TERRAIN_BLOCK_SIZE*1.7));
         //sprite position based upon device width
-        START_X = WIDTH/9;
+        START_X = 0;
         //initialize scroll amount
         _scrollX = 0;
         //initialize speed
         BASE_SPEED = 8;
         //init jump elevation
         JUMP_ELEVATION = HEIGHT/7;
+        //set max distance of background scrolling layer
+        MAX_DISTANCE = 6;
         //initialize game instance dependent variables
         this._setGameVariables();
         supr(this, 'init', [opts]);
@@ -100,7 +105,6 @@ exports = Class(BaseView, function(supr) {
     };
 
     this.resetView = function() {
-        _character.resume();
         _livesView.resetLives();
         this._setGameVariables();
         this._setViews();
@@ -126,12 +130,14 @@ exports = Class(BaseView, function(supr) {
     this._setGameHandlers = function() {
         this.on('InputStart', function() {
             if(!_character.isImmune() && _character.numJumps > 0) {
+                _character.startAnimation('jump', {loop: true});
                 _character.pause();
                 _character.numJumps--;
                 animate(_character)
                     .now({ y: _character.style.y - JUMP_ELEVATION }, 300, animate.easeOut)
                     .then({ y: CHARACTER_ELEVATION }, 550, animate.easeIn)
                     .then(bind(this, function() {
+                        _character.startAnimation('run', {loop: true});
                         _character.resetJumps();
                         _character.resume();
                 }));
@@ -140,11 +146,12 @@ exports = Class(BaseView, function(supr) {
     };
 
     this.tick = function(dt) {
-        _scrollX += _speed;
+        _scrollX += _speed/MAX_DISTANCE;
         if(_gameStarted) {
             _cEngine.runTick(dt);
             _terrainLayer.scrollTo(_scrollX, 0);
             _itemLayer.scrollTo(_scrollX, 0);
+            _mountainLayer.scrollTo(_scrollX, 0);
             _character.updateCollisionPoints();
         } 
     };
@@ -210,6 +217,41 @@ exports = Class(BaseView, function(supr) {
             }
         });
 
+        var mountainLayer = new ParallaxView.Layer({
+            parent: this,
+            distance: MAX_DISTANCE,
+            populate: function (layer, x) {
+                var v = layer.obtainView(ImageView, {
+                    image: "resources/images/mountains.png",
+                    superview: layer,
+                    x: x,
+                    width: WIDTH,
+                    height: HEIGHT/1.6,
+                    y: HEIGHT - HEIGHT/1.6
+                });
+                //return random space between elements
+                return v.style.width;
+            }
+        });
+
+        var cloudLayer = new EnvironmentLayer({
+            parent: this,
+            distance: MAX_DISTANCE - 1,
+            populate: function (layer, x) {
+                var v = layer.obtainView(ImageView, {
+                    image: "resources/images/clouds/cloud_000.png",
+                    group: "clouds",
+                    superview: layer,
+                    x: x,
+                    width: TERRAIN_BLOCK_SIZE*2,
+                    height: TERRAIN_BLOCK_SIZE,
+                    y: (HEIGHT - HEIGHT/1.6) - TERRAIN_BLOCK_SIZE/1.5
+                });
+                //return random space between elements
+                return v.style.width + Math.random()*WIDTH/2;
+            }
+        });
+
         var svBox = new View({
             superview: this,
             x: WIDTH/30,
@@ -237,9 +279,12 @@ exports = Class(BaseView, function(supr) {
             }
         });
 
-        _terrainLayer = this.parallaxView.addLayer(terrainLayer);
         _itemLayer = this.parallaxView.addLayer(itemLayer);
-        _character.startAnimation('run', {loop: true});
+        _terrainLayer = this.parallaxView.addLayer(terrainLayer);
+        this.parallaxView.addLayer(_character);
+        _mountainLayer = this.parallaxView.addLayer(mountainLayer);
+        _cloudLayer = this.parallaxView.addLayer(cloudLayer);
+
         this._setViews();
         this._setGameHandlers();
     };
