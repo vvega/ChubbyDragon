@@ -279,9 +279,10 @@ exports = Class(BaseView, function(supr) {
             }
         });
 
+        //this.parallaxView.addLayer(_character);
+
         _itemLayer = this.parallaxView.addLayer(itemLayer);
         _terrainLayer = this.parallaxView.addLayer(terrainLayer);
-        this.parallaxView.addLayer(_character);
         _mountainLayer = this.parallaxView.addLayer(mountainLayer);
         _cloudLayer = this.parallaxView.addLayer(cloudLayer);
 

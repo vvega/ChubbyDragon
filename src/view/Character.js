@@ -75,7 +75,7 @@ exports = Class(SpriteView, function(supr) {
             strokeWidth: HEIGHT/18,
             opacity: 0,
             visible: false,
-            x: this.style.width/2 + HEIGHT/4,
+            x: this.style.width/2 + HEIGHT/6,
             y: -this.style.height/5
         });
 
