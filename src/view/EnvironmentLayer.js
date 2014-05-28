@@ -5,7 +5,11 @@ import ui.ImageView;
 exports = Class(ParallaxView.Layer, function(supr){
 
 	var BAD_ITEM_MODIFIER = .5;
+	var PEPPER_MODIFIER = .05;
+
 	var _badTerrainModifier;
+	var _badFood = [ "resources/images/cake.png" ];
+	var _goodFood = [ "resources/images/apple.png" ];
 
 	this.init = function(opts) {
 		this.parent = opts.parent;
@@ -13,9 +17,10 @@ exports = Class(ParallaxView.Layer, function(supr){
 	}
 
 	this.obtainView = function(ctor, viewOpts, opts) {
+
 		//generate terrain based on speed (increased speed = increased difficulty)
-		_badTerrainModifier = (this.parent.getChar().speed > 0) ? this.parent.getChar().speed/150 : 1/150;
-		viewOpts._active = (this.parent.getChar().isImmune()) ? false : true;
+		_badTerrainModifier = (this.parent.character.speed > 0) ? this.parent.character.speed/150 : 1/150;
+		viewOpts._active = (this.parent.character.isImmune()) ? false : true;
 		viewOpts.opacity = 1;
 		viewOpts.scale = 1;
 		viewOpts._flaggedForRemoval = false;
@@ -32,19 +37,20 @@ exports = Class(ParallaxView.Layer, function(supr){
 		}
 
 		if(viewOpts.group === "items") {
-		    //only start generating bad items when game has started 
 			if (Math.random() < BAD_ITEM_MODIFIER && viewOpts._active) {
 				viewOpts._harmful = true;
-				viewOpts.image = "resources/images/cake.png";
+				viewOpts.image = _badFood[~~(Math.random()*_badFood.length)];
 				viewOpts.type = 'cake';
 				viewOpts._value = -2;
 				viewOpts._pointValue = 0;
+				viewOpts._boostValue = 1;
 			} else {
 				viewOpts._harmful = false;
-				viewOpts.image = "resources/images/apple.png";
+				viewOpts.image = _goodFood[~~(Math.random()*_goodFood.length)];
 				viewOpts.type = 'apple';
 				viewOpts._value = 1;
 				viewOpts._pointValue = 10;
+				viewOpts._boostValue = 2;
 			}
 		}
 
@@ -54,9 +60,10 @@ exports = Class(ParallaxView.Layer, function(supr){
 				viewOpts.height = viewOpts.height/1.5;
 			}
 			if(Math.random() > .5) {
-					viewOpts.y = viewOpts.y + viewOpts.height/2;
+				viewOpts.y = viewOpts.y + viewOpts.height/2;
 			}
 		}
+
         return supr(this, 'obtainView', [ctor, viewOpts, opts]);
 	}
 });

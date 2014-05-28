@@ -16,6 +16,9 @@ exports = Class(BaseView, function (supr) {
     this.constructView = function() {
         supr(this, 'constructView');
 
+        _textView.style.visible = true;
+        _highScoreView.style.visible = true;
+
         animate(_textView)
             .now({ y: -HEIGHT/2.5, opacity: 1 }, 500, animate.easeIn)
             .then(function() {
@@ -28,20 +31,20 @@ exports = Class(BaseView, function (supr) {
         _textView.updateOpts({
             x: _textPosX,
             y: _textPosY,
-            visibility: false,
+            visibile: false,
             opacity: 0
         });
         _highScoreView.updateOpts({
             x: _textPosX,
             y: _textPosY,
-            visibility: false,
+            visibile: false,
             opacity: 0
         });
         _highScoreView.setText("Current High Score: "+GC.app.highScore);
     };
 
     this.build = function() {
-        //add mountains
+
         this.mountainView = new ui.ImageView({
             image: "resources/images/mountains.png",
             superview: this,
@@ -106,19 +109,6 @@ exports = Class(BaseView, function (supr) {
                 }
         });
 
-        //TODO: Make guide
-        /*var guideButton = new ButtonView({
-            superview: buttonGrid,
-            title: "Guide",
-            backgroundColor: "blue",
-            opacity: 1,
-            col: 1,
-            row: 4,
-            on: {
-                up: bind(this, function(){
-                })
-            }
-        });*/
         _textPosX = _textView.style.x;
         _textPosY = _textView.style.y;
     };

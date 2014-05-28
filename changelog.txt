@@ -101,7 +101,33 @@
 		-position based on parent character
 		-builds particles based on item type prior to calling super method emitParticles()
 		-particles adjust delta-x based upon character speed
+5/27/2014:
+	General: 
+		-Tons of new art!
+		-New feature: fire breath (items are burned, apples yield points*BOOST_MODIFIER amount)
+		-additional animation
+	GameView: 
+		-character is now a property of the GameView object for easier access
+		-the zIndex is now adjusted so that the character seems "nested" within the environment
+		-new parallax layers: mountains and clouds
+		-boostBar view added
+		-flameEngine class created
+	Character:
+		-sprite framerate now correlates to speed property
+		-points now differ in appearance when fireboost is active
+		-added new functions to increase boost level, activate boost, and cancel it
+	EnvironmentLayer:
+		-added logic to randomize cloud image and elevation
+	ItemBlock:
+		-fireboost branching logic added to points, speed, and particle appearance 
+		-crumb particles now render at item location instead of relative to the dragon
+	BoostBar:
+		-utilizes two imagescaleviews placed on top of one another to convey the fire boost level
+		-increases based upon amount eaten by the player. Apples yield more than cakes.
+		-decreases target boost level when depletion property is flagged true
 	
+	
+		
 		
 
 		

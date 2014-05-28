@@ -8,8 +8,11 @@ import src.view.BaseView as BaseView;
 import src.view.EnvironmentLayer as EnvironmentLayer;
 import src.view.LivesView as LivesView;
 import src.view.Character as Character;
+import src.view.BoostBar as BoostBar;
 import src.model.CrumbEngine as CrumbEngine;
+import src.model.FlameEngine as FlameEngine;
 import ui.ScoreView as ScoreView;
+import ui.TextView as TextView;
 import animate;
 
 exports = Class(BaseView, function(supr) {
@@ -38,6 +41,7 @@ exports = Class(BaseView, function(supr) {
     var _mountainLayer;
     var _jumpCount;
     var _cEngine 
+    var _boostText;
 
     this.init = function(opts) {
         //scale terrain blocks to device size
@@ -73,9 +77,11 @@ exports = Class(BaseView, function(supr) {
 
     this._setViews = function() {
         _scoreView.setText(_score);
-        _character.style.x = START_X;
-        _character.style.y = CHARACTER_ELEVATION;
-        _character.activate();
+        this.character.style.x = START_X;
+        this.character.style.y = CHARACTER_ELEVATION;
+        this.character.style.zIndex = _terrainLayer.style.zIndex - 1;
+        _itemLayer.style.zIndex = this.character.style.zIndex - 1;
+        this.character.activate();
     };
 
     this.adjustSpeed = function(value) {
@@ -91,10 +97,6 @@ exports = Class(BaseView, function(supr) {
         return _lives;
     };
 
-    this.getChar = function() {
-        return _character;
-    };
-
     this.getBaseSpeed = function() {
         return BASE_SPEED;
     };
@@ -106,6 +108,7 @@ exports = Class(BaseView, function(supr) {
 
     this.resetView = function() {
         _livesView.resetLives();
+        this.boostBar.reset();
         this._setGameVariables();
         this._setViews();
     };
@@ -127,32 +130,59 @@ exports = Class(BaseView, function(supr) {
         return d;
     };
 
+    //Handles jumping. First jump will always be a jump animation immediately followed by a pause (to catch the first frame).
+    //Following jumps will run a full jump animation followed by the first frame of the next jump.
+    //Because jumps run at a constant framerate, the character framerate is reset accordingly after landing.
     this._setGameHandlers = function() {
         this.on('InputStart', function() {
-            if(!_character.isImmune() && _character.numJumps > 0) {
-                _character.startAnimation('jump', {loop: true});
-                _character.pause();
-                _character.numJumps--;
-                animate(_character)
-                    .now({ y: _character.style.y - JUMP_ELEVATION }, 300, animate.easeOut)
+            if(!this.character.isImmune() && this.character.numJumps > 0) {
+                if(this.character.numJumps === this.character.getMaxJumps()) {
+                    this._runHalfJump();
+                } else {
+                    this.character.resume();
+                    this._runFullJump();
+                }
+                this.character.numJumps--;
+                animate(this.character)
+                    .now({ y: this.character.style.y - JUMP_ELEVATION }, 300, animate.easeOut)
                     .then({ y: CHARACTER_ELEVATION }, 550, animate.easeIn)
                     .then(bind(this, function() {
-                        _character.startAnimation('run', {loop: true});
-                        _character.resetJumps();
-                        _character.resume();
+                        this.character.resetJumps();
+                        this.character.resume();
+                        this.character.updateFramerate();
+                        this.character.resetAnimation();
                 }));
             }
         });
     };
 
+    this._runFullJump = function() {
+        this.character.setFramerate(25);
+        this.character.startAnimation('jump', {
+            loop:false,
+            frame: 0,
+            callback: function() {
+                this.character.startAnimation('jump', {loop:false}); 
+                this.character.pause();
+        }.bind(this)});
+    }
+
+    this._runHalfJump = function() {
+        this.character.setFramerate(25);
+        this.character.startAnimation('jump', {loop:false}); 
+        this.character.pause(); 
+    };
+
     this.tick = function(dt) {
         _scrollX += _speed/MAX_DISTANCE;
         if(_gameStarted) {
+            this.boostBar.step(dt);
             _cEngine.runTick(dt);
+            _fEngine.runTick(dt);
+            this.character.updateCollisionPoints();
             _terrainLayer.scrollTo(_scrollX, 0);
             _itemLayer.scrollTo(_scrollX, 0);
             _mountainLayer.scrollTo(_scrollX, 0);
-            _character.updateCollisionPoints();
         } 
     };
 
@@ -163,8 +193,7 @@ exports = Class(BaseView, function(supr) {
             height: this.style.height
         });
 
-        //character
-        _character = new Character(merge({
+        this.character = new Character(merge({
             superview: this,
             name: "hero",
             x: START_X,
@@ -173,19 +202,13 @@ exports = Class(BaseView, function(supr) {
             height: CHARACTER_HEIGHT
         }));
 
-        //particle engine
-        _cEngine = new CrumbEngine({
-            parent: _character
-        });
-
-        //terrain and items
         var terrainLayer = new EnvironmentLayer({
             parent: this,
             distance: 1,
             populate: function (layer, x) {
                 var v = layer.obtainView(TerrainBlock, {
                       group: "terrain",
-                      character: _character,
+                      character: this.character,
                       superview: layer,
                       image: "resources/images/terrain_block.png",
                       x: x,
@@ -194,7 +217,7 @@ exports = Class(BaseView, function(supr) {
                       height: TERRAIN_BLOCK_SIZE
                 });
                 return v.style.width;
-            }
+            }.bind(this)
         });
 
         var itemLayer = new EnvironmentLayer({
@@ -204,7 +227,7 @@ exports = Class(BaseView, function(supr) {
                 var v = layer.obtainView(ItemBlock, {
                     group: "items",
                     type: "apple",
-                    character: _character,
+                    character: this.character,
                     superview: layer,
                     crumbGen: _cEngine,
                     x: x,
@@ -212,9 +235,8 @@ exports = Class(BaseView, function(supr) {
                     height: TERRAIN_BLOCK_SIZE/1.5,
                     y: HEIGHT - TERRAIN_BLOCK_SIZE*1.6
                 });
-                //return random space between elements
                 return v.style.width + Math.random()*WIDTH;
-            }
+            }.bind(this)
         });
 
         var mountainLayer = new ParallaxView.Layer({
@@ -229,7 +251,6 @@ exports = Class(BaseView, function(supr) {
                     height: HEIGHT/1.6,
                     y: HEIGHT - HEIGHT/1.6
                 });
-                //return random space between elements
                 return v.style.width;
             }
         });
@@ -247,7 +268,6 @@ exports = Class(BaseView, function(supr) {
                     height: TERRAIN_BLOCK_SIZE,
                     y: (HEIGHT - HEIGHT/1.6) - TERRAIN_BLOCK_SIZE/1.5
                 });
-                //return random space between elements
                 return v.style.width + Math.random()*WIDTH/2;
             }
         });
@@ -279,12 +299,44 @@ exports = Class(BaseView, function(supr) {
             }
         });
 
-        //this.parallaxView.addLayer(_character);
+        this.boostText = new TextView({
+            superview: this,
+            layout: 'box',
+            fontFamily: 'tiptoe',
+            text: "Fire Breath!",
+            size: HEIGHT/10,
+            strokeColor: '#e99338',
+            strokeWidth: HEIGHT/18,
+            opacity: 0,
+            color: "#FFF",
+            wrap: true
+        });
+
+        this.boostBar = new BoostBar({
+            superview: this,
+            height: TERRAIN_BLOCK_SIZE/1.5,
+            width: WIDTH,
+            scaleMethod: 'tile',
+            columns: Math.round(WIDTH/TERRAIN_BLOCK_SIZE),
+            canHandleEvents: false,
+            blockEvents: true
+        });
+
+        //particle engines
+        _cEngine = new CrumbEngine({
+            parent: this,
+            character: this.character
+        });
+
+        _fEngine = new FlameEngine({
+            parent: this.character
+        });
 
         _itemLayer = this.parallaxView.addLayer(itemLayer);
         _terrainLayer = this.parallaxView.addLayer(terrainLayer);
         _mountainLayer = this.parallaxView.addLayer(mountainLayer);
         _cloudLayer = this.parallaxView.addLayer(cloudLayer);
+        this.parallaxView.addSubview(this.character);
 
         this._setViews();
         this._setGameHandlers();

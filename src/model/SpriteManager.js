@@ -18,15 +18,26 @@ exports.getImageData = function() {
         },
         particles: {
             crumbs_cake: [ 
-                "resources/images/crumbs/cake/crumb_1.png",
-                "resources/images/crumbs/cake/crumb_2.png",
-                "resources/images/crumbs/cake/crumb_3.png"
+                "resources/images/particles/crumbs/cake/crumb_1.png",
+                "resources/images/particles/crumbs/cake/crumb_2.png",
+                "resources/images/particles/crumbs/cake/crumb_3.png"
             ],
             crumbs_apple: [
-                "resources/images/crumbs/apple/crumb_1.png",
-                "resources/images/crumbs/apple/crumb_2.png",
-                "resources/images/crumbs/apple/crumb_3.png",
-                "resources/images/crumbs/apple/crumb_4.png"
+                "resources/images/particles/crumbs/apple/crumb_1.png",
+                "resources/images/particles/crumbs/apple/crumb_2.png",
+                "resources/images/particles/crumbs/apple/crumb_3.png",
+                "resources/images/particles/crumbs/apple/crumb_4.png"
+            ],
+            crumbs_burnt: [
+                "resources/images/particles/crumbs/burnt/crumb_1.png",
+                "resources/images/particles/crumbs/burnt/crumb_2.png",
+                "resources/images/particles/crumbs/burnt/crumb_3.png",
+            ],
+            flames : [
+                "resources/images/particles/flames/flame_1.png",
+                "resources/images/particles/flames/flame_2.png",
+                "resources/images/particles/flames/flame_3.png",
+                "resources/images/particles/flames/flame_4.png"
             ]
         }
     };

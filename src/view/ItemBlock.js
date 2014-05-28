@@ -11,6 +11,8 @@ exports = Class(ImageView, function(supr) {
     var _boundingCircle;
     var _crumbEngine;
     var _elevation;
+
+    var BOOST_MULTIPLIER = 2;
     
     this.init = function(opts) {
         _parent = opts.superview;
@@ -25,7 +27,6 @@ exports = Class(ImageView, function(supr) {
         this.activeAnim = false;
     };
 
-    //animates up and down until view is removed
     this._runAnimation = function() {
         if(this.activeAnim) {
             animate(this)
@@ -38,23 +39,32 @@ exports = Class(ImageView, function(supr) {
         }
     };
 
+    //This tick manages several aspects of the item objects:
+    //  1) Activates item animation if it's visible.
+    //  2) If the character isn't immune and the item hasn't already been eaten, check for collision using actual(unscaled) position relative to the screen.
+    //  3) Upon collision, update character stats based upon item values and fire boost flag, then release the view back to the pool.
     this.tick = function(dt) {
         if(!this.activeAnim && this.style.visible) {
             this.activeAnim = true;
             this._runAnimation();
         }
-        //only proceed if this item hasn't already detected a collision
         if(!_character.isImmune() && !this._opts._flaggedForRemoval) {
-            //update bounding circle & scale the onscreen x/y coordinates based on parent layer scaling
+
             _boundingCircle.x = this.getPosition().x / this.getPosition().scale;
             _boundingCircle.y = this.getPosition().y / this.getPosition().scale;
+
             if(intersect.circleAndLine(_boundingCircle, _character.collisionLine) === true) {
-                //remove this view from the layer and add use the item's value to adjust the world speed
-                _crumbEngine.emitParticles(this._opts.type, _character.collisionLine);
-                _character.addToScore(this._opts._pointValue);
-                _character.addToSpeed(this._opts._value);
+                var pointValue = (_character.fireBoostActive) ? this._opts._pointValue*BOOST_MULTIPLIER : this._opts._pointValue;
+                this._opts.type = (_character.fireBoostActive) ? 'burnt' : this._opts.type;
+
+                _character.fireBoostActive || _character.increaseBoostLevel(this._opts._boostValue);
+                (_character.fireBoostActive && this._opts._value < 0) || _character.addToSpeed(this._opts._value);
+                
+                _character.addToScore(pointValue);
+                _crumbEngine.emitParticles(this._opts.type, _boundingCircle);
                 this.activeAnim = false;
                 this._opts._flaggedForRemoval = true;
+
                 _parent.releaseLayerView(this);
             }
         }
