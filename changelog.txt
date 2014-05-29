@@ -125,7 +125,13 @@
 		-utilizes two imagescaleviews placed on top of one another to convey the fire boost level
 		-increases based upon amount eaten by the player. Apples yield more than cakes.
 		-decreases target boost level when depletion property is flagged true
-	
+5/29/2014:
+	General:
+		-Sprite animation for dying and firebreath running/jumping added
+		-Current spriteManager refactored to ImageManager
+		-Animation functionality encapsulated within new SpriteManager class.
+		-Boost bar now starts depleting from a percentage of 100 each time (even if last value was over)
+		
 	
 		
 		

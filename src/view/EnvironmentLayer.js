@@ -5,7 +5,6 @@ import ui.ImageView;
 exports = Class(ParallaxView.Layer, function(supr){
 
 	var BAD_ITEM_MODIFIER = .5;
-	var PEPPER_MODIFIER = .05;
 
 	var _badTerrainModifier;
 	var _badFood = [ "resources/images/cake.png" ];

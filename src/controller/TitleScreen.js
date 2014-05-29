@@ -44,7 +44,6 @@ exports = Class(BaseView, function (supr) {
     };
 
     this.build = function() {
-
         this.mountainView = new ui.ImageView({
             image: "resources/images/mountains.png",
             superview: this,

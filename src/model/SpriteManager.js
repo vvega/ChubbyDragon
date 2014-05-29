@@ -1,45 +1,69 @@
-exports.getImageData = function() {
-    var imageData = {
-        sprites: {
-            sheetData: {
-                url: 'resources/images/spritesheet.png',
-                height: 175,
-                width: 250,
-                offsetX: 0,
-                offsetY: 0,
-                startX: 0,
-                startY: 0
-            },
-            hero: {
-                jump: [ [0, 2], [1, 2], [2, 2], [3, 2] ],
-                eat: [ [0, 5], [1, 5], [2, 5], [3, 5], [4, 5] ],
-                run: [ [0, 0], [1, 0], [2, 0], [3, 0], [4, 0], [5, 0] , [0, 1], [1, 1], [3, 0],[2, 1] ]
-            }
-        },
-        particles: {
-            crumbs_cake: [ 
-                "resources/images/particles/crumbs/cake/crumb_1.png",
-                "resources/images/particles/crumbs/cake/crumb_2.png",
-                "resources/images/particles/crumbs/cake/crumb_3.png"
-            ],
-            crumbs_apple: [
-                "resources/images/particles/crumbs/apple/crumb_1.png",
-                "resources/images/particles/crumbs/apple/crumb_2.png",
-                "resources/images/particles/crumbs/apple/crumb_3.png",
-                "resources/images/particles/crumbs/apple/crumb_4.png"
-            ],
-            crumbs_burnt: [
-                "resources/images/particles/crumbs/burnt/crumb_1.png",
-                "resources/images/particles/crumbs/burnt/crumb_2.png",
-                "resources/images/particles/crumbs/burnt/crumb_3.png",
-            ],
-            flames : [
-                "resources/images/particles/flames/flame_1.png",
-                "resources/images/particles/flames/flame_2.png",
-                "resources/images/particles/flames/flame_3.png",
-                "resources/images/particles/flames/flame_4.png"
-            ]
+exports = new Class(function(){
+
+	var _sprite;
+
+	this.init = function(opts) {
+		_sprite = opts.sprite;
+	};
+
+    this.runFullJump = function() {
+        var jumpAnim = (_sprite.fireBoostActive) ? 'boostJump' : 'jump';
+        _sprite.isPaused && _sprite.resume();
+        _sprite.setFramerate(25);
+        _sprite.startAnimation(jumpAnim, {
+            loop:false,
+            callback: function() {
+                _sprite.startAnimation(jumpAnim, {loop: false}); 
+                _sprite.pause();
+        }});
+    }
+
+    this.runHalfJump = function() {
+        var jumpAnim = (_sprite.fireBoostActive) ? 'boostJump' : 'jump';
+        _sprite.isPlaying && _sprite.stopAnimation();
+        _sprite.setFramerate(25);
+        _sprite.startAnimation(jumpAnim, {loop: false}); 
+        _sprite.pause(); 
+    };
+
+    this.runEatAnim = function() {
+        _sprite.isPlaying && _sprite.stopAnimation();
+        _sprite.setFramerate(15);
+        _sprite.startAnimation('eat', {loop: false, callback: bind(this, function() {
+                _sprite.updateFramerate();
+                _sprite.jumpActive && this.runHalfJump();
+            })
+        });
+    };
+
+    this.killChar = function() {
+        _sprite.isPlaying && _sprite.stopAnimation();
+        _sprite.startAnimation('die', {loop: false});
+        _sprite.pause();
+    };
+
+    this.resumeRun = function() {
+        _sprite.resume();
+        _sprite.updateFramerate();
+        _sprite.fireBoostActive && _sprite.startAnimation('boostRun', {loop: true});
+        !_sprite.fireBoostActive && _sprite.resetAnimation();
+    };
+
+    this.activateChar = function() {
+    	if(_sprite.isPlaying) {
+            _sprite.resume();
+        } else {
+            _sprite.startAnimation('run', {loop: true});
         }
     };
-    return imageData;
-};
+
+    this.setBoostRun = function() {
+        _sprite.jumpActive && this.runHalfJump();
+    	_sprite.startAnimation('boostRun', {loop: true});
+    };
+
+    this.cancelBoost = function() {
+        _sprite.jumpActive && this.runHalfJump();
+        _sprite.jumpActive || _sprite.resetAnimation();
+    };
+});

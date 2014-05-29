@@ -10,7 +10,7 @@ exports = Class(ImageScaleView, function(supr) {
 	var BOOST_X = 0;
 	var BOOST_Y;
 	var DEPLETION_MOD = 3;
-	var SPARK_BOOST = "resources/images/crumbs/apple/crumb_1.png";
+	var SPARK_BOOST;
 
 	var _parent;
 	var _boostPct;
@@ -31,6 +31,7 @@ exports = Class(ImageScaleView, function(supr) {
 
 		BOOST_FILL = this.style.width;
 		BOOST_Y = this.style.height*.95;
+		SPARK_BOOST = imageData.particles.flames[0];
 		this.PERCENT_INTERVAL = 5;
 
 		this.build();
@@ -68,6 +69,7 @@ exports = Class(ImageScaleView, function(supr) {
 	this.reset = function(config) {
 		_boostPct = 1;
 		_boostTargetPct = 1;
+		_time = 0;
 		this.step(0);
 	};
 
@@ -93,6 +95,7 @@ exports = Class(ImageScaleView, function(supr) {
 		} 
 
 		if(this.clipper.style.width >= ~~BOOST_FILL && !_parent.character.fireBoostActive) {
+			_boostTargetPct = 100;
 			_parent.character.activateFireBoost();
 		} else if(this.clipper.style.width <= BOOST_X) {
 			_parent.character.cancelFireBoost();

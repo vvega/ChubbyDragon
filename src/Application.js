@@ -5,7 +5,7 @@ import src.controller.TitleScreen as TitleScreen;
 import src.controller.GameOverView as GameOverView;
 import src.controller.GameView as GameView;
 import src.model.DataManager as DataManager;
-import src.model.SpriteManager as SpriteManager;
+import src.model.ImageManager as ImageManager;
 //import src.SoundController as SoundController;
 
 exports = Class(GC.Application, function() {
@@ -88,7 +88,7 @@ exports = Class(GC.Application, function() {
     };
 
     this._obtainData = function() {
-        imageData = SpriteManager.getImageData();
+        imageData = ImageManager.getImageData();
         dataManager = new DataManager();
         this.highScore = dataManager.getData(KEY_HIGH_SCORE);
     };

@@ -68,14 +68,13 @@ exports = Class(SpriteView, function(supr) {
         this.build(opts);
     };
 
-
-
     this.updateFramerate = function() {
         this.setFramerate(BASE_FR + this.speed);
     };
 
     this.resetJumps = function() {
         this.numJumps = MAX_JUMPS;
+        this.jumpActive = false;
     };
 
     this.isImmune = function() {
@@ -140,20 +139,15 @@ exports = Class(SpriteView, function(supr) {
         this.score = 0;
         this.setFramerate(BASE_FR);
         this.initImmunityTimeout();
-        if(this.isPlaying) {
-            this.resume();
-        } else {
-            this.startAnimation('run', {loop: true});
-        }
+        _parent.spriteMgr.activateChar();
     };
 
     //Handles immunity status animation and resets associated character data
     this.initImmunityTimeout = function() {
         this.immune = true;
-        var animation;
         this.resetAnimation();
         //scales animation duration based upon timeout length
-        animation = animate(this)
+        animate(this)
             .now({ opacity: .4 }, IMMUNITY_TIMEOUT/4, animate.easeIn )
             .then({ opacity: 1 }, IMMUNITY_TIMEOUT/4, animate.easeIn )
             .then({ opacity: .4 }, IMMUNITY_TIMEOUT/4, animate.easeIn )
@@ -190,6 +184,7 @@ exports = Class(SpriteView, function(supr) {
     };
 
     this.addToScore = function(value) {
+        this.fireBoostActive || _parent.spriteMgr.runEatAnim();
         if(value) {
             value = (this.speed > 0) ? value + value*this.speed : value;
             _parent.updateScoreBoard(this.score + value);
@@ -201,7 +196,7 @@ exports = Class(SpriteView, function(supr) {
     //Also calls the immunity timeout.
     this.kill = function() {
         this.immune = true;
-        this.pause();
+        _parent.spriteMgr.killChar();
         this.cancelFireBoost();
         this.updateFramerate();
         this.style.zIndex++;
@@ -232,7 +227,7 @@ exports = Class(SpriteView, function(supr) {
                 .then({opacity: 0, x: -this.style.width/3, visible: false}, 400, animate.easeOut)
                 .then(function() {
                     _speedText.style.visible = false;
-                    _speedText.style.x = SPEED_TEXT_DATA.x;
+                    this._resetMessages();
                 }.bind(this));
         } else {
             _speedText.updateOpts({ color:'#d8632a' });
@@ -241,9 +236,8 @@ exports = Class(SpriteView, function(supr) {
                 .now({opacity: 1, visible: true, x: -this.style.width/10, y: this.style.height/15}, 600, animate.linear)
                 .then({opacity: 0, visible: false}, 300, animate.linear)
                 .then(function() {
-                    _speedText.style.x = SPEED_TEXT_DATA.x;
-                    _speedText.style.y = SPEED_TEXT_DATA.y;
                     _speedText.style.visible = false;
+                    this._resetMessages();
                 }.bind(this));
         }
     };
@@ -260,7 +254,7 @@ exports = Class(SpriteView, function(supr) {
             .then({opacity: 0 }, 200, animate.linear)
             .then(function() {
                 _scoreText.style.visible = false;
-                _scoreText.style.y = -this.style.height/5;
+                this._resetMessages();
             }.bind(this));
     };
 
@@ -277,13 +271,15 @@ exports = Class(SpriteView, function(supr) {
 
     this._showFireBreathText = function() {
         _parent.boostText.style.visible = true;
+        var origY = _parent.boostText.style.y;
         animate(_parent.boostText)
-            .now({ y: -100, opacity: 1 }, 500, animate.easeIn)
+            .now({ y: -200, opacity: 1 }, 500, animate.easeIn)
             .then({ opacity: 0 }, 1000, animate.easeOut)
             .then(function() {
                 _parent.boostText.style.scale = 1;
                 _parent.boostText.style.opacity = 0;
                 _parent.boostText.style.visible = false;
+                _parent.boostText.style.y = origY;
             });
     };
 
@@ -298,12 +294,14 @@ exports = Class(SpriteView, function(supr) {
         this.fireBoostActive = false;
         _parent.boostBar.depletion = false;
         _parent.boostBar.reset();
+        _parent.spriteMgr.cancelBoost();
     };
 
     this.activateFireBoost = function() {
         this.boostLevel = 0;
         this.fireBoostActive = true;
         this._showFireBreathText();
+        _parent.spriteMgr.setBoostRun();
         _parent.boostBar.depletion = true;
     };
 });

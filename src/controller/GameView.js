@@ -11,6 +11,7 @@ import src.view.Character as Character;
 import src.view.BoostBar as BoostBar;
 import src.model.CrumbEngine as CrumbEngine;
 import src.model.FlameEngine as FlameEngine;
+import src.model.SpriteManager as SpriteManager;
 import ui.ScoreView as ScoreView;
 import ui.TextView as TextView;
 import animate;
@@ -41,7 +42,6 @@ exports = Class(BaseView, function(supr) {
     var _mountainLayer;
     var _jumpCount;
     var _cEngine 
-    var _boostText;
 
     this.init = function(opts) {
         //scale terrain blocks to device size
@@ -136,11 +136,11 @@ exports = Class(BaseView, function(supr) {
     this._setGameHandlers = function() {
         this.on('InputStart', function() {
             if(!this.character.isImmune() && this.character.numJumps > 0) {
+                this.character.jumpActive = true;
                 if(this.character.numJumps === this.character.getMaxJumps()) {
-                    this._runHalfJump();
+                    this.spriteMgr.runHalfJump();
                 } else {
-                    this.character.resume();
-                    this._runFullJump();
+                    this.spriteMgr.runFullJump();
                 }
                 this.character.numJumps--;
                 animate(this.character)
@@ -148,29 +148,10 @@ exports = Class(BaseView, function(supr) {
                     .then({ y: CHARACTER_ELEVATION }, 550, animate.easeIn)
                     .then(bind(this, function() {
                         this.character.resetJumps();
-                        this.character.resume();
-                        this.character.updateFramerate();
-                        this.character.resetAnimation();
+                        this.spriteMgr.resumeRun();
                 }));
             }
         });
-    };
-
-    this._runFullJump = function() {
-        this.character.setFramerate(25);
-        this.character.startAnimation('jump', {
-            loop:false,
-            frame: 0,
-            callback: function() {
-                this.character.startAnimation('jump', {loop:false}); 
-                this.character.pause();
-        }.bind(this)});
-    }
-
-    this._runHalfJump = function() {
-        this.character.setFramerate(25);
-        this.character.startAnimation('jump', {loop:false}); 
-        this.character.pause(); 
     };
 
     this.tick = function(dt) {
@@ -304,7 +285,7 @@ exports = Class(BaseView, function(supr) {
             layout: 'box',
             fontFamily: 'tiptoe',
             text: "Fire Breath!",
-            size: HEIGHT/10,
+            size: HEIGHT/6,
             strokeColor: '#e99338',
             strokeWidth: HEIGHT/18,
             opacity: 0,
@@ -330,6 +311,11 @@ exports = Class(BaseView, function(supr) {
 
         _fEngine = new FlameEngine({
             parent: this.character
+        });
+
+        //character animation manager
+        this.spriteMgr = new SpriteManager({
+            sprite: this.character
         });
 
         _itemLayer = this.parallaxView.addLayer(itemLayer);
