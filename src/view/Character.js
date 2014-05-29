@@ -196,8 +196,8 @@ exports = Class(SpriteView, function(supr) {
     //Also calls the immunity timeout.
     this.kill = function() {
         this.immune = true;
+        this.fireBoostActive && this.cancelFireBoost();
         _parent.spriteMgr.killChar();
-        this.cancelFireBoost();
         this.updateFramerate();
         this.style.zIndex++;
         animate(this)
