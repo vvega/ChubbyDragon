@@ -6,6 +6,7 @@ import src.view.ParallaxView as ParallaxView;
 import src.view.ItemBlock as ItemBlock;
 import src.view.BaseView as BaseView;
 import src.view.EnvironmentLayer as EnvironmentLayer;
+import src.view.ItemLayer as ItemLayer;
 import src.view.LivesView as LivesView;
 import src.view.Character as Character;
 import src.view.BoostBar as BoostBar;
@@ -41,7 +42,6 @@ exports = Class(BaseView, function(supr) {
     var _terrainLayer;
     var _mountainLayer;
     var _jumpCount;
-    var _cEngine 
 
     this.init = function(opts) {
         //scale terrain blocks to device size
@@ -158,7 +158,7 @@ exports = Class(BaseView, function(supr) {
         _scrollX += _speed/MAX_DISTANCE;
         if(_gameStarted) {
             this.boostBar.step(dt);
-            _cEngine.runTick(dt);
+            this.cEngine.runTick(dt);
             _fEngine.runTick(dt);
             this.character.updateCollisionPoints();
             _terrainLayer.scrollTo(_scrollX, 0);
@@ -201,16 +201,15 @@ exports = Class(BaseView, function(supr) {
             }.bind(this)
         });
 
-        var itemLayer = new EnvironmentLayer({
+        var itemLayer = new ItemLayer({
             parent: this,
             distance: 1,
             populate: function (layer, x) {
                 var v = layer.obtainView(ItemBlock, {
-                    group: "items",
                     type: "apple",
                     character: this.character,
                     superview: layer,
-                    crumbGen: _cEngine,
+                    crumbGen: this.cEngine,
                     x: x,
                     width: TERRAIN_BLOCK_SIZE/1.5,
                     height: TERRAIN_BLOCK_SIZE/1.5,
@@ -304,7 +303,7 @@ exports = Class(BaseView, function(supr) {
         });
 
         //particle engines
-        _cEngine = new CrumbEngine({
+        this.cEngine = new CrumbEngine({
             parent: this,
             character: this.character
         });

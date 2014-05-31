@@ -131,6 +131,13 @@
 		-Current spriteManager refactored to ImageManager
 		-Animation functionality encapsulated within new SpriteManager class.
 		-Boost bar now starts depleting from a percentage of 100 each time (even if last value was over)
+5/30/2014:
+	General:
+		-Terrain and items are now separated to encapsulate item and terrain-specific logic (new custom layer: ItemLayer)
+		-reduced randomization call time by assigning private variable to the Math.random function when applicable
+		-Crumb and flame particles are now pre-built where applicable in an attempt to minimize the amount of property computation on the fly
+		-Boost bar now properly resets upon death (during flame breath)
+		
 		
 	
 		

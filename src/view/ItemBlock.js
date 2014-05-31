@@ -23,8 +23,11 @@ exports = Class(ImageView, function(supr) {
 
         _boundingCircle = new Circle(this.style.x, _parent.style.height - this.style.y, this.style.width/2);
         _elevation = this.style.y;
-        this.flaggedForRemoval = false;
+
         this.activeAnim = false;
+        this._flaggedForRemoval = false;
+        this._opts._flaggedForRemoval = false;
+        this._opts._active = false;
     };
 
     this._runAnimation = function() {

@@ -32,7 +32,7 @@ exports = Class(ImageScaleView, function(supr) {
 		BOOST_FILL = this.style.width;
 		BOOST_Y = this.style.height*.95;
 		SPARK_BOOST = imageData.particles.flames[0];
-		this.PERCENT_INTERVAL = 5;
+		this.PERCENT_INTERVAL = 6;
 
 		this.build();
 		this.reset();
@@ -94,7 +94,7 @@ exports = Class(ImageScaleView, function(supr) {
 			this.emitGainParticle(this.clipper.style.width, BOOST_Y, SPARK_BOOST);
 		} 
 
-		if(this.clipper.style.width >= ~~BOOST_FILL && !_parent.character.fireBoostActive) {
+		if((this.clipper.style.width >= ~~BOOST_FILL) && !_parent.character.fireBoostActive) {
 			_boostTargetPct = 100;
 			_parent.character.activateFireBoost();
 		} else if(this.clipper.style.width <= BOOST_X) {

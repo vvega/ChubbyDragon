@@ -196,10 +196,10 @@ exports = Class(SpriteView, function(supr) {
     //Also calls the immunity timeout.
     this.kill = function() {
         this.immune = true;
-        this.fireBoostActive && this.cancelFireBoost();
-        _parent.spriteMgr.killChar();
+        this.cancelFireBoost();
         this.updateFramerate();
         this.style.zIndex++;
+        _parent.spriteMgr.killChar();
         animate(this)
            .now({ y: _parent.style.height/2 }, 200, animate.linear)
            .then({ y: _parent.style.height + (this.style.height) }, 500, animate.linear)
@@ -295,6 +295,7 @@ exports = Class(SpriteView, function(supr) {
         _parent.boostBar.depletion = false;
         _parent.boostBar.reset();
         _parent.spriteMgr.cancelBoost();
+        _parent.cEngine.updateParticleData(this.fireBoostActive);
     };
 
     this.activateFireBoost = function() {
@@ -303,5 +304,6 @@ exports = Class(SpriteView, function(supr) {
         this._showFireBreathText();
         _parent.spriteMgr.setBoostRun();
         _parent.boostBar.depletion = true;
+        _parent.cEngine.updateParticleData(this.fireBoostActive);
     };
 });

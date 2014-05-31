@@ -9,10 +9,12 @@ exports = Class(ui.ParticleEngine, function(supr) {
 
 	var _character;
 	var _time = 0;
+    var _random = Math.random;
 
 	this.init = function(opts) {
 		_character = opts.parent;
 		supr(this, 'init', [opts]);
+        this._buildParticles();
 	};
 
 	this.runTick = function(dt) {
@@ -36,28 +38,28 @@ exports = Class(ui.ParticleEngine, function(supr) {
 
         for(var i = 0; i < NUMB_FLAMES; i++) {
             pObj = _data[i];
-            ttl = Math.random() * 1000 + 1800;
-            width = Math.random() * FLAME_WIDTH / 3 + 2 * FLAME_WIDTH / 3;
+            ttl = _random() * 1000 + 1800;
+            width = _random() * FLAME_WIDTH / 3 + 2 * FLAME_WIDTH / 3;
             height = FLAME_HEIGHT * width / FLAME_WIDTH;
-            pObj.image = imageArr[~~(Math.random() * imageArr.length)];
+            pObj.image = imageArr[~~(_random() * imageArr.length)];
             pObj.x = _character.collisionLine.start.x + _character.style.width/3.7;
             pObj.y = _character.style.height/3.7;
             pObj.r = FLAME_R;
             pObj.width = width;
             pObj.height = height;
             pObj.dx =  _character.collisionLine.end.x - _character.collisionLine.start.x;
-            pObj.dy = Math.random()*_character.style.height/2;
-            pObj.dr = Math.random()*Math.PI/8;
+            pObj.dy = _random()*_character.style.height/2;
+            pObj.dr = _random()*Math.PI/8;
             pObj.dheight = -height/1.5;
             pObj.dwidth = -width/1.5;
-            pObj.ddx = Math.random()*30;
-            pObj.ddy = Math.random()*30;
+            pObj.ddx = _random()*30;
+            pObj.ddy = _random()*30;
             pObj.ttl = ttl;
         }
     };
 
     this.emitParticles = function() {
-        this._buildParticles();
         supr(this, 'emitParticles', [_data]);
+        this._buildParticles();
 	};
 });
