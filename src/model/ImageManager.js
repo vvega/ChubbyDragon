@@ -1,5 +1,11 @@
 exports.getImageData = function() {
     var imageData = {
+        ui: {
+            header: "resources/images/header.png",
+            scoreFont: "resources/fonts/scoreboard/",
+            life: "resources/images/life.png",
+            sky: "resources/images/sky.png"
+        },
         sprites: {
             sheetData: {
                 url: 'resources/images/spritesheet.png',

@@ -1,11 +1,12 @@
 import device;
 import animate;
-import ui.View as View;
+import ui.ImageView as ImageView;
 import src.controller.TitleScreen as TitleScreen;
 import src.controller.GameOverView as GameOverView;
 import src.controller.GameView as GameView;
 import src.model.DataManager as DataManager;
 import src.model.ImageManager as ImageManager;
+import src.view.RootView as RootView;
 //import src.SoundController as SoundController;
 
 exports = Class(GC.Application, function() {
@@ -17,31 +18,31 @@ exports = Class(GC.Application, function() {
 	this.initUI = function() {
         this._initDimensions();
         this._obtainData();
-        this.rootView = new View({
-            superview: this.view,
-            x: 0,
-            y: 0,
-            width: WIDTH,
-            height: HEIGHT,
-            scale: SCALE
+        this.rootView = new RootView({
+            superview: this.view
         });
         this.titleScreen = new TitleScreen({
             superview: this.rootView,
             highScore: this.highScore,
             zIndex: Z_CURRENT,
+            visible: false,
             width: WIDTH,
             height: HEIGHT
         });
         this.gameView = new GameView({
             superview: this.rootView,
+            visible: false,
             width: WIDTH,
             height: HEIGHT
         });
         this.gameOverView = new GameOverView({
             superview: this.rootView,
+            visible: false,
             width: WIDTH,
             height: HEIGHT
         });
+        
+        this.rootView.constructView();
         //TODO: var sound = SoundController.getSound();
     };
 
@@ -75,16 +76,17 @@ exports = Class(GC.Application, function() {
         }
     };
 
+    //initialize dimensions based on device dimensions. Check for iPad and large ~4:3 WxH ratios.
     this._initDimensions = function() {
-        //get landscape mode dimensions
         var deviceDimensions = device.getDimensions(true);
-        //calculate dimensions to scale based on deviceDimensions
         var boundsWidth = 576;
         var boundsHeight = 1024;
         WIDTH = boundsWidth;
         WIDTH = deviceDimensions.width * (boundsHeight / deviceDimensions.height);
         HEIGHT = boundsHeight;
         SCALE = deviceDimensions.height / HEIGHT;
+        BLOCK_SIZE = HEIGHT/4.9;
+        this.isTablet = (deviceDimensions.height/deviceDimensions.width >= 3/4);
     };
 
     this._obtainData = function() {

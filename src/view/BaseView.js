@@ -6,7 +6,6 @@ exports = Class(ui.ImageView, function (supr) {
         opts = merge(opts, {
             x:0,
             y:0,
-            image: "resources/images/sky.png",
             visible: false,
             zIndex: Z_PREV
         });

@@ -39,12 +39,10 @@ exports = Class(SpriteView, function(supr) {
         _parent = opts.superview;
         WIDTH = opts.width;
         HEIGHT = opts.height;
-        ORIG_Y = opts.y;
-        ORIG_X = opts.x;
         COLLISION_BOX_WIDTH = WIDTH/3;
         COLLISION_BOX_HEIGHT = HEIGHT/3;
-        SPEED_LIMIT_LOWER = _parent.getBaseSpeed() + 82;
-        SPEED_LIMIT_LOWER = 3 - _parent.getBaseSpeed();
+        SPEED_LIMIT_LOWER = GC.app.rootView.BASE_SPEED + 82;
+        SPEED_LIMIT_LOWER = 3 - GC.app.rootView.BASE_SPEED;
         FIRE_OFFSET_X = WIDTH/2;
         LINE_X = opts.x + WIDTH/1.25;
         LINE_Y_OFFSET = HEIGHT/3;
@@ -53,12 +51,17 @@ exports = Class(SpriteView, function(supr) {
         this.numJumps = MAX_JUMPS;
         this.boostLevel = 0;
         this.fireBoostActive = false;
+        this.elevation = opts.elevation;
+        
         supr(this, 'init', [opts]);
 
         SCORE_TEXT_DATA = {
-            x: this.style.width/2 + HEIGHT/5,
-            y: -this.style.height/5
+            x: this.getPosition().x,
+            y: this.getPosition().y/2
         };
+
+        this.ORIG_X = 0;
+        this.ORIG_Y = _parent.style.height + this.style.height;
 
         SPEED_TEXT_DATA = {
             x: -this.style.width/15,
@@ -95,11 +98,11 @@ exports = Class(SpriteView, function(supr) {
         var collisionPoints = {
            startPoint: new Point({
                 x: LINE_X,
-                y: ORIG_Y
+                y: this.elevation
              }),
             endPoint: new Point({
                 x: LINE_X,
-                y: ORIG_Y + LINE_Y_OFFSET
+                y: this.elevation + LINE_Y_OFFSET
             })
         }
         this.collisionLine = new Line(collisionPoints.startPoint, collisionPoints.endPoint); 
@@ -107,7 +110,7 @@ exports = Class(SpriteView, function(supr) {
 
         //build speed and point messages
         _scoreText = new TextView({
-            superview: this,
+            superview: _parent,
             layout: 'box',
             fontFamily: 'tiptoe',
             size: HEIGHT/4,
@@ -138,7 +141,7 @@ exports = Class(SpriteView, function(supr) {
         this.speed = 1;
         this.score = 0;
         this.setFramerate(BASE_FR);
-        this.initImmunityTimeout();
+        //this.initImmunityTimeout();
         _parent.spriteMgr.activateChar();
     };
 
@@ -206,10 +209,10 @@ exports = Class(SpriteView, function(supr) {
            .then(bind(this, function() {
                 this.style.zIndex--; 
                _parent.updateLives();
-               if(_parent.getLives() > 0) {
+               if(_parent.lives > 0) {
                     this.updateOpts({
-                        x: ORIG_X,
-                        y: ORIG_Y
+                        x: this.ORIG_X,
+                        y: this.elevation
                     });
                     this.resume();
                     this.initImmunityTimeout();
@@ -250,8 +253,8 @@ exports = Class(SpriteView, function(supr) {
         });
         _scoreText.style.visible = true;
         animate(_scoreText)
-            .now({opacity: 1, y: -this.style.height/1.2}, 400, animate.linear)
-            .then({opacity: 0 }, 200, animate.linear)
+            .now({opacity: 1, y: -150}, 400, animate.linear)
+            .then({opacity: 0 }, 100, animate.linear)
             .then(function() {
                 _scoreText.style.visible = false;
                 this._resetMessages();

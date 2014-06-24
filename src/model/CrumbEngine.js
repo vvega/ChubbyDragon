@@ -5,7 +5,7 @@ exports = Class(ui.ParticleEngine, function(supr) {
 	var CRUMB_WIDTH = 70;
 	var CRUMB_HEIGHT = 70;
 	var CRUMB_R = -Math.PI / 18;
-    var NUM_CRUMBS = 35;
+    var NUM_CRUMBS = 15;
     var NUM_ASHES = 10;
 
     var _data = [];

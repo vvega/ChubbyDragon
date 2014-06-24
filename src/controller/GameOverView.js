@@ -45,15 +45,6 @@ exports = Class(BaseView, function (supr){
     };
 
     this.build = function() {
-        //add mountains
-        this.mountainView = new ui.ImageView({
-            image: "resources/images/mountains.png",
-            superview: this,
-            x: 0,
-            width: WIDTH,
-            height: HEIGHT/2,
-            y: HEIGHT - HEIGHT/2
-        });
 
         _textView = new TextView({
             superview: this,
@@ -85,24 +76,22 @@ exports = Class(BaseView, function (supr){
             superview: this,
             width: this.style.width,
             height: this.style.height,
-            verticalMargin: 20,
+            verticalMargin: 10,
             cols: 3,
             rows: 6
         });
 
         var replayButton = new ButtonView({
             superview: buttonGrid,
+            image: "resources/images/button.png",
             text: {
                 fontFamily: 'tiptoe',
-                text: "Play Again",
+                text: "Replay",
                 verticalAlign: "middle",
                 horizontalAlign: "center",
                 padding: [0,0,65,0],
                 color: "#FFF"
            },
-            width: 200,
-            height: 100,
-            backgroundColor: "#d2a734",
             opacity: 1,
             col: 1,
             row: 3,
@@ -115,15 +104,15 @@ exports = Class(BaseView, function (supr){
 
         var exitButton = new ButtonView({
             superview: buttonGrid,
+            image: "resources/images/button.png",
             text: {
                 fontFamily: 'tiptoe',
-                text: "Back to Menu",
+                text: "Menu",
                 verticalAlign: "middle",
                 horizontalAlign: "center",
                 padding: [0,0,65,0],
                 color: "#FFF"
            },
-            backgroundColor: "#d2a734",
             opacity: 1,
             col: 1,
             row: 4,

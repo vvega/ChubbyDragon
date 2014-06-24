@@ -1,3 +1,5 @@
+import animate;
+
 exports = new Class(function(){
 
 	var _sprite;
@@ -6,13 +8,13 @@ exports = new Class(function(){
 		_sprite = opts.sprite;
 	};
 
-    this.runFullJump = function() {
+    this.runFullJump = function(cb) {
         var jumpAnim = (_sprite.fireBoostActive) ? 'boostJump' : 'jump';
         _sprite.isPaused && _sprite.resume();
         _sprite.setFramerate(25);
         _sprite.startAnimation(jumpAnim, {
             loop:false,
-            callback: function() {
+            callback: cb || function() {
                 _sprite.startAnimation(jumpAnim, {loop: false}); 
                 _sprite.pause();
         }});
@@ -50,11 +52,14 @@ exports = new Class(function(){
     };
 
     this.activateChar = function() {
-    	if(_sprite.isPlaying) {
-            _sprite.resume();
-        } else {
-            _sprite.startAnimation('run', {loop: true});
-        }
+        this.runFullJump(function() {
+            animate(_sprite)
+            .now({y: _sprite.elevation }, 550, animate.easeOut)
+            .then(function() {
+                this.resumeRun();
+                _sprite.initImmunityTimeout();
+            }.bind(this));
+        }.bind(this));
     };
 
     this.setBoostRun = function() {

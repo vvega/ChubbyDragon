@@ -12,16 +12,18 @@ exports = Class(View, function(supr){
 	var _lifeViews = [];
 
 	this.init = function(opts) {
-		MARGIN = opts.lifeViewProps.height/6;
+		MARGIN = opts.parent.style.height/15;		
 		opts = merge(opts, {
-			width: opts.lifeViewProps.width * opts.numLives,
+			width: opts.lifeViewProps.width * (opts.numLives + MARGIN),
 			height: opts.lifeViewProps.height,
-			x: opts.parent.style.width - (opts.lifeViewProps.width*opts.numLives + opts.lifeViewProps.height/6),
-			y: 0,
+			x: opts.parent.style.width - ((opts.lifeViewProps.width+MARGIN)*opts.numLives),
+			y: -MARGIN/2.5,
 		});
+
 		_numLives = opts.numLives;
 		_lifeViewProps = opts.lifeViewProps;
 		supr(this, 'init', [opts]);
+		console.log(this);
 		this.build();
 	};
 
@@ -29,7 +31,7 @@ exports = Class(View, function(supr){
 		var newView;
 		for(var i = 0; i < _numLives; i++) {
 			newView = new ImageView(_lifeViewProps);
-			newView.style.x = i*_lifeViewProps.width;
+			newView.style.x = i*(_lifeViewProps.width + MARGIN);
 			newView.style.y = MARGIN;
 			_lifeViews.push(newView);
 			this.addSubview(newView);

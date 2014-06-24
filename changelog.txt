@@ -137,6 +137,16 @@
 		-reduced randomization call time by assigning private variable to the Math.random function when applicable
 		-Crumb and flame particles are now pre-built where applicable in an attempt to minimize the amount of property computation on the fly
 		-Boost bar now properly resets upon death (during flame breath)
+6/23/2014:
+	General:
+		-Parallax view and layers attached to the RootView now, as the layers will serve as a live menu background
+		-TerrainLayer, ItemLayer, and Mountainlayer _scrollTo method overriden to only scroll during live gameplay
+		-Cloudlayer now scrolls continuously
+	GameView.js
+		-ParallaxView functionality removed
+		-Some private variables refactored to object properties
+		-_showUI and _hideUI methods added to smoothly add and remove UI components Boostbar and header
+	
 		
 		
 	

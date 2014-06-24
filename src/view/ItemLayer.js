@@ -9,6 +9,7 @@ exports = Class(ParallaxView.Layer, function(supr){
 
 	this.init = function(opts) {
 		this.parent = opts.parent;
+		this.scrollPos = 0;
 		supr(this, 'init', [opts]);
 	};
 
@@ -34,5 +35,10 @@ exports = Class(ParallaxView.Layer, function(supr){
 		}
 
 		return supr(this, 'obtainView', [ctor, viewOpts, opts]);
+	};
+
+	this._scrollTo = function(x, y) {
+		GC.app.gameView.gameStarted && (this.scrollPos += this._opts.parent.speed);
+		supr(this, '_scrollTo', [this.scrollPos, y]);
 	};
 });
