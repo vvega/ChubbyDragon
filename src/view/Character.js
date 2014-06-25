@@ -205,14 +205,14 @@ exports = Class(SpriteView, function(supr) {
         _parent.spriteMgr.killChar();
         animate(this)
            .now({ y: _parent.style.height/2 }, 200, animate.linear)
-           .then({ y: _parent.style.height + (this.style.height) }, 500, animate.linear)
+           .then({ y: _parent.style.height + (this.style.height)}, 500, animate.linear)
            .then(bind(this, function() {
-                this.style.zIndex--; 
                _parent.updateLives();
                if(_parent.lives > 0) {
                     this.updateOpts({
                         x: this.ORIG_X,
-                        y: this.elevation
+                        y: this.elevation,
+                        zIndex: this.style.zIndex - 1
                     });
                     this.resume();
                     this.initImmunityTimeout();

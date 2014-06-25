@@ -61,7 +61,7 @@ exports = Class(BaseView, function(supr) {
 
         this.terrainLayer = new TerrainLayer({
             parent: this,
-            distance: this.MAX_DISTANCE - 2,
+            distance: this.MAX_DISTANCE - 3,
             character: GC.app.gameView.character,
             populate: function (layer, x) {
                 var v = layer.obtainView(TerrainBlock, {

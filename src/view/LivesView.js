@@ -15,7 +15,7 @@ exports = Class(View, function(supr){
 		MARGIN = opts.parent.style.height/15;		
 		opts = merge(opts, {
 			width: opts.lifeViewProps.width * (opts.numLives + MARGIN),
-			height: opts.lifeViewProps.height,
+			height: opts.parent.height,
 			x: opts.parent.style.width - ((opts.lifeViewProps.width+MARGIN)*opts.numLives),
 			y: -MARGIN/2.5,
 		});

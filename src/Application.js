@@ -85,8 +85,8 @@ exports = Class(GC.Application, function() {
         WIDTH = deviceDimensions.width * (boundsHeight / deviceDimensions.height);
         HEIGHT = boundsHeight;
         SCALE = deviceDimensions.height / HEIGHT;
-        BLOCK_SIZE = HEIGHT/4.9;
         this.isTablet = (deviceDimensions.height/deviceDimensions.width >= 3/4);
+        BLOCK_SIZE = (this.isTablet) ? HEIGHT/6 : HEIGHT/4.9;
     };
 
     this._obtainData = function() {

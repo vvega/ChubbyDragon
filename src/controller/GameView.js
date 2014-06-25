@@ -64,8 +64,7 @@ exports = Class(BaseView, function(supr) {
         this.boostBar.style.y = HEIGHT + this.boostBar.style.height;
         this.character.style.x = this.character.ORIG_X;
         this.character.style.y = this.character.ORIG_Y;
-        this.character.style.zIndex = GC.app.rootView.terrainLayer.style.zIndex - 1;
-        this.itemLayer.style.zIndex = this.character.style.zIndex - 1;
+       // this.itemLayer.style.zIndex = GC.app.rootView.mountainLayer.style.zIndex + 1;
         this.itemLayer.style.visible = true;
     };
 
@@ -146,7 +145,7 @@ exports = Class(BaseView, function(supr) {
 
         var itemLayer = new ItemLayer({
             parent: this,
-            distance: 1,
+            distance: GC.app.rootView.MAX_DISTANCE - 2,
             populate: function (layer, x) {
                 var v = layer.obtainView(ItemBlock, {
                     type: "apple",
@@ -171,8 +170,6 @@ exports = Class(BaseView, function(supr) {
             lifeViewProps: {
                 numLives: LIVES,
                 style: {
-                    height: BLOCK_SIZE/1.6,
-                    width: BLOCK_SIZE/1.6,
                     image: imageData.ui.life
                 }
             },

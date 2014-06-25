@@ -6,7 +6,7 @@ import src.view.LivesView as LivesView;
 exports = Class(ImageScaleView, function(supr) {
 
 	this.init = function(opts) {
-        //opts.image = imageData.ui.header;
+        opts.image = imageData.ui.header;
         this.lives = opts.lifeViewProps.numLives;
         this.lifeViewProps = opts.lifeViewProps.style;
 
@@ -17,10 +17,19 @@ exports = Class(ImageScaleView, function(supr) {
 
 	this.build = function() {
 
-		 var svBox = new View({
+        this.livesView = new LivesView({
+            parent: this,
+            numLives: this.lives,
+            lifeViewProps : merge(this.lifeViewProps, {
+                height: this.style.height*.8,
+                width: this.style.height*.8
+            })
+        });
+
+        var svBox = new View({
             superview: this,
-            x: WIDTH/30,
-            y: HEIGHT/32,
+            x: this.style.height/5,
+            y: this.style.height/5,
             width: WIDTH/4,
             height: HEIGHT/10
         });
@@ -32,12 +41,6 @@ exports = Class(ImageScaleView, function(supr) {
             layout: "box",
             text: "0",
             characterData: this._nextCharData()
-        });
-
-        this.livesView = new LivesView({
-            parent: this,
-            numLives: this.lives,
-            lifeViewProps : this.lifeViewProps
         });
 	};
 

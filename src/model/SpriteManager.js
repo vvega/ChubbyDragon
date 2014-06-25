@@ -52,14 +52,19 @@ exports = new Class(function(){
     };
 
     this.activateChar = function() {
-        this.runFullJump(function() {
-            animate(_sprite)
-            .now({y: _sprite.elevation }, 550, animate.easeOut)
+        _sprite.style.zIndex = GC.app.rootView.terrainLayer.style.zIndex + 1;
+        _sprite.isPaused && _sprite.resume();
+        _sprite.resetAnimation();
+        _sprite.startAnimation('powerJump', {loop: true});
+        _sprite.style.x = -_sprite.style.width/2;
+        animate(_sprite)
+            .now({y: _sprite.elevation - 150, x: 0 }, 550, animate.linear)
+            .then({y: _sprite.elevation }, 150, animate.easeOut)
             .then(function() {
                 this.resumeRun();
+                _sprite.style.zIndex = GC.app.rootView.terrainLayer.style.zIndex - 1;
                 _sprite.initImmunityTimeout();
             }.bind(this));
-        }.bind(this));
     };
 
     this.setBoostRun = function() {
