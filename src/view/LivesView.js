@@ -12,7 +12,7 @@ exports = Class(View, function(supr){
 	var _lifeViews = [];
 
 	this.init = function(opts) {
-		MARGIN = opts.parent.style.height/15;		
+		MARGIN = opts.lifeViewProps.margin;		
 		opts = merge(opts, {
 			width: opts.lifeViewProps.width * (opts.numLives + MARGIN),
 			height: opts.parent.height,
@@ -23,7 +23,6 @@ exports = Class(View, function(supr){
 		_numLives = opts.numLives;
 		_lifeViewProps = opts.lifeViewProps;
 		supr(this, 'init', [opts]);
-		console.log(this);
 		this.build();
 	};
 

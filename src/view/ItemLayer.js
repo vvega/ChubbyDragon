@@ -3,14 +3,17 @@ import src.view.ParallaxView as ParallaxView;
 exports = Class(ParallaxView.Layer, function(supr){
 
 	var BAD_ITEM_MODIFIER = .5;
-	var _badFood = [ "resources/images/cake.png" ];
-	var _goodFood = [ "resources/images/apple.png" ];
+	var _badFood;
+	var _goodFood;
 	var _random = Math.random;
 
 	this.init = function(opts) {
 		this.parent = opts.parent;
 		this.scrollPos = 0;
 		supr(this, 'init', [opts]);
+
+		_badFood = imageData.food.fatty;
+		_goodFood = imageData.food.healthy;
 	};
 
 	this.obtainView = function(ctor, viewOpts, opts) {

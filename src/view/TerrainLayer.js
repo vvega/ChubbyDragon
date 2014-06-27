@@ -17,13 +17,14 @@ exports = Class(ParallaxView.Layer, function(supr){
 	this.obtainView = function(ctor, viewOpts, opts) {
 
 		_badTerrainModifier = (this.character.speed > 0) ? this.character.speed/150 : 1/150;
+		//_badTerrainModifier = .3;
 		viewOpts._active = (this.character.isImmune()) ? false : true;
 
 		viewOpts._harmful = ((_random() < _badTerrainModifier) && viewOpts._active) ? true : false;
 		if(viewOpts._harmful) {
 			viewOpts.image = "resources/images/terrain_block_brambles.png";
-			viewOpts.height = viewOpts.height + viewOpts.height/3;
-			viewOpts.y = viewOpts.y - viewOpts.height/6;
+			viewOpts.height = viewOpts.height*1.22;
+			viewOpts.y = HEIGHT - viewOpts.height;
 			viewOpts.width = viewOpts.width + viewOpts.width/4;
 		} 
 		

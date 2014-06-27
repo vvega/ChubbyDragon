@@ -56,8 +56,8 @@ exports = Class(SpriteView, function(supr) {
         supr(this, 'init', [opts]);
 
         SCORE_TEXT_DATA = {
-            x: this.getPosition().x,
-            y: this.getPosition().y/2
+            x: this.getPosition().x + this.style.width/6,
+            y: this.style.y*2
         };
 
         this.ORIG_X = 0;
@@ -253,7 +253,7 @@ exports = Class(SpriteView, function(supr) {
         });
         _scoreText.style.visible = true;
         animate(_scoreText)
-            .now({opacity: 1, y: -150}, 400, animate.linear)
+            .now({opacity: 1, y: -50}, 400, animate.linear)
             .then({opacity: 0 }, 100, animate.linear)
             .then(function() {
                 _scoreText.style.visible = false;

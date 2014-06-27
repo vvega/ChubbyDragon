@@ -22,6 +22,15 @@ exports.getImageData = function() {
                 run: [ [0, 0], [1, 0], [2, 0], [3, 0], [4, 0], [5, 0] , [0, 1], [1, 1], [3, 0],[2, 1] ]
             }
         },
+        food: {
+            healthy: [
+                "resources/images/apple.png",
+                "resources/images/spinach.png"
+            ],
+            fatty: [
+                "resources/images/cake.png"
+            ]
+        },
         particles: {
             crumbs_cake: [ 
                 "resources/images/particles/crumbs/cake/crumb_1.png",
@@ -44,6 +53,9 @@ exports.getImageData = function() {
                 "resources/images/particles/flames/flame_2.png",
                 "resources/images/particles/flames/flame_3.png",
                 "resources/images/particles/flames/flame_4.png"
+            ],
+            sparkles : [
+                "resources/images/particles/crumbs/apple/crumb_1.png"
             ]
         }
     };

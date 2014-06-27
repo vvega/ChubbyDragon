@@ -59,12 +59,11 @@ exports = Class(BaseView, function(supr) {
     };
 
     this._setViews = function() {
-        this.header.scoreView.setText(_score);
+        this.header.scoreText.setText(_score);
         this.header.style.y = -this.header.style.height;
         this.boostBar.style.y = HEIGHT + this.boostBar.style.height;
         this.character.style.x = this.character.ORIG_X;
         this.character.style.y = this.character.ORIG_Y;
-       // this.itemLayer.style.zIndex = GC.app.rootView.mountainLayer.style.zIndex + 1;
         this.itemLayer.style.visible = true;
     };
 
@@ -74,7 +73,7 @@ exports = Class(BaseView, function(supr) {
 
     this.updateScoreBoard = function(value) {
         _score += value;
-        this.header.scoreView.setText(_score);
+        this.header.scoreText.setText(_score);
     };
 
     this._startGame = function() {
@@ -153,8 +152,8 @@ exports = Class(BaseView, function(supr) {
                     superview: layer,
                     crumbGen: this.cEngine,
                     x: x,
-                    width: BLOCK_SIZE/1.5,
-                    height: BLOCK_SIZE/1.5,
+                    width: BLOCK_SIZE*.7,
+                    height: BLOCK_SIZE*.7,
                     y: HEIGHT - BLOCK_SIZE*1.6
                 });
                 return v.style.width + Math.random()*WIDTH;

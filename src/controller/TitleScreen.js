@@ -5,6 +5,7 @@ import ui.TextView as TextView;
 import ui.ImageScaleView as ImageScaleView;
 import src.view.BaseView as BaseView;
 import animate;
+//import plugins.facebook.facebook as facebook;
 
 exports = Class(BaseView, function (supr) {
 
@@ -24,6 +25,8 @@ exports = Class(BaseView, function (supr) {
         LOGO_WIDTH = WIDTH*.95;
         LOGO_HEIGHT = HEIGHT*.95;
         supr(this, 'init', [opts]);
+    //    console.log(facebook);
+    //    facebook.login();
     };
 
     this.constructView = function() {
