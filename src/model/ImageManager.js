@@ -4,7 +4,13 @@ exports.getImageData = function() {
             header: "resources/images/header.png",
             scoreFont: "resources/fonts/scoreboard/",
             life: "resources/images/life.png",
-            sky: "resources/images/sky.png"
+            sky: "resources/images/sky.png",
+            guideBG: "resources/images/ui/guide/guide_bg.png",
+            guideImages: [
+                "resources/images/ui/guide/guide_1.png",
+                "resources/images/ui/guide/guide_2.png",
+                "resources/images/ui/guide/guide_3.png"
+            ]
         },
         sprites: {
             sheetData: {
@@ -23,31 +29,24 @@ exports.getImageData = function() {
             }
         },
         food: {
+            base_path : "resources/images/food/",
+            num_crumbs : 4,
             healthy: [
-                "resources/images/apple.png",
-                "resources/images/spinach.png"
+                "apple",
+                "spinach",
+                "broccoli",
+                "beet",
+                "grapes"
             ],
             fatty: [
-                "resources/images/cake.png"
+                "cake",
+                "donut",
+                "lollipop",
+                "icecream",
+                "fries"
             ]
         },
         particles: {
-            crumbs_cake: [ 
-                "resources/images/particles/crumbs/cake/crumb_1.png",
-                "resources/images/particles/crumbs/cake/crumb_2.png",
-                "resources/images/particles/crumbs/cake/crumb_3.png"
-            ],
-            crumbs_apple: [
-                "resources/images/particles/crumbs/apple/crumb_1.png",
-                "resources/images/particles/crumbs/apple/crumb_2.png",
-                "resources/images/particles/crumbs/apple/crumb_3.png",
-                "resources/images/particles/crumbs/apple/crumb_4.png"
-            ],
-            crumbs_burnt: [
-                "resources/images/particles/crumbs/burnt/crumb_1.png",
-                "resources/images/particles/crumbs/burnt/crumb_2.png",
-                "resources/images/particles/crumbs/burnt/crumb_3.png",
-            ],
             flames : [
                 "resources/images/particles/flames/flame_1.png",
                 "resources/images/particles/flames/flame_2.png",

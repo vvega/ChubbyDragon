@@ -3,8 +3,8 @@ import src.view.ParallaxView as ParallaxView;
 exports = Class(ParallaxView.Layer, function(supr){
 
 	var BAD_ITEM_MODIFIER = .5;
-	var _badFood;
-	var _goodFood;
+	var _fattyFood;
+	var _healthyFood;
 	var _random = Math.random;
 
 	this.init = function(opts) {
@@ -12,11 +12,13 @@ exports = Class(ParallaxView.Layer, function(supr){
 		this.scrollPos = 0;
 		supr(this, 'init', [opts]);
 
-		_badFood = imageData.food.fatty;
-		_goodFood = imageData.food.healthy;
+		_fattyFood = imageData.food.fatty;
+		_healthyFood = imageData.food.healthy;
 	};
 
 	this.obtainView = function(ctor, viewOpts, opts) {
+
+		var type;
 
 		viewOpts._active = (this.parent.character.isImmune()) ? false : true;
 		viewOpts.opacity = 1;
@@ -24,18 +26,19 @@ exports = Class(ParallaxView.Layer, function(supr){
 		viewOpts._flaggedForRemoval = false;
 
 		if (Math.random() < BAD_ITEM_MODIFIER && viewOpts._active) {
-			viewOpts.image = _badFood[~~(_random()*_badFood.length)];
-			viewOpts.type = 'cake';
+			type = _fattyFood[~~(_random()*_fattyFood.length)];
 			viewOpts._value = -2;
 			viewOpts._pointValue = 0;
 			viewOpts._boostValue = 1;
 		} else {
-			viewOpts.image = _goodFood[~~(_random()*_goodFood.length)];
-			viewOpts.type = 'apple';
+			type = _healthyFood[~~(_random()*_healthyFood.length)];
 			viewOpts._value = 1;
 			viewOpts._pointValue = 10;
 			viewOpts._boostValue = 2;
 		}
+
+		viewOpts.image = imageData.food.base_path + type + '/' + type +'.png';
+		viewOpts.type = type;
 
 		return supr(this, 'obtainView', [ctor, viewOpts, opts]);
 	};

@@ -2,8 +2,8 @@ import ui.ParticleEngine;
 
 exports = Class(ui.ParticleEngine, function(supr) {
 
-	var FLAME_WIDTH = 100;
-	var FLAME_HEIGHT = 170;
+	var FLAME_WIDTH;
+	var FLAME_HEIGHT;
     var NUMB_FLAMES = 2;
 	var FLAME_R = Math.PI / 2;
 
@@ -12,9 +12,12 @@ exports = Class(ui.ParticleEngine, function(supr) {
     var _random = Math.random;
 
 	this.init = function(opts) {
-		_character = opts.parent;
+		_character = opts.character;
 		supr(this, 'init', [opts]);
         this._buildParticles();
+        this.active = false;
+        FLAME_HEIGHT = _character.style.width/4;
+        FLAME_WIDTH = FLAME_HEIGHT*.5;
 	};
 
 	this.runTick = function(dt) {
@@ -22,8 +25,25 @@ exports = Class(ui.ParticleEngine, function(supr) {
 		if(_character.fireBoostActive && _time % 3 == 0) {
 			this.emitParticles();
 		}
+        _character.fireBoostActive || this._finish(dt);
 		supr(this, 'runTick', [dt]);
 	};
+
+    //This function is called in order to keep flame boost collision active until most particles have deceased.
+    //Will also clean up all particles once the last particle rendered is gone.
+    this._finish = function(dt) {
+        if(this.active) {
+            var lastParticle = this.activeParticles[~~(this.activeParticles.length*.2)];
+            if(lastParticle) {
+                var data = lastParticle.pData;
+                if(data && (data.elapsed + dt > data.ttl)) {
+                    //last active particle is dead
+                    this.active = false;
+                    this.killAllParticles();
+                }
+            }
+        }
+    };
 
 	this._buildParticles = function() {
         var ttl;
@@ -42,13 +62,13 @@ exports = Class(ui.ParticleEngine, function(supr) {
             width = _random() * FLAME_WIDTH / 3 + 2 * FLAME_WIDTH / 3;
             height = FLAME_HEIGHT * width / FLAME_WIDTH;
             pObj.image = imageArr[~~(_random() * imageArr.length)];
-            pObj.x = _character.collisionLine.start.x + _character.style.width/3.7;
-            pObj.y = _character.style.height/3.7;
+            pObj.x = _character.collisionLine.start.x + _character.style.width/3.3;
+            pObj.y = _character.collisionLine.end.y;
             pObj.r = FLAME_R;
             pObj.width = width;
             pObj.height = height;
-            pObj.dx =  _character.collisionLine.end.x - _character.collisionLine.start.x;
-            pObj.dy = _random()*_character.style.height/2;
+            pObj.dx = _character.collisionLine.end.x - _character.collisionLine.start.x;
+            pObj.dy = _random()*_character.style.height/2 + _random()*-_character.style.height/5;
             pObj.dr = _random()*Math.PI/8;
             pObj.dheight = -height/1.5;
             pObj.dwidth = -width/1.5;

@@ -9,7 +9,7 @@ import animate;
 
 exports = Class(SpriteView, function(supr) {
 
-    var IMMUNITY_TIMEOUT = 3000;
+    var IMMUNITY_TIMEOUT = 2000;
     var BASE_FR = 8;
     var MAX_JUMPS = 3;
 
@@ -45,7 +45,7 @@ exports = Class(SpriteView, function(supr) {
         SPEED_LIMIT_LOWER = 3 - GC.app.rootView.BASE_SPEED;
         FIRE_OFFSET_X = WIDTH/2;
         LINE_X = opts.x + WIDTH/1.25;
-        LINE_Y_OFFSET = HEIGHT/3;
+        LINE_Y_OFFSET = HEIGHT*.27;
 
         this.immune = true;
         this.numJumps = MAX_JUMPS;
@@ -56,8 +56,8 @@ exports = Class(SpriteView, function(supr) {
         supr(this, 'init', [opts]);
 
         SCORE_TEXT_DATA = {
-            x: this.getPosition().x + this.style.width/6,
-            y: this.style.y*2
+            x: this.getPosition().x,
+            y: this.style.y - this.style.height/4
         };
 
         this.ORIG_X = 0;
@@ -65,7 +65,7 @@ exports = Class(SpriteView, function(supr) {
 
         SPEED_TEXT_DATA = {
             x: -this.style.width/15,
-            y: -this.style.height/5
+            y: -this.style.height/3
         };
 
         this.build(opts);
@@ -84,12 +84,12 @@ exports = Class(SpriteView, function(supr) {
         return this.immune;
     };
 
-    this.getParent = function() {
-        return _parent;
-    };
-
     this.getMaxJumps = function() {
         return MAX_JUMPS;
+    };
+
+    this.getParent = function() {
+        return _parent;
     };
 
     this.build = function(opts) {
@@ -112,7 +112,7 @@ exports = Class(SpriteView, function(supr) {
         _scoreText = new TextView({
             superview: _parent,
             layout: 'box',
-            fontFamily: 'tiptoe',
+            fontFamily: 'bigbottom',
             size: HEIGHT/4,
             color: "#ffc600",
             strokeColor: "#FFF",
@@ -126,7 +126,7 @@ exports = Class(SpriteView, function(supr) {
         _speedText = new TextView({
             superview: this,
             layout: 'box',
-            fontFamily: 'tiptoe',
+            fontFamily: 'bigbottom',
             size: HEIGHT/5,
             strokeColor: "#FFF",
             strokeWidth: HEIGHT/18,
@@ -141,7 +141,6 @@ exports = Class(SpriteView, function(supr) {
         this.speed = 1;
         this.score = 0;
         this.setFramerate(BASE_FR);
-        //this.initImmunityTimeout();
         _parent.spriteMgr.activateChar();
     };
 
@@ -162,11 +161,11 @@ exports = Class(SpriteView, function(supr) {
             }.bind(this));
     };
 
-    this.updateCollisionPoints = function() {
+    this.updateCollisionPoints = function(dt) {
         //update collision line (for items)
         this.collisionLine.start.x = LINE_X;
-        this.collisionLine.start.y = (this.fireBoostActive) ? this.style.y + LINE_Y_OFFSET : this.style.y;
-        this.collisionLine.end.x = (this.fireBoostActive) ? LINE_X + FIRE_OFFSET_X : LINE_X;
+        this.collisionLine.start.y = (_parent.fEngine.active) ? this.style.y + LINE_Y_OFFSET : this.style.y;
+        this.collisionLine.end.x = (_parent.fEngine.active) ? LINE_X + FIRE_OFFSET_X : LINE_X;
         this.collisionLine.end.y = this.style.y + LINE_Y_OFFSET;
          //update collision box (for terrain)
         this.collisionBox.x = this.style.x + COLLISION_BOX_WIDTH*1.3;
@@ -187,7 +186,7 @@ exports = Class(SpriteView, function(supr) {
     };
 
     this.addToScore = function(value) {
-        this.fireBoostActive || _parent.spriteMgr.runEatAnim();
+        _parent.fEngine.active || _parent.spriteMgr.runEatAnim();
         if(value) {
             value = (this.speed > 0) ? value + value*this.speed : value;
             _parent.updateScoreBoard(this.score + value);
@@ -207,8 +206,10 @@ exports = Class(SpriteView, function(supr) {
            .now({ y: _parent.style.height/2 }, 200, animate.linear)
            .then({ y: _parent.style.height + (this.style.height)}, 500, animate.linear)
            .then(bind(this, function() {
-               _parent.updateLives();
-               if(_parent.lives > 0) {
+                //_parent.fEngine.killAllParticles();
+                //_parent.fEngine.active = false;
+                _parent.updateLives();
+                if(_parent.lives > 0) {
                     this.updateOpts({
                         x: this.ORIG_X,
                         y: this.elevation,
@@ -216,7 +217,7 @@ exports = Class(SpriteView, function(supr) {
                     });
                     this.resume();
                     this.initImmunityTimeout();
-              }
+                }
         }));  
     };
 
@@ -253,7 +254,7 @@ exports = Class(SpriteView, function(supr) {
         });
         _scoreText.style.visible = true;
         animate(_scoreText)
-            .now({opacity: 1, y: -50}, 400, animate.linear)
+            .now({opacity: 1, y: -this.style.height/3}, 400, animate.linear)
             .then({opacity: 0 }, 100, animate.linear)
             .then(function() {
                 _scoreText.style.visible = false;
@@ -308,5 +309,6 @@ exports = Class(SpriteView, function(supr) {
         _parent.spriteMgr.setBoostRun();
         _parent.boostBar.depletion = true;
         _parent.cEngine.updateParticleData(this.fireBoostActive);
+        _parent.fEngine.active = true;
     };
 });

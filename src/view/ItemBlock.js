@@ -18,6 +18,7 @@ exports = Class(ImageView, function(supr) {
         _parent = opts.superview;
         _character = opts.character;
         _crumbEngine = opts.crumbGen;
+        _flameEngine = opts.flameGen;
 
         supr(this, 'init', [opts]);
 
@@ -57,14 +58,14 @@ exports = Class(ImageView, function(supr) {
             _boundingCircle.y = this.getPosition().y / this.getPosition().scale;
 
             if(intersect.circleAndLine(_boundingCircle, _character.collisionLine) === true) {
-                var pointValue = (_character.fireBoostActive) ? this._opts._pointValue*BOOST_MULTIPLIER : this._opts._pointValue;
-                this._opts.type = (_character.fireBoostActive) ? 'burnt' : this._opts.type;
+                var pointValue = (_flameEngine.active) ? this._opts._pointValue*BOOST_MULTIPLIER : this._opts._pointValue;
+                this._opts.type = (_flameEngine.active) ? 'burnt' : this._opts.type;
 
-                _character.fireBoostActive || _character.increaseBoostLevel(this._opts._boostValue);
-                (_character.fireBoostActive && this._opts._value < 0) || _character.addToSpeed(this._opts._value);
+                _flameEngine.active || _character.increaseBoostLevel(this._opts._boostValue);
+                (_flameEngine.active && this._opts._value < 0) || _character.addToSpeed(this._opts._value);
                 
                 _character.addToScore(pointValue);
-                _crumbEngine.emitParticles(this._opts.type, _boundingCircle);
+                this._opts.type && _crumbEngine.emitParticles(this._opts.type, _boundingCircle);
                 this.activeAnim = false;
                 this._opts._flaggedForRemoval = true;
 

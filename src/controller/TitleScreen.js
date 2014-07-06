@@ -1,9 +1,10 @@
 import ui.View;
 import ui.ImageView;
-import ui.widget.ButtonView as ButtonView;
 import ui.TextView as TextView;
 import ui.ImageScaleView as ImageScaleView;
 import src.view.BaseView as BaseView;
+import src.view.BaseButton as BaseButton;
+import src.controller.GuideView as GuideView;
 import animate;
 //import plugins.facebook.facebook as facebook;
 
@@ -15,6 +16,7 @@ exports = Class(BaseView, function (supr) {
     var _logoView;
     var _subtitleView;
     var _highScoreView;
+    var _guideView;
     var _startButton;
     var _guideButton;
 
@@ -24,6 +26,8 @@ exports = Class(BaseView, function (supr) {
     this.init = function(opts) {
         LOGO_WIDTH = WIDTH*.95;
         LOGO_HEIGHT = HEIGHT*.95;
+        //opts.layout = 'linear';
+        //opts.justifyContent = 'center';
         supr(this, 'init', [opts]);
     //    console.log(facebook);
     //    facebook.login();
@@ -32,16 +36,14 @@ exports = Class(BaseView, function (supr) {
     this.constructView = function() {
         supr(this, 'constructView');
 
-        //_textView.style.visible = true;
-        _highScoreView.style.visible = true;
+        //_highScoreView.style.visible = true;
 
         animate(_logoView)
             .now({ y: -HEIGHT/50, opacity: 1 }, 700, animate.easeIn)
             .then(function() {
-                //animate(_highScoreView)
-                //.now({ y: -HEIGHT/6.3, opacity: 1 }, 300, animate.easeIn)
                 this._runLogoAnimation();
-                //this._runButtonAnimation(_startButton, _startButton.style);
+                _startButton.startButtonAnim();
+                _guideButton.startButtonAnim();
         }.bind(this));
     };
 
@@ -62,6 +64,11 @@ exports = Class(BaseView, function (supr) {
     };
 
     this.build = function() {
+        _guideView = new GuideView({
+            superview: this,
+            height: HEIGHT,
+            width: HEIGHT
+        });
 
         _logoView = new ImageScaleView({
             superview: this,
@@ -107,48 +114,32 @@ exports = Class(BaseView, function (supr) {
             rows: 6
         });
 
-        _startButton = new ButtonView({
+        _startButton = new BaseButton({
             superview: buttonGrid,
-            image: "resources/images/button.png",
-             text: {
-                 fontFamily: 'tiptoe',
-                 text: "Start",
-                 verticalAlign: "middle",
-                 horizontalAlign: "center",
-                 padding: [0,0,65,0],
-                 color: "#FFF"
-                },
-                opacity: 1,
-                col: 1,
-                row: 3,
-                on: {
-                    up: bind(this, function(){
-                        GC.app.transitionViews(GC.app.gameView);
-                    })
-                }
+            text: { text: "Start" },
+            zIndex: this.style.zIndex,
+            opacity: 1,
+            col: 1,
+            row: 3,
+            on: {
+                up: bind(this, function(){
+                    GC.app.transitionViews(GC.app.gameView);
+                })
+            }
         });
 
-        _guideButton = new ButtonView({
+        _guideButton = new BaseButton({
             superview: buttonGrid,
-            image: "resources/images/button.png",
-             text: {
-                 fontFamily: 'tiptoe',
-                 text: "Guide",
-                 verticalAlign: "middle",
-                 horizontalAlign: "center",
-                 padding: [0,0,65,0],
-                 color: "#FFF"
-                },
-                opacity: 1,
-                col: 1,
-                row: 4,
-                on: {
-                    up: bind(this, function(){
-                       // GC.app.transitionViews(GC.app.gameView);
-                    })
-                }
+            text: { text: "Guide" },
+            opacity: 1,
+            col: 1,
+            row: 4,
+            on: {
+                up: bind(this, function(){
+                   _guideView.openView();
+                })
+            }
         });
-
 
         _textPosX = _logoView.style.x;
         _textPosY = _logoView.style.y;
@@ -161,16 +152,6 @@ exports = Class(BaseView, function (supr) {
             .then({y: -20}, 300, animate.easeOut)
             .then(function() {
                 this._runLogoAnimation();
-            }.bind(this));
-    };
-
-    this._runButtonAnimation = function(button, origStyle) {
-        animate(button) 
-            .now({width: origStyle.width*.98, x: origStyle.x + origStyle.width*.02}, 300, animate.easeIn)
-            .then({width: origStyle.width, x: origStyle.x}, 300, animate.linear)
-            .then({width: origStyle.width*.98, x: origStyle.x + origStyle.width*.02}, 300, animate.easeOut)
-            .then(function() {
-                this._runButtonAnimation(button, origStyle);
             }.bind(this));
     };
 });

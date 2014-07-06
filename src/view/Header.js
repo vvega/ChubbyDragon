@@ -33,40 +33,15 @@ exports = Class(ImageScaleView, function(supr) {
             layout: 'box',
             horizontalAlign: 'left',
             verticalAlign: 'top',
-            fontFamily: 'tiptoe',
+            fontFamily: 'bigbottom',
             text: "0",
-            size: this.style.height*.6,
+            size: this.style.height*.35,
             color: "#FFF",
             strokeColor: "#322",
             strokeWidth: this.style.height*.1,
             wrap: true,
-            x: this.style.height/5
-        });
-
-        /*var svBox = new View({
-            superview: this,
             x: this.style.height/5,
-            y: this.style.height/5,
-            width: WIDTH/4,
-            height: HEIGHT/10
+            y: -this.style.height/5
         });
-
-        this.scoreView = new ScoreView({
-            superview: svBox,
-            x:0,
-            y:0,
-            layout: "box",
-            text: "0",
-            characterData: this._nextCharData()
-        });*/
 	};
-
-	this._nextCharData = function() {
-        var d = {};
-        for (var i = 0; i < 10; i++) {
-            d[i] = { image: imageData.ui.scoreFont + i + '.png'};
-        }
-        return d;
-    };
-
 });

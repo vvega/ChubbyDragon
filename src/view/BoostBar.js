@@ -32,7 +32,7 @@ exports = Class(ImageScaleView, function(supr) {
 		BOOST_FILL = this.style.width;
 		BOOST_Y = this.style.height*.95;
 		SPARK_BOOST = imageData.particles.flames[0];
-		this.PERCENT_INTERVAL = 6;
+		this.PERCENT_INTERVAL = 10;
 
 		this.build();
 		this.reset();

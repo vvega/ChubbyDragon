@@ -81,11 +81,13 @@ exports = Class(BaseView, function(supr) {
         this._showUI();
         this.character.activate();
     }
+
     this._stopGame = function() {
         this.gameStarted = false;
         this.speed = GC.app.rootView.BASE_SPEED;
         this._hideUI();
     }
+
     this.constructView = function() {
         supr(this, 'constructView');
         this._startGame();
@@ -135,8 +137,8 @@ exports = Class(BaseView, function(supr) {
         if(this.gameStarted) {
             this.boostBar.step(dt);
             this.cEngine.runTick(dt);
-            _fEngine.runTick(dt);
-            this.character.updateCollisionPoints();
+            this.fEngine.runTick(dt);
+            this.character.updateCollisionPoints(dt);
         } 
     };
 
@@ -151,6 +153,7 @@ exports = Class(BaseView, function(supr) {
                     character: this.character,
                     superview: layer,
                     crumbGen: this.cEngine,
+                    flameGen: this.fEngine,
                     x: x,
                     width: BLOCK_SIZE*.7,
                     height: BLOCK_SIZE*.7,
@@ -205,8 +208,9 @@ exports = Class(BaseView, function(supr) {
             character: this.character
         });
 
-        _fEngine = new FlameEngine({
-            parent: this.character
+        this.fEngine = new FlameEngine({
+            parent: this,
+            character: this.character
         });
 
         //character animation manager

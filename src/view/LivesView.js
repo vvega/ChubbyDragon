@@ -5,6 +5,7 @@ import animate;
 exports = Class(View, function(supr){
 	
 	var ANIM_DURATION = 400;
+	var SCALE_AMOUNT = 12;
 	var MARGIN;
 
 	var _numLives;
@@ -37,6 +38,7 @@ exports = Class(View, function(supr){
 		}
 		//lives will be removed in reverse order
 		_lifeViews.reverse();
+		this._startLivesAnim();
 	};
 
 	this.updateLives = function(currentLives) {
@@ -52,5 +54,27 @@ exports = Class(View, function(supr){
 		for(var idx in _lifeViews) {
 			_lifeViews[idx].style.opacity = 1;
 		}
+		this._startLivesAnim();
+	};
+
+	this._startLivesAnim = function() {
+		for(var index in _lifeViews) {
+			this._runScaleAnim(_lifeViews[index], _lifeViews[index].style);
+		}
+	}
+
+	this._runScaleAnim = function(view, origStyle) {
+		animate(view)
+			.now({
+				width: _lifeViewProps.width + SCALE_AMOUNT,
+				y: origStyle.y + SCALE_AMOUNT/3
+			}, 700, animate.linear)
+			.then({
+				width: _lifeViewProps.width,
+				y: origStyle.y
+			}, 700, animate.linear)
+			.then(bind(this, function() {
+				this._runScaleAnim(view, origStyle);
+			}));
 	};
 });
