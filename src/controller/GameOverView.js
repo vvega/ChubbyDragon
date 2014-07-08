@@ -19,7 +19,7 @@ exports = Class(BaseView, function (supr){
     this.constructView = function(score) {
         supr(this, 'constructView');
         animate(_textView)
-            .now({ y: -HEIGHT/2.5, opacity: 1 }, 500, animate.easeIn)
+            .now({ y: -HEIGHT/1.8, opacity: 1 }, 500, animate.easeIn)
             .then(function() {
                 _replayButton.startButtonAnim();
                 _exitButton.startButtonAnim();
@@ -34,8 +34,12 @@ exports = Class(BaseView, function (supr){
                 }
 
                 animate(_highScoreView)
-                        .now({ y: -HEIGHT/6.3, opacity: 1 }, 300, animate.easeIn)
-        }.bind(this));
+                    .now({ y: -HEIGHT/5, opacity: 1 }, 300, animate.easeIn)
+                    .then(function() {
+                        this._runBounceAnimation(_highScoreView.style);
+                    }.bind(this))
+
+            }.bind(this));
     };
 
     this.resetView = function() {
@@ -58,11 +62,11 @@ exports = Class(BaseView, function (supr){
         _textView = new TextView({
             superview: this,
             layout: 'box',
-            fontFamily: 'tiptoe',
+            fontFamily: 'bigbottom',
             text: "Game Over!",
-            size: HEIGHT/5,
+            size: (GC.app.isTablet) ? HEIGHT/7 : HEIGHT/6,
             strokeColor: "#ffc600",
-            strokeWidth: HEIGHT/18,
+            strokeWidth: (GC.app.isTablet) ? HEIGHT/40 : HEIGHT/18,
             opacity: .4,
             color: "#FFF",
             wrap: true
@@ -71,11 +75,11 @@ exports = Class(BaseView, function (supr){
         _highScoreView = new TextView({
             superview: this,
             layout: 'box',
-            fontFamily: 'tiptoe',
+            fontFamily: 'bigbottom',
             text: "New High Score!",
-            size: HEIGHT/10,
+            size: HEIGHT/15,
             strokeColor: "#FFF",
-            strokeWidth: HEIGHT/30,
+            strokeWidth: (GC.app.isTablet) ? HEIGHT/60 : HEIGHT/30,
             opacity: 0,
             color: "#ffc600",
             wrap: true
@@ -122,5 +126,14 @@ exports = Class(BaseView, function (supr){
 
     this.writeToFile = function(score) {
         dataManager.setData(KEY_HIGH_SCORE, score);
+    };
+
+    this._runBounceAnimation = function(origStyle) {
+        animate(_highScoreView)
+            .now({y: origStyle.y-10}, 500, animate.easeIn)
+            .then({y: origStyle.y}, 500, animate.easeOut)
+            .then(function() {
+                this.style.visible && this._runBounceAnimation(origStyle);
+            }.bind(this));
     };
 });

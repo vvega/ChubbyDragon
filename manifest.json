@@ -1,4 +1,7 @@
-{
+{	
+	"addons" : [
+		"leadbolt"
+	],
 	"appID": "e0fe6d06937542118a4ff8fb90b2d611",
 	"shortName": "ChubbyDragon",
 	"title": "ChubbyDragon",
@@ -22,7 +25,9 @@
 			"48": "resources/icons/android48.png",
 			"72": "resources/icons/android72.png",
 			"96": "resources/icons/android96.png"
-		}
+		},
+		"leadBoltPackage": "com.rxrcwhiajjmnuqszpof",
+		"leadBoltSectionId": "10081395"
 	},
 	"ios": {
 		"bundleID": "",
@@ -34,7 +39,8 @@
 			"114": "resources/icons/ios114.png",
 			"144": "resources/icons/ios144.png",
 			"renderGloss": true
-		}
+		},
+		"leadBoltSectionId": "10081395"
 	},
 	"sdkVersion": "release-0.1.45"
 }

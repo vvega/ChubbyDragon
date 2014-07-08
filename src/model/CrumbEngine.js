@@ -82,8 +82,8 @@ exports = Class(ui.ParticleEngine, function(supr) {
     };
 
     this.emitParticles = function(type, at) {
+        this.updateParticleData(this._character.fireBoostActive);
         this._buildParticles(type, at);
         supr(this, 'emitParticles', [_data]);
-        this.updateParticleData(this._character.fireBoostActive);
 	};
 });

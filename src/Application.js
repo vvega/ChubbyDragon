@@ -4,16 +4,18 @@ import ui.ImageView as ImageView;
 import src.controller.TitleScreen as TitleScreen;
 import src.controller.GameOverView as GameOverView;
 import src.controller.GameView as GameView;
-import src.model.DataManager as DataManager;
-import src.model.ImageManager as ImageManager;
+import src.controller.SoundController as SoundController;
+import src.model.StorageManager as StorageManager;
+import src.model.ResourceManager as ResourceManager;
 import src.view.RootView as RootView;
-//import src.SoundController as SoundController;
+import plugins.leadbolt.leadBolt as leadBolt;
 
 exports = Class(GC.Application, function() {
 
     Z_CURRENT = 2;
     Z_PREV = 1;
     TRANSITION_TIME = 300;
+    LEADBOLT = leadBolt;
 
 	this.initUI = function() {
         this._initDimensions();
@@ -43,7 +45,7 @@ exports = Class(GC.Application, function() {
         });
         
         this.rootView.constructView();
-        //TODO: var sound = SoundController.getSound();
+        this.sound = new SoundController();
     };
 
     this.launchUI = function () {
@@ -90,8 +92,9 @@ exports = Class(GC.Application, function() {
     };
 
     this._obtainData = function() {
-        imageData = ImageManager.getImageData();
-        dataManager = new DataManager();
-        this.highScore = dataManager.getData(KEY_HIGH_SCORE);
+        imageData = ResourceManager.getImageData();
+        soundData = ResourceManager.getSoundData();
+        storageManager = new StorageManager();
+        this.highScore = storageManager.getData(KEY_HIGH_SCORE);
     };
 });

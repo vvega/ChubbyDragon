@@ -1,7 +1,11 @@
-/* 
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
+import AudioManager;
 
-
+exports = Class(AudioManager, function(supr) {
+	this.init = function(opts) {
+		opts = merge(opts, {
+			path : soundData.basePath,
+			files : soundData.files
+		});
+		supr(this, 'init', [opts]);
+	};
+});

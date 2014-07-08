@@ -12,7 +12,7 @@ import src.view.BoostBar as BoostBar;
 import src.view.Header as Header;
 import src.model.CrumbEngine as CrumbEngine;
 import src.model.FlameEngine as FlameEngine;
-import src.model.SpriteManager as SpriteManager;
+import src.model.AnimManager as AnimManager;
 import ui.TextView as TextView;
 import animate;
 
@@ -35,7 +35,7 @@ exports = Class(BaseView, function(supr) {
         GROUND_ELEVATION = HEIGHT - BLOCK_SIZE*2;
         CHARACTER_WIDTH = BLOCK_SIZE*4;
         CHARACTER_HEIGHT = BLOCK_SIZE*2;
-        LIVES = 3;
+        LIVES = 1;
         JUMP_ELEVATION = HEIGHT/7;
 
         supr(this, 'init', [opts]);
@@ -181,10 +181,10 @@ exports = Class(BaseView, function(supr) {
 
         this.boostText = new TextView({
             superview: this,
-            layout: 'box',
-            fontFamily: 'tiptoe',
+            layout: 'linear',
+            fontFamily: 'bigbottom',
             text: "Fire Breath!",
-            size: HEIGHT/6,
+            size: HEIGHT/8,
             strokeColor: '#e99338',
             strokeWidth: HEIGHT/18,
             opacity: 0,
@@ -214,7 +214,7 @@ exports = Class(BaseView, function(supr) {
         });
 
         //character animation manager
-        this.spriteMgr = new SpriteManager({
+        this.spriteMgr = new AnimManager({
             sprite: this.character
         });
 

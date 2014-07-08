@@ -1,6 +1,6 @@
 import ui.SpriteView as SpriteView;
 import ui.TextView as TextView;
-import src.model.SpriteManager as SpriteManager;
+import src.model.AnimManager as AnimManager;
 import math.geom.intersect as intersect;
 import math.geom.Point as Point;
 import math.geom.Rect as Rect;
@@ -43,7 +43,7 @@ exports = Class(SpriteView, function(supr) {
         COLLISION_BOX_HEIGHT = HEIGHT/3;
         SPEED_LIMIT_LOWER = GC.app.rootView.BASE_SPEED + 82;
         SPEED_LIMIT_LOWER = 3 - GC.app.rootView.BASE_SPEED;
-        FIRE_OFFSET_X = WIDTH/2;
+        FIRE_OFFSET_X = WIDTH/1.5;
         LINE_X = opts.x + WIDTH/1.25;
         LINE_Y_OFFSET = HEIGHT*.27;
 
@@ -127,7 +127,7 @@ exports = Class(SpriteView, function(supr) {
             superview: this,
             layout: 'box',
             fontFamily: 'bigbottom',
-            size: HEIGHT/5,
+            size: HEIGHT/6,
             strokeColor: "#FFF",
             strokeWidth: HEIGHT/18,
             opacity: 0,
@@ -206,8 +206,7 @@ exports = Class(SpriteView, function(supr) {
            .now({ y: _parent.style.height/2 }, 200, animate.linear)
            .then({ y: _parent.style.height + (this.style.height)}, 500, animate.linear)
            .then(bind(this, function() {
-                //_parent.fEngine.killAllParticles();
-                //_parent.fEngine.active = false;
+                _parent.fEngine.cancelParticles();
                 _parent.updateLives();
                 if(_parent.lives > 0) {
                     this.updateOpts({
@@ -249,12 +248,12 @@ exports = Class(SpriteView, function(supr) {
     this._showPointMessage = function(value) {
         _scoreText.setText("+"+value);
         _scoreText.updateOpts({ 
-            color: (this.fireBoostActive) ? '#e99338' : '#ffc600',
-            size: (this.fireBoostActive) ? HEIGHT/3 : HEIGHT/4
+            color: (_parent.fEngine.active) ? '#e99338' : '#ffc600',
+            size: (_parent.fEngine.active) ? HEIGHT/3 : HEIGHT/4
         });
         _scoreText.style.visible = true;
         animate(_scoreText)
-            .now({opacity: 1, y: -this.style.height/3}, 400, animate.linear)
+            .now({opacity: 1, y: (GC.app.isTablet) ? -this.style.height/3 : -this.style.height/2}, 400, animate.linear)
             .then({opacity: 0 }, 100, animate.linear)
             .then(function() {
                 _scoreText.style.visible = false;
@@ -277,7 +276,7 @@ exports = Class(SpriteView, function(supr) {
         _parent.boostText.style.visible = true;
         var origY = _parent.boostText.style.y;
         animate(_parent.boostText)
-            .now({ y: -200, opacity: 1 }, 500, animate.easeIn)
+            .now({ y: -_parent.style.height/3, opacity: 1 }, 700, animate.easeIn)
             .then({ opacity: 0 }, 1000, animate.easeOut)
             .then(function() {
                 _parent.boostText.style.scale = 1;

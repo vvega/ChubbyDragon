@@ -90,6 +90,7 @@ exports = Class(ImageView, function(supr) {
 				return;
 			}
 			if(direction === 'down') {
+				GC.app.sound.play('swipe', {loop:false});
 				this.closeView();
 			}
 		}));
@@ -135,6 +136,8 @@ exports = Class(ImageView, function(supr) {
 				.then(function() {
 					_currentView = nextView;
 				});
+
+			GC.app.sound.play('swipe', {loop:false});
 		}
 	};
 });

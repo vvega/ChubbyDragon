@@ -14,7 +14,6 @@ exports = Class(ui.ParticleEngine, function(supr) {
 	this.init = function(opts) {
 		_character = opts.character;
 		supr(this, 'init', [opts]);
-        this._buildParticles();
         this.active = false;
         FLAME_HEIGHT = _character.style.width/4;
         FLAME_WIDTH = FLAME_HEIGHT*.5;
@@ -29,6 +28,11 @@ exports = Class(ui.ParticleEngine, function(supr) {
 		supr(this, 'runTick', [dt]);
 	};
 
+    this.cancelParticles = function() {
+        this.active = false;
+        this.killAllParticles();
+    };
+
     //This function is called in order to keep flame boost collision active until most particles have deceased.
     //Will also clean up all particles once the last particle rendered is gone.
     this._finish = function(dt) {
@@ -38,8 +42,8 @@ exports = Class(ui.ParticleEngine, function(supr) {
                 var data = lastParticle.pData;
                 if(data && (data.elapsed + dt > data.ttl)) {
                     //last active particle is dead
-                    this.active = false;
                     this.killAllParticles();
+                    this.active = false;
                 }
             }
         }
@@ -79,7 +83,7 @@ exports = Class(ui.ParticleEngine, function(supr) {
     };
 
     this.emitParticles = function() {
-        supr(this, 'emitParticles', [_data]);
         this._buildParticles();
+        supr(this, 'emitParticles', [_data]);
 	};
 });

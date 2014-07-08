@@ -6,7 +6,6 @@ import src.view.BaseView as BaseView;
 import src.view.BaseButton as BaseButton;
 import src.controller.GuideView as GuideView;
 import animate;
-//import plugins.facebook.facebook as facebook;
 
 exports = Class(BaseView, function (supr) {
 
@@ -26,17 +25,11 @@ exports = Class(BaseView, function (supr) {
     this.init = function(opts) {
         LOGO_WIDTH = WIDTH*.95;
         LOGO_HEIGHT = HEIGHT*.95;
-        //opts.layout = 'linear';
-        //opts.justifyContent = 'center';
         supr(this, 'init', [opts]);
-    //    console.log(facebook);
-    //    facebook.login();
     };
 
     this.constructView = function() {
         supr(this, 'constructView');
-
-        //_highScoreView.style.visible = true;
 
         animate(_logoView)
             .now({ y: -HEIGHT/50, opacity: 1 }, 700, animate.easeIn)
@@ -45,6 +38,7 @@ exports = Class(BaseView, function (supr) {
                 _startButton.startButtonAnim();
                 _guideButton.startButtonAnim();
         }.bind(this));
+
     };
 
     this.resetView = function() {
@@ -124,6 +118,7 @@ exports = Class(BaseView, function (supr) {
             on: {
                 up: bind(this, function(){
                     GC.app.transitionViews(GC.app.gameView);
+                    //GC.app.sound.play('button', {loop: false});
                 })
             }
         });
@@ -143,6 +138,7 @@ exports = Class(BaseView, function (supr) {
 
         _textPosX = _logoView.style.x;
         _textPosY = _logoView.style.y;
+                LEADBOLT.showInterstitial();
     };
 
     this._runLogoAnimation = function() {
@@ -151,7 +147,7 @@ exports = Class(BaseView, function (supr) {
             .then({y: 5}, 300, animate.linear)
             .then({y: -20}, 300, animate.easeOut)
             .then(function() {
-                this._runLogoAnimation();
+                this.style.visible && this._runLogoAnimation();
             }.bind(this));
     };
 });

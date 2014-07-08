@@ -60,3 +60,22 @@ exports.getImageData = function() {
     };
     return imageData;
 };
+
+exports.getSoundData = function() {
+    var soundData = {
+        basePath: "resources/audio/",
+        files: {
+            button: {
+                volume: 1,
+                loop: false,
+                background: false
+            },
+            swipe: {
+                volume: 1,
+                loop: false,
+                background: false
+            }
+        }
+    }
+    return soundData;
+};

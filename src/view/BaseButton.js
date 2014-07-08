@@ -36,7 +36,7 @@ exports = Class(ButtonView, function(supr){
                 y: origStyle.y
             }, 1000, animate.linear)
             .then(bind(this, function() {
-                this._runScaleAnim(view, origStyle);
+                this.style.visible && this._runScaleAnim(view, origStyle);
             }));
     };
 });
