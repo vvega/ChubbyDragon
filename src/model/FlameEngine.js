@@ -36,17 +36,17 @@ exports = Class(ui.ParticleEngine, function(supr) {
     //This function is called in order to keep flame boost collision active until most particles have deceased.
     //Will also clean up all particles once the last particle rendered is gone.
     this._finish = function(dt) {
-        if(this.active) {
+        if(this.active && this.activeParticles) {
             var lastParticle = this.activeParticles[~~(this.activeParticles.length*.2)];
             if(lastParticle) {
                 var data = lastParticle.pData;
                 if(data && (data.elapsed + dt > data.ttl)) {
                     //last active particle is dead
                     this.killAllParticles();
-                    this.active = false;
                 }
             }
         }
+        this.active = false;
     };
 
 	this._buildParticles = function() {
@@ -54,7 +54,7 @@ exports = Class(ui.ParticleEngine, function(supr) {
         var width;
         var height;
         var pObj;
-        var imageArr;
+        var imageArr =[];
         var wind;
 
         _data = this.obtainParticleArray(NUMB_FLAMES);

@@ -1,5 +1,5 @@
-{	
-	"addons" : [
+{
+	"addons": [
 		"leadbolt"
 	],
 	"appID": "e0fe6d06937542118a4ff8fb90b2d611",
@@ -42,5 +42,5 @@
 		},
 		"leadBoltSectionId": "10081395"
 	},
-	"sdkVersion": "release-0.1.45"
+	"sdkVersion": "release-0.1.46"
 }

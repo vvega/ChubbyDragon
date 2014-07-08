@@ -125,7 +125,7 @@ exports = Class(BaseView, function (supr){
     }
 
     this.writeToFile = function(score) {
-        dataManager.setData(KEY_HIGH_SCORE, score);
+        storageManager.setData(KEY_HIGH_SCORE, score);
     };
 
     this._runBounceAnimation = function(origStyle) {
