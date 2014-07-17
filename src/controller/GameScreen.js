@@ -1,19 +1,18 @@
-import ui.View as View;
-import ui.ImageView as ImageView;
 import src.view.ParallaxView as ParallaxView;
-import src.view.TerrainBlock as TerrainBlock;
-import src.view.ParallaxView as ParallaxView;
-import src.view.ItemBlock as ItemBlock;
+import src.view.game.TerrainBlock as TerrainBlock;
+import src.view.game.ItemBlock as ItemBlock;
+import src.view.game.TerrainLayer as TerrainLayer;
+import src.view.game.ItemLayer as ItemLayer;
+import src.view.game.Character as Character;
+import src.view.ui.BoostBar as BoostBar;
+import src.view.ui.Header as Header;
 import src.view.BaseView as BaseView;
-import src.view.TerrainLayer as TerrainLayer;
-import src.view.ItemLayer as ItemLayer;
-import src.view.Character as Character;
-import src.view.BoostBar as BoostBar;
-import src.view.Header as Header;
 import src.model.CrumbEngine as CrumbEngine;
 import src.model.FlameEngine as FlameEngine;
 import src.model.AnimManager as AnimManager;
 import ui.TextView as TextView;
+import ui.View as View;
+import ui.ImageView as ImageView;
 import animate;
 
 exports = Class(BaseView, function(supr) {
@@ -35,7 +34,7 @@ exports = Class(BaseView, function(supr) {
         GROUND_ELEVATION = HEIGHT - BLOCK_SIZE*2;
         CHARACTER_WIDTH = BLOCK_SIZE*4;
         CHARACTER_HEIGHT = BLOCK_SIZE*2;
-        LIVES = 1;
+        LIVES = 3;
         JUMP_ELEVATION = HEIGHT/7;
 
         supr(this, 'init', [opts]);
@@ -90,6 +89,7 @@ exports = Class(BaseView, function(supr) {
 
     this.constructView = function() {
         supr(this, 'constructView');
+        GC.app.sound.play('game');
         this._startGame();
     };
 

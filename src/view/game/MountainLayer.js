@@ -9,7 +9,7 @@ exports = Class(ParallaxView.Layer, function(supr) {
 
 	this.obtainView = function(ctor, viewOpts, opts) {
 		viewOpts = merge(viewOpts, {
-			image: "resources/images/mountains.png",
+			image: imageData.environment.mountains,
             width: WIDTH,
             height: HEIGHT/1.6,
             y: HEIGHT - HEIGHT/1.6

@@ -25,7 +25,7 @@ exports = Class(ImageScaleView, function(supr) {
 		opts.y = _parent.style.height - FRAME_HEIGHT;
 		opts.x = 0;
 		opts.layout = 'box';
-		opts.image = "resources/images/boost_frame.png";
+		opts.image = imageData.ui.boostBar.frame;
 
 		supr(this, 'init', [opts]);
 
@@ -53,7 +53,7 @@ exports = Class(ImageScaleView, function(supr) {
 			height: FRAME_HEIGHT,
 			scaleMethod: 'tile',
 			columns: this.columns,
-			image: "resources/images/boost_bar.png",
+			image: imageData.ui.boostBar.bar,
 			canHandleEvents: false
 		});
 

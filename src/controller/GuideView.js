@@ -108,7 +108,7 @@ exports = Class(ImageView, function(supr) {
 			}));
 			_guideImageViews[idx].next = null;
 			_guideImageViews[idx].previous = null;
-			//assign doubly-linked imageView retroactively
+
 			if(idx - 1 >= 0) {
 				_guideImageViews[idx].style.x =	this.style.width + _guideImageViews[idx].style.width;
 				_guideImageViews[idx].previous = _guideImageViews[idx-1];

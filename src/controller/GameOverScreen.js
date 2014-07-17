@@ -4,7 +4,7 @@ import ui.ImageView;
 import ui.widget.GridView as GridView;
 import ui.widget.ButtonView as ButtonView;
 import src.view.BaseView as BaseView;
-import src.view.BaseButton as BaseButton;
+import src.view.ui.BaseButton as BaseButton;
 import animate;
 
 exports = Class(BaseView, function (supr){
@@ -40,6 +40,7 @@ exports = Class(BaseView, function (supr){
                     }.bind(this))
 
             }.bind(this));
+        GC.app.sound.play('menu');
     };
 
     this.resetView = function() {

@@ -2,12 +2,12 @@ import device;
 import animate;
 import ui.ImageView as ImageView;
 import src.controller.TitleScreen as TitleScreen;
-import src.controller.GameOverView as GameOverView;
-import src.controller.GameView as GameView;
+import src.controller.GameOverScreen as GameOverScreen;
+import src.controller.GameScreen as GameScreen;
 import src.controller.SoundController as SoundController;
 import src.model.StorageManager as StorageManager;
 import src.model.ResourceManager as ResourceManager;
-import src.view.RootView as RootView;
+import src.view.ui.RootView as RootView;
 import plugins.leadbolt.leadBolt as leadBolt;
 
 exports = Class(GC.Application, function() {
@@ -31,13 +31,13 @@ exports = Class(GC.Application, function() {
             width: WIDTH,
             height: HEIGHT
         });
-        this.gameView = new GameView({
+        this.gameView = new GameScreen({
             superview: this.rootView,
             visible: false,
             width: WIDTH,
             height: HEIGHT
         });
-        this.gameOverView = new GameOverView({
+        this.gameOverView = new GameOverScreen({
             superview: this.rootView,
             visible: false,
             width: WIDTH,
@@ -45,7 +45,9 @@ exports = Class(GC.Application, function() {
         });
         
         this.rootView.constructView();
-        this.sound = new SoundController();
+        this.sound = new SoundController({
+            superview: this.rootView
+        });
     };
 
     this.launchUI = function () {

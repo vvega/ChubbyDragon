@@ -1,31 +1,35 @@
 exports.getImageData = function() {
     var imageData = {
         ui: {
-            header: "resources/images/header.png",
+            logo: "resources/images/ui/logo.png",
+            header: "resources/images/ui/header.png",
             scoreFont: "resources/fonts/scoreboard/",
-            life: "resources/images/life.png",
-            sky: "resources/images/sky.png",
+            life: "resources/images/ui/life.png",
             guideBG: "resources/images/ui/guide/guide_bg.png",
+            boostBar: {
+                frame: "resources/images/ui/boost_frame.png",
+                bar: "resources/images/ui/boost_bar.png"
+            },
             guideImages: [
                 "resources/images/ui/guide/guide_1.png",
                 "resources/images/ui/guide/guide_2.png",
                 "resources/images/ui/guide/guide_3.png"
-            ]
+            ],
+            button: {
+                up: "resources/images/ui/button.png",
+                down: "resources/images/ui/button_selected.png"
+            }
         },
-        sprites: {
-            sheetData: {
-                url: 'resources/images/spritesheet.png',
-                height: 175,
-                width: 250,
-                offsetX: 0,
-                offsetY: 0,
-                startX: 0,
-                startY: 0
-            },
-            hero: {
-                jump: [ [0, 2], [1, 2], [2, 2], [3, 2] ],
-                eat: [ [0, 5], [1, 5], [2, 5], [3, 5], [4, 5] ],
-                run: [ [0, 0], [1, 0], [2, 0], [3, 0], [4, 0], [5, 0] , [0, 1], [1, 1], [3, 0],[2, 1] ]
+        environment: {
+            sky: "resources/images/environment/sky.png",
+            mountains: "resources/images/environment/mountains.png",
+            clouds: [
+                "resources/images/environment/cloud_000.png",
+                "resources/images/environment/cloud_001.png"
+            ],
+            terrain: {
+                grass: "resources/images/environment/terrain_block.png",
+                brambles: "resources/images/environment/terrain_block_brambles.png"
             }
         },
         food: {
@@ -74,6 +78,16 @@ exports.getSoundData = function() {
                 volume: 1,
                 loop: false,
                 background: false
+            },
+            menu : {
+                volume: 1,
+                loop: true,
+                background: true
+            },
+            game: {
+                volume: 1,
+                loop: true,
+                background: true
             }
         }
     }

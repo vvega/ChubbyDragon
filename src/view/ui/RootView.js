@@ -1,15 +1,15 @@
 import ui.ImageView as ImageView;
 import src.view.BaseView as BaseView;
 import src.view.ParallaxView as ParallaxView;
-import src.view.CloudLayer as CloudLayer;
-import src.view.MountainLayer as MountainLayer;
-import src.view.TerrainLayer as TerrainLayer;
-import src.view.TerrainBlock as TerrainBlock;
+import src.view.game.CloudLayer as CloudLayer;
+import src.view.game.MountainLayer as MountainLayer;
+import src.view.game.TerrainLayer as TerrainLayer;
+import src.view.game.TerrainBlock as TerrainBlock;
 
 exports = Class(BaseView, function(supr) {
 	this.init = function(opts) {
 		opts = merge(opts, {
-			image: imageData.ui.sky,
+			image: imageData.environment.sky,
 			x: 0,
 			y: 0,
 			width: WIDTH,
@@ -66,7 +66,7 @@ exports = Class(BaseView, function(supr) {
             populate: function (layer, x) {
                 var v = layer.obtainView(TerrainBlock, {
                       superview: layer,
-                      image: "resources/images/terrain_block.png",
+                      image: imageData.environment.terrain.grass,
                       x: x,
                       y: HEIGHT - BLOCK_SIZE,
                       width: BLOCK_SIZE,

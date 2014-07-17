@@ -10,7 +10,7 @@ exports = Class(ImageView, function(supr) {
     
     this.init = function(opts) {
         opts = merge(opts, {
-             image: "resources/images/terrain_block.png"
+             image: imageData.environment.terrain.grass
         });
         _parent = opts.superview;
         opts._active = false;

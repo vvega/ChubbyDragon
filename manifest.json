@@ -1,6 +1,7 @@
 {
 	"addons": [
-		"leadbolt"
+		"leadbolt",
+		"appflood"
 	],
 	"appID": "e0fe6d06937542118a4ff8fb90b2d611",
 	"shortName": "ChubbyDragon",

@@ -3,7 +3,7 @@ import ui.ImageView;
 import ui.TextView as TextView;
 import ui.ImageScaleView as ImageScaleView;
 import src.view.BaseView as BaseView;
-import src.view.BaseButton as BaseButton;
+import src.view.ui.BaseButton as BaseButton;
 import src.controller.GuideView as GuideView;
 import animate;
 
@@ -39,6 +39,7 @@ exports = Class(BaseView, function (supr) {
                 _guideButton.startButtonAnim();
         }.bind(this));
 
+        GC.app.sound.isPlaying('menu') || GC.app.sound.play('menu');
     };
 
     this.resetView = function() {
@@ -66,7 +67,7 @@ exports = Class(BaseView, function (supr) {
 
         _logoView = new ImageScaleView({
             superview: this,
-            image: "resources/images/logo.png",
+            image: imageData.ui.logo,
             width: LOGO_WIDTH,
             height: LOGO_HEIGHT,
             x: (WIDTH - LOGO_WIDTH)/2,
@@ -118,7 +119,7 @@ exports = Class(BaseView, function (supr) {
             on: {
                 up: bind(this, function(){
                     GC.app.transitionViews(GC.app.gameView);
-                    //GC.app.sound.play('button', {loop: false});
+                    GC.app.sound.play('button', {loop: false});
                 })
             }
         });
@@ -138,7 +139,6 @@ exports = Class(BaseView, function (supr) {
 
         _textPosX = _logoView.style.x;
         _textPosY = _logoView.style.y;
-                LEADBOLT.showInterstitial();
     };
 
     this._runLogoAnimation = function() {

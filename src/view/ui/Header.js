@@ -2,7 +2,7 @@ import ui.View as View;
 import ui.ImageScaleView as ImageScaleView;
 import ui.TextView as TextView;
 import ui.ScoreView as ScoreView;
-import src.view.LivesView as LivesView;
+import src.view.ui.LivesView as LivesView;
 
 exports = Class(ImageScaleView, function(supr) {
 
