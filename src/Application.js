@@ -8,14 +8,14 @@ import src.controller.SoundController as SoundController;
 import src.model.StorageManager as StorageManager;
 import src.model.ResourceManager as ResourceManager;
 import src.view.ui.RootView as RootView;
-import plugins.leadbolt.leadBolt as leadBolt;
+//import plugins.leadbolt.leadBolt as leadBolt;
 
 exports = Class(GC.Application, function() {
 
     Z_CURRENT = 2;
     Z_PREV = 1;
     TRANSITION_TIME = 300;
-    LEADBOLT = leadBolt;
+    //LEADBOLT = leadBolt;
 
 	this.initUI = function() {
         this._initDimensions();
@@ -31,13 +31,13 @@ exports = Class(GC.Application, function() {
             width: WIDTH,
             height: HEIGHT
         });
-        this.gameView = new GameScreen({
+        this.gameScreen = new GameScreen({
             superview: this.rootView,
             visible: false,
             width: WIDTH,
             height: HEIGHT
         });
-        this.gameOverView = new GameOverScreen({
+        this.gameOverScreen = new GameOverScreen({
             superview: this.rootView,
             visible: false,
             width: WIDTH,
@@ -97,6 +97,11 @@ exports = Class(GC.Application, function() {
         imageData = ResourceManager.getImageData();
         soundData = ResourceManager.getSoundData();
         storageManager = new StorageManager();
+        var sfx = storageManager.getData(KEY_SFX);
+        var music = storageManager.getData(KEY_MUSIC);
+        
         this.highScore = storageManager.getData(KEY_HIGH_SCORE);
+        this.sfx = (sfx === 'undefined') ? true : sfx;
+        this.music = (music === 'undefined') ? true : music;
     };
 });

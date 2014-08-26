@@ -1,6 +1,8 @@
 exports = Class(function () {
 
 	KEY_HIGH_SCORE = "high_score";
+	KEY_SFX = "sfx";
+	KEY_MUSIC = "music";
 
 	this.init = function(opts) {
 		this._gameData = {};

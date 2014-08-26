@@ -19,7 +19,7 @@ exports = Class(BaseView, function (supr){
     this.constructView = function(score) {
         supr(this, 'constructView');
         animate(_textView)
-            .now({ y: -HEIGHT/1.8, opacity: 1 }, 500, animate.easeIn)
+            .now({ y: -HEIGHT/2, opacity: 1 }, 500, animate.easeIn)
             .then(function() {
                 _replayButton.startButtonAnim();
                 _exitButton.startButtonAnim();
@@ -34,7 +34,7 @@ exports = Class(BaseView, function (supr){
                 }
 
                 animate(_highScoreView)
-                    .now({ y: -HEIGHT/5, opacity: 1 }, 300, animate.easeIn)
+                    .now({ y: -HEIGHT/6, opacity: 1 }, 300, animate.easeIn)
                     .then(function() {
                         this._runBounceAnimation(_highScoreView.style);
                     }.bind(this))
@@ -103,7 +103,7 @@ exports = Class(BaseView, function (supr){
             row: 3,
             on: {
                up: function () {
-                   GC.app.transitionViews(GC.app.gameView);
+                   GC.app.transitionViews(GC.app.gameScreen);
                 }
               }
         });

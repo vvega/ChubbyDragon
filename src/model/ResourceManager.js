@@ -18,6 +18,16 @@ exports.getImageData = function() {
             button: {
                 up: "resources/images/ui/button.png",
                 down: "resources/images/ui/button_selected.png"
+            },
+            sound : {
+                sfx: {
+                    on: "resources/images/ui/sound.png",
+                    off: "resources/images/ui/sound_off.png"
+                },
+                music: {
+                    on: "resources/images/ui/music.png",
+                    off: "resources/images/ui/music_off.png"
+                }
             }
         },
         environment: {
@@ -69,11 +79,11 @@ exports.getSoundData = function() {
     var soundData = {
         basePath: "resources/audio/",
         files: {
-            button: {
+           /* button: {
                 volume: 1,
                 loop: false,
                 background: false
-            },
+            },*/
             swipe: {
                 volume: 1,
                 loop: false,

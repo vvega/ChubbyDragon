@@ -105,7 +105,7 @@ exports = Class(BaseView, function(supr) {
         this.header.livesView.updateLives(this.lives);
         if(this.lives == 0) {
             this._stopGame();
-            GC.app.transitionViews(GC.app.gameOverView, _score);
+            GC.app.transitionViews(GC.app.gameOverScreen, _score);
         }
     };
 
@@ -233,6 +233,10 @@ exports = Class(BaseView, function(supr) {
             .now({y: HEIGHT - this.boostBar.style.height}, 500, animate.linear);
         animate(this.header)
             .now({y: 0}, 500, animate.linear);
+        animate(GC.app.sound.muteMusic)
+            .now({y: this.header.style.height + this.header.margin}, 500, animate.linear)
+        animate(GC.app.sound.muteSound)
+            .now({y: this.header.style.height + this.header.margin}, 500, animate.linear)
 
         this.itemLayer.style.visible = true;
     };
@@ -249,6 +253,11 @@ exports = Class(BaseView, function(supr) {
             .then(function() {
                 this.boostBar.style.visible = false;
             }.bind(this));
+
+        animate(GC.app.sound.muteMusic)
+            .now({y: 10 }, 500, animate.linear)
+        animate(GC.app.sound.muteSound)
+            .now({y: 10 }, 500, animate.linear)
 
         //this.itemLayer.style.visible = false;
         this.itemLayer.clear();

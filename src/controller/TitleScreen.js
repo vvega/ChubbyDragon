@@ -118,7 +118,7 @@ exports = Class(BaseView, function (supr) {
             row: 3,
             on: {
                 up: bind(this, function(){
-                    GC.app.transitionViews(GC.app.gameView);
+                    GC.app.transitionViews(GC.app.gameScreen);
                     GC.app.sound.play('button', {loop: false});
                 })
             }

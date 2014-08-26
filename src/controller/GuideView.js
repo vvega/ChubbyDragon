@@ -40,7 +40,8 @@ exports = Class(ImageView, function(supr) {
 		_currentView.style.visible = true;
 		_currentView.style.opacity = 1;
 		animate(this)
-			.now({y: 0}, 700, animate.linear)
+			.now({y: -20}, 500, animate.linear)
+			.then({y: 0}, 100, animate.easeIn)
 			.then(bind(this, function() {
         		this._runScaleAnim(this, this.style);
 			}));
@@ -48,7 +49,8 @@ exports = Class(ImageView, function(supr) {
 
 	this.closeView = function() {
 		animate(this)
-			.now({y: ORIG_Y}, 700, animate.linear)
+			.now({y: -20}, 100, animate.easeOut)
+			.then({y: ORIG_Y}, 500, animate.linear)
 			.then(function() {
 				for(idx in _guideImageViews) {
 					_guideImageViews[idx].style.visible = false;
@@ -64,11 +66,13 @@ exports = Class(ImageView, function(supr) {
 		animate(view)
 			.now({
 				width: origStyle.width + SCALE_AMOUNT,
-				y: origStyle.y + SCALE_AMOUNT/3
+				y: origStyle.y + SCALE_AMOUNT/3,
+				x: origStyle.x -SCALE_AMOUNT
 			}, 700, animate.linear)
 			.then({
 				width: origStyle.width,
-				y: origStyle.y
+				y: origStyle.y,
+				x: origStyle.x
 			}, 700, animate.linear)
 			.then(bind(this, function() {
 				this._runScaleAnim(view, origStyle);
@@ -130,13 +134,12 @@ exports = Class(ImageView, function(supr) {
 				});
 
 			nextView.style.visible = true;
-
+			
 			animate(nextView)
 				.now({x: 0, opacity: 1}, TRANSITION_TIME, animate.linear)
 				.then(function() {
 					_currentView = nextView;
 				});
-
 			GC.app.sound.play('swipe', {loop:false});
 		}
 	};

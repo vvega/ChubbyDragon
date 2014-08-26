@@ -19,7 +19,7 @@ exports = Class(ParallaxView.Layer, function(supr) {
 	};
 
 	this._scrollTo = function(x, y) {
-		GC.app.gameView.gameStarted && (this.scrollPos += this._opts.parent.speed/this._opts.parent.MAX_DISTANCE);
+		GC.app.gameScreen.gameStarted && (this.scrollPos += this._opts.parent.speed/this._opts.parent.MAX_DISTANCE);
 		supr(this, '_scrollTo', [this.scrollPos, y]);
 	};
 	

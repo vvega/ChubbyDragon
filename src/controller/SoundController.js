@@ -1,10 +1,12 @@
 import AudioManager;
 import ui.ImageView as ImageView;
 import ui.widget.ButtonView as ButtonView;
+import ui.View as View;
 
 exports = Class(AudioManager, function(supr) {
 	
 	var _rootView;
+	var _header;
 
 	this.init = function(opts) {
 		opts = merge(opts, {
@@ -13,36 +15,72 @@ exports = Class(AudioManager, function(supr) {
 		});
 		_rootView = opts.superview;
 		supr(this, 'init', [opts]);
+		GC.app.sfx || this.setEffectsMuted(true);
+		GC.app.music || this.setMusicMuted(true);
 		this.buildView();
 	};
 
 	this.buildView = function() {
-		/*var muteAll = new ButtonView({
-			backgroundColor: "red",
+
+		this.muteSound = new ButtonView({
+			superview: _rootView,
+			images: {
+				selected: imageData.ui.sound.sfx.off,
+				unselected: imageData.ui.sound.sfx.on
+			},
+			toggleSelected: true,
 			height: 100,
 			width: 100,
-			x: WIDTH - 100,
-			y: 0,
-			zIndex: 10000,
+			x: WIDTH - 110,
+			y: 10,
 			on: {
-				up: function() {
-					this.mute();
-				}.bind(this)
+				selected: bind(this, function() {
+					this.setEffectsMuted(true);
+				}),
+				unselected: bind(this, function() {
+					this.setEffectsMuted(false);
+				})
 			}
 		});
 
-		var muteMusic = new ButtonView({
-			backgroundColor: "blue",
+		this.muteMusic = new ButtonView({
+			superview: _rootView,
+			images: {
+				selected: imageData.ui.sound.music.off,
+				unselected: imageData.ui.sound.music.on
+			},
+			toggleSelected: true,
 			height: 100,
 			width: 100,
 			x: WIDTH - 230,
-			zIndex: 10000,
-			y: 0
+			y: 10,
+			on: {
+				selected: bind(this, function() {
+					this.setMusicMuted(true);
+					GC.app.music = false;
+				}),
+				unselected: bind(this, function() {
+					this.setMusicMuted(false);
+					GC.app.music = true;
+				})
+			}
 		});
 
-		_rootView.addSubview(muteAll);
-		_rootView.addSubview(muteMusic);*/
+		this.muteSound.style.update({ zIndex: Z_CURRENT + 1});
+		this.muteMusic.style.update({ zIndex: Z_CURRENT + 1});
+		GC.app.music || this.muteMusic.setState(ButtonView.states.SELECTED);
+		GC.app.sfx || this.muteSound.setState(ButtonView.states.SELECTED);
 	};
 
-	this.play = function(){};
+	this.setMusicMuted = function(muted) {
+		supr(this, 'setMusicMuted', [muted]);
+		GC.app.music = !muted;
+		storageManager.setData(KEY_MUSIC, GC.app.music);
+	};
+
+	this.setEffectsMuted = function(muted) {
+		supr(this, 'setEffectsMuted', [muted]);
+		GC.app.sfx = !muted;
+		storageManager.setData(KEY_SFX, GC.app.sfx);
+	};
 });

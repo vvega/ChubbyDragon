@@ -96,7 +96,7 @@ exports = Class(SpriteView, function(supr) {
         //Create line from collisionPoints.
         //(From top right of sprite to halfway down in height with some x-cushion)
         var collisionPoints = {
-           startPoint: new Point({
+            startPoint: new Point({
                 x: LINE_X,
                 y: this.elevation
              }),
@@ -129,7 +129,7 @@ exports = Class(SpriteView, function(supr) {
             fontFamily: 'bigbottom',
             size: HEIGHT/6,
             strokeColor: "#FFF",
-            strokeWidth: HEIGHT/18,
+            strokeWidth: HEIGHT/25,
             opacity: 0,
             visible: false,
             x: SPEED_TEXT_DATA.x,
@@ -224,7 +224,7 @@ exports = Class(SpriteView, function(supr) {
         _speedText.style.visible = true;
         if(value > 0) {
             _speedText.updateOpts({ color:'#8cb453' });
-            _speedText.setText('+Speed');
+            _speedText.setText('+speed');
             animate(_speedText)
                 .now({opacity: 1}, 300, animate.linear)
                 .then({opacity: 0, x: -this.style.width/3, visible: false}, 400, animate.easeOut)
@@ -234,9 +234,10 @@ exports = Class(SpriteView, function(supr) {
                 }.bind(this));
         } else {
             _speedText.updateOpts({ color:'#d8632a' });
-            _speedText.setText('-Speed');
+            _speedText.setText('-speed');
+            _speedText.style.x = -this.style.width/10;
             animate(_speedText)
-                .now({opacity: 1, visible: true, x: -this.style.width/10, y: this.style.height/15}, 600, animate.linear)
+                .now({opacity: 1, visible: true, y: 0}, 600, animate.linear)
                 .then({opacity: 0, visible: false}, 300, animate.linear)
                 .then(function() {
                     _speedText.style.visible = false;
