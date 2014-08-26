@@ -1,11 +1,7 @@
 {
-	"addons": [
-		"leadbolt",
-		"appflood"
-	],
 	"appID": "e0fe6d06937542118a4ff8fb90b2d611",
 	"shortName": "ChubbyDragon",
-	"title": "ChubbyDragon",
+	"title": "Chubby Dragon",
 	"studio": {
 		"name": "Example Studio Name",
 		"domain": "studio.example.com",
@@ -17,7 +13,16 @@
 	"description": "",
 	"icon": "resources/icons/icon512.png",
 	"splash": {
-		"autoHide": true
+		"autoHide": true,
+		"music" : "resources/audio/menu.mp3",
+		"universal" : "resources/splash/2048x1536.png",
+		"portrait480": "resources/splash/320x480.png",
+		"portrait960": "resources/splash/640x960.png",
+		"portrait1024": "resources/splash/768x1024.png",
+		"portrait1136": "resources/splash/640x1136.png",
+		"portrait2048": "resources/splash/1536x2048.png",
+		"landscape768" : "resources/splash/1024x768.png",
+		"landscape1536" : "resources/splash/2048x1536.png"
 	},
 	"android": {
 		"versionCode": 1,
@@ -26,9 +31,7 @@
 			"48": "resources/icons/android48.png",
 			"72": "resources/icons/android72.png",
 			"96": "resources/icons/android96.png"
-		},
-		"leadBoltPackage": "com.rxrcwhiajjmnuqszpof",
-		"leadBoltSectionId": "10081395"
+		}
 	},
 	"ios": {
 		"bundleID": "",
@@ -40,8 +43,7 @@
 			"114": "resources/icons/ios114.png",
 			"144": "resources/icons/ios144.png",
 			"renderGloss": true
-		},
-		"leadBoltSectionId": "10081395"
+		}
 	},
 	"sdkVersion": "release-0.1.46"
 }
