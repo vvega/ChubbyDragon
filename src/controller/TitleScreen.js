@@ -119,7 +119,7 @@ exports = Class(BaseView, function (supr) {
             on: {
                 up: bind(this, function(){
                     GC.app.transitionViews(GC.app.gameScreen);
-                    GC.app.sound.play('button', {loop: false});
+                    GC.app.sound.play('startButton', {loop: false});
                 })
             }
         });

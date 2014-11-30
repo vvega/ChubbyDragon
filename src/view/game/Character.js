@@ -27,7 +27,8 @@ exports = Class(SpriteView, function(supr) {
 
     var _parent;
     var _scoreText;
-    var _speedText;
+    var _plusSpeed;
+    var _minusSpeed;
 
     this.init = function(opts) {  
         opts = merge(opts, {
@@ -123,15 +124,30 @@ exports = Class(SpriteView, function(supr) {
             y: SCORE_TEXT_DATA.y
         });
 
-        _speedText = new TextView({
+        _plusSpeed = new TextView({
             superview: this,
             layout: 'box',
             fontFamily: 'bigbottom',
             size: HEIGHT/6,
             strokeColor: "#FFF",
+            color: '#8cb453',
             strokeWidth: HEIGHT/25,
             opacity: 0,
-            visible: false,
+            visible: true,
+            x: SPEED_TEXT_DATA.x,
+            y: SPEED_TEXT_DATA.y
+        });
+
+        _minusSpeed = new TextView({
+            superview: this,
+            layout: 'box',
+            fontFamily: 'bigbottom',
+            size: HEIGHT/6,
+            strokeColor: "#FFF",
+            color: '#d8632a',
+            strokeWidth: HEIGHT/25,
+            opacity: 0,
+            visible: true,
             x: SPEED_TEXT_DATA.x,
             y: SPEED_TEXT_DATA.y
         });
@@ -190,13 +206,18 @@ exports = Class(SpriteView, function(supr) {
         if(value) {
             value = (this.speed > 0) ? value + value*this.speed : value;
             _parent.updateScoreBoard(this.score + value);
-            this._showPointMessage(value);
+            if(_scoreText.style.visible) {
+                this._showPointMessage(value + parseInt(_scoreText.getText()));
+            } else {
+                this._showPointMessage(value);
+            }
         }
     };
 
     //Performs kill animation and resets character position/animation.
     //Also calls the immunity timeout.
     this.kill = function() {
+        GC.app.sound.play('death', {loop: false});
         this.immune = true;
         this.cancelFireBoost();
         this.updateFramerate();
@@ -221,27 +242,29 @@ exports = Class(SpriteView, function(supr) {
     };
 
     this._showSpeedMessage = function(value) {
-        _speedText.style.visible = true;
         if(value > 0) {
-            _speedText.updateOpts({ color:'#8cb453' });
-            _speedText.setText('+speed');
-            animate(_speedText)
+            GC.app.sound.play('plusSpeed', {loop: false});
+            _plusSpeed.style.visible = true;
+            _plusSpeed.style.opacity = 1;
+            animate(_plusSpeed)
                 .now({opacity: 1}, 300, animate.linear)
-                .then({opacity: 0, x: -this.style.width/3, visible: false}, 400, animate.easeOut)
+                .then({opacity: 0, x:500, y: 500}, 400, animate.easeOut)
                 .then(function() {
-                    _speedText.style.visible = false;
-                    this._resetMessages();
+                    _plusSpeed.updateOpts({
+                        x: SPEED_TEXT_DATA.x,
+                        y: SPEED_TEXT_DATA.y
+                    });
                 }.bind(this));
         } else {
-            _speedText.updateOpts({ color:'#d8632a' });
-            _speedText.setText('-speed');
-            _speedText.style.x = -this.style.width/10;
-            animate(_speedText)
-                .now({opacity: 1, visible: true, y: 0}, 600, animate.linear)
-                .then({opacity: 0, visible: false}, 300, animate.linear)
+            _minusSpeed.style.visible = true;
+            animate(_minusSpeed)
+                .now({opacity: 1, y: 0}, 600, animate.linear)
+                .then({opacity: 0}, 300, animate.linear)
                 .then(function() {
-                    _speedText.style.visible = false;
-                    this._resetMessages();
+                    _minusSpeed.updateOpts({
+                        x: SPEED_TEXT_DATA.x,
+                        y: SPEED_TEXT_DATA.y
+                    });
                 }.bind(this));
         }
     };
@@ -254,20 +277,31 @@ exports = Class(SpriteView, function(supr) {
         });
         _scoreText.style.visible = true;
         animate(_scoreText)
-            .now({opacity: 1, y: (GC.app.isTablet) ? -this.style.height/3 : -this.style.height/2}, 400, animate.linear)
-            .then({opacity: 0 }, 100, animate.linear)
+            .now({opacity: 1}, 100, animate.linear)
+            .then({y: (GC.app.isTablet) ? -this.style.height/3 : -this.style.height/2}, 300, animate.linear)
+            .then({opacity: 0 }, 200, animate.linear)
             .then(function() {
-                _scoreText.style.visible = false;
-                this._resetMessages();
+                _scoreText.updateOpts({
+                    visible: false,
+                    x: SCORE_TEXT_DATA.x,
+                    y: SCORE_TEXT_DATA.y
+                });
             }.bind(this));
     };
 
     this._resetMessages = function() {
         _scoreText.updateOpts({
+            visible: false,
             x: SCORE_TEXT_DATA.x,
             y: SCORE_TEXT_DATA.y
         });
-        _speedText.updateOpts({
+        _minusSpeed.updateOpts({
+            visible: false,
+            x: SPEED_TEXT_DATA.x,
+            y: SPEED_TEXT_DATA.y
+        });
+        _plusSpeed.updateOpts({
+            visible: false,
             x: SPEED_TEXT_DATA.x,
             y: SPEED_TEXT_DATA.y
         });

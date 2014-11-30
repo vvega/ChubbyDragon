@@ -79,15 +79,14 @@ exports.getSoundData = function() {
     var soundData = {
         basePath: "resources/audio/",
         files: {
-           /* button: {
-                volume: 1,
-                loop: false,
-                background: false
-            },*/
-            swipe: {
-                volume: 1,
-                loop: false,
-                background: false
+            startButton: {
+                volume: .5
+            },
+            death: {
+                volume: .6
+            },
+            plusSpeed: {
+                volume: .6
             },
             menu : {
                 volume: 1,

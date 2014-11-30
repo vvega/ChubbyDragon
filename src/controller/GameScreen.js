@@ -23,7 +23,6 @@ exports = Class(BaseView, function(supr) {
     var LIVES;
     var JUMP_ELEVATION;
 
-    var _speed;
     var _character;
     var _score;
     var _lives;
@@ -36,12 +35,12 @@ exports = Class(BaseView, function(supr) {
         CHARACTER_HEIGHT = BLOCK_SIZE*2;
         LIVES = 3;
         JUMP_ELEVATION = HEIGHT/7;
+        BASE_MUSIC_SPEED = 1;
 
         supr(this, 'init', [opts]);
 
         this.character = new Character(merge({
             superview: this,
-            name: "hero",
             width: CHARACTER_WIDTH,
             height: CHARACTER_HEIGHT,
             x: 0,
@@ -68,6 +67,12 @@ exports = Class(BaseView, function(supr) {
 
     this.adjustSpeed = function(value) {
         this.speed = GC.app.rootView.BASE_SPEED + value;
+
+        var pbr = (this.speed > GC.app.rootView.BASE_SPEED + 32) ? BASE_MUSIC_SPEED + value/(this.speed*1.2) : BASE_MUSIC_SPEED + value/(this.speed*1.7);
+        
+        GC.app.sound.setPlaybackRate('game', pbr);
+        GC.app.sound.setPlaybackRate('plusSpeed', pbr);
+        GC.app.sound.setPlaybackRate('death', pbr);
     };
 
     this.updateScoreBoard = function(value) {
@@ -89,6 +94,7 @@ exports = Class(BaseView, function(supr) {
 
     this.constructView = function() {
         supr(this, 'constructView');
+        GC.app.sound.setPlaybackRate('game', 1);
         GC.app.sound.play('game');
         this._startGame();
     };

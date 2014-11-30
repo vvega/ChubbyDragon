@@ -27,7 +27,7 @@ exports = Class(BaseView, function (supr){
                 //insert high score view
                 if(score > GC.app.highScore) {
                     GC.app.highScore = score;
-                    _highScoreView.setText("New High Score!: "+score);
+                    _highScoreView.setText("New High Score! "+score);
                     this.writeToFile(score);
                 } else {
                     _highScoreView.setText("Your score: "+score);
@@ -103,7 +103,8 @@ exports = Class(BaseView, function (supr){
             row: 3,
             on: {
                up: function () {
-                   GC.app.transitionViews(GC.app.gameScreen);
+                    GC.app.sound.play('startButton', {loop: false});
+                    GC.app.transitionViews(GC.app.gameScreen);
                 }
               }
         });
