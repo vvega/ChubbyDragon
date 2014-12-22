@@ -9,6 +9,8 @@ exports = new Class(function(){
 	};
 
     this.runFullJump = function(cb) {
+        GC.app.sound.play('jump');
+
         var jumpAnim = (_sprite.fireBoostActive) ? 'boostJump' : 'jump';
         _sprite.isPaused && _sprite.resume();
         _sprite.setFramerate(25);
@@ -21,6 +23,9 @@ exports = new Class(function(){
     }
 
     this.runHalfJump = function() {
+        GC.app.sound.play('hop');
+        GC.app.sound.stop('running');
+
         var jumpAnim = (_sprite.fireBoostActive) ? 'boostJump' : 'jump';
         _sprite.isPlaying && _sprite.stopAnimation();
         _sprite.setFramerate(25);
@@ -29,6 +34,9 @@ exports = new Class(function(){
     };
 
     this.runEatAnim = function() {
+        var soundIdx = Math.ceil(Math.random()*4);
+        GC.app.sound.play('eat_'+soundIdx, {loop: false});
+
         _sprite.isPlaying && _sprite.stopAnimation();
         _sprite.setFramerate(15);
         _sprite.startAnimation('eat', {loop: false, callback: bind(this, function() {
@@ -39,12 +47,17 @@ exports = new Class(function(){
     };
 
     this.killChar = function() {
+        GC.app.sound.play('death');
+        GC.app.sound.stop('running');
+
         _sprite.isPlaying && _sprite.stopAnimation();
         _sprite.startAnimation('die', {loop: false});
         _sprite.pause();
     };
 
     this.resumeRun = function() {
+        GC.app.sound.isPlaying('running') || GC.app.sound.play('running', {loop: true});
+
         _sprite.resume();
         _sprite.updateFramerate();
         _sprite.fireBoostActive && _sprite.startAnimation('boostRun', {loop: true});
@@ -68,11 +81,15 @@ exports = new Class(function(){
     };
 
     this.setBoostRun = function() {
+        GC.app.sound.play('fire');
+
         _sprite.jumpActive && this.runHalfJump();
     	_sprite.startAnimation('boostRun', {loop: true});
     };
 
     this.cancelBoost = function() {
+        GC.app.sound.stop('fire');
+
         _sprite.jumpActive && this.runHalfJump();
         _sprite.jumpActive || _sprite.resetAnimation();
     };

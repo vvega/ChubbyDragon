@@ -86,21 +86,12 @@ exports = Class(BaseView, function (supr){
             wrap: true
         });
 
-        var buttonGrid = new GridView({
-            superview: this,
-            width: this.style.width,
-            height: this.style.height,
-            verticalMargin: 10,
-            cols: 3,
-            rows: 6
-        });
-
         _replayButton = new BaseButton({
-            superview: buttonGrid,
+            superview: this,
             text: { text: "Replay" },
             opacity: 1,
-            col: 1,
-            row: 3,
+            x: WIDTH/2 - BUTTON_WIDTH/2,
+            y: HEIGHT/2,
             on: {
                up: function () {
                     GC.app.sound.play('startButton', {loop: false});
@@ -110,11 +101,11 @@ exports = Class(BaseView, function (supr){
         });
 
         _exitButton = new BaseButton({
-            superview: buttonGrid,
+            superview: this,
             text: { text: "Menu" },
             opacity: 1,
-            col: 1,
-            row: 4,
+            x: WIDTH/2 - BUTTON_WIDTH/2,
+            y: HEIGHT/2 + BUTTON_HEIGHT + 25,
             on: {
                up: function () {
                  GC.app.transitionViews(GC.app.titleScreen);

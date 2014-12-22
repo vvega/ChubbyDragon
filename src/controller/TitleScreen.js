@@ -35,11 +35,9 @@ exports = Class(BaseView, function (supr) {
             .now({ y: -HEIGHT/50, opacity: 1 }, 700, animate.easeIn)
             .then(function() {
                 this._runLogoAnimation();
-                _startButton.startButtonAnim();
-                _guideButton.startButtonAnim();
+                //_startButton.startButtonAnim();
+                //_guideButton.startButtonAnim();
         }.bind(this));
-
-        GC.app.sound.isPlaying('menu') || GC.app.sound.play('menu');
     };
 
     this.resetView = function() {
@@ -100,22 +98,12 @@ exports = Class(BaseView, function (supr) {
             wrap: true
         });
 
-        var buttonGrid = new GridView({
-            superview: this,
-            width: this.style.width,
-            height: this.style.height,
-            verticalMargin: 10,
-            cols: 3,
-            rows: 6
-        });
-
         _startButton = new BaseButton({
-            superview: buttonGrid,
+            superview: this,
             text: { text: "Start" },
-            zIndex: this.style.zIndex,
             opacity: 1,
-            col: 1,
-            row: 3,
+            x: WIDTH/2 - BUTTON_WIDTH/2,
+            y: HEIGHT/2,
             on: {
                 up: bind(this, function(){
                     GC.app.transitionViews(GC.app.gameScreen);
@@ -125,11 +113,11 @@ exports = Class(BaseView, function (supr) {
         });
 
         _guideButton = new BaseButton({
-            superview: buttonGrid,
+            superview: this,
             text: { text: "Guide" },
             opacity: 1,
-            col: 1,
-            row: 4,
+            x: WIDTH/2 - BUTTON_WIDTH/2,
+            y: HEIGHT/2 + BUTTON_HEIGHT + 25,
             on: {
                 up: bind(this, function(){
                    _guideView.openView();
@@ -139,6 +127,7 @@ exports = Class(BaseView, function (supr) {
 
         _textPosX = _logoView.style.x;
         _textPosY = _logoView.style.y;
+        GC.app.sound.isPlaying('menu') || GC.app.sound.play('menu');
     };
 
     this._runLogoAnimation = function() {
@@ -150,4 +139,5 @@ exports = Class(BaseView, function (supr) {
                 this.style.visible && this._runLogoAnimation();
             }.bind(this));
     };
+
 });

@@ -3,7 +3,7 @@ import animate;
 
 exports = Class(ButtonView, function(supr){
 
-	var SCALE_AMOUNT = 22;
+	var SCALE_AMOUNT = 5;
 
 	this.init = function(opts) {
 
@@ -12,6 +12,8 @@ exports = Class(ButtonView, function(supr){
 				up: imageData.ui.button.up,
 				down: imageData.ui.button.down
 			},
+			width: BUTTON_WIDTH,
+			height: BUTTON_HEIGHT,
 			text: merge(opts.text, {
 				fontFamily: 'tiptoe',
 				verticalAlign: "middle",
@@ -26,14 +28,14 @@ exports = Class(ButtonView, function(supr){
 	};
 
 	this.startButtonAnim = function() {
-		this._runScaleAnim(this, this.style);
+		//this._runScaleAnim(this, this.style);
 	};
 
 	this._runScaleAnim = function(view, origStyle) {
         animate(view)
             .now({
                 width: origStyle.width + SCALE_AMOUNT,
-                x: origStyle.x - SCALE_AMOUNT/3
+                x: origStyle.x + SCALE_AMOUNT
             }, 1000, animate.linear)
             .then({
                 width: origStyle.width,

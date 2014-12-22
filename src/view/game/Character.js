@@ -217,7 +217,6 @@ exports = Class(SpriteView, function(supr) {
     //Performs kill animation and resets character position/animation.
     //Also calls the immunity timeout.
     this.kill = function() {
-        GC.app.sound.play('death', {loop: false});
         this.immune = true;
         this.cancelFireBoost();
         this.updateFramerate();
@@ -237,13 +236,13 @@ exports = Class(SpriteView, function(supr) {
                     });
                     this.resume();
                     this.initImmunityTimeout();
+                    GC.app.sound.play('running', {loop: true});
                 }
         }));  
     };
 
     this._showSpeedMessage = function(value) {
         if(value > 0) {
-            GC.app.sound.play('plusSpeed', {loop: false});
             _plusSpeed.style.visible = true;
             _plusSpeed.style.opacity = 1;
             animate(_plusSpeed)

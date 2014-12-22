@@ -82,10 +82,37 @@ exports.getSoundData = function() {
             startButton: {
                 volume: .5
             },
+            eat_1: {
+                volume: .7
+            },
+            eat_2: {
+                volume: .7
+            },
+            eat_3: {
+                volume: .7
+            },
+            eat_4: {
+                volume: .7
+            },
+            fire: {
+                volume: .7
+            },
+            running: {
+                volume: .4
+            },
+            hop: {
+                volume: .6
+            },
+            jump: {
+                volume: .6
+            },
             death: {
                 volume: .6
             },
             plusSpeed: {
+                volume: .6
+            },
+            minusSpeed: {
                 volume: .6
             },
             menu : {

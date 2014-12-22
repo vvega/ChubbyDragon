@@ -48,6 +48,10 @@ exports = Class(GC.Application, function() {
         this.sound = new SoundController({
             superview: this.rootView
         });
+        device.setBackButtonHandler(function() {
+            GC.app.engine.stopLoop();
+            return false;
+        });
     };
 
     this.launchUI = function () {
@@ -80,14 +84,24 @@ exports = Class(GC.Application, function() {
         }
     };
 
+    this.onPause = function() {
+        //GC.app.sound.muteAll(true);
+    };
+
+    this.onPause = function() {
+        //GC.app.sound.muteAll(false);
+    };
+
     //initialize dimensions based on device dimensions. Check for iPad and large ~4:3 WxH ratios.
     this._initDimensions = function() {
-        var deviceDimensions = device.getDimensions(true);
+        var deviceDimensions = { width: device.width, height: device.height };
         var boundsWidth = 576;
         var boundsHeight = 1024;
         WIDTH = boundsWidth;
         WIDTH = deviceDimensions.width * (boundsHeight / deviceDimensions.height);
         HEIGHT = boundsHeight;
+        BUTTON_WIDTH = WIDTH/3;
+        BUTTON_HEIGHT = HEIGHT/6;
         SCALE = deviceDimensions.height / HEIGHT;
         this.isTablet = (deviceDimensions.height/deviceDimensions.width >= 3/4);
         BLOCK_SIZE = (this.isTablet) ? HEIGHT/6 : HEIGHT/4.9;

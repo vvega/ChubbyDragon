@@ -45,14 +45,14 @@ exports = Class(ui.ParticleEngine, function(supr) {
 
         for(var i = 0; i < _numCrumbs; i++) {
             pObj = _data[i];
-            pObj.r = CRUMB_R*_random();
+            pObj.r = CRUMB_R;
             pObj.width = width;
             pObj.height = height;
             pObj.dr = _random()*Math.PI;
             pObj.dheight = -height;
             pObj.dwidth = -width;
-            pObj.ddx = _random()*30;
-            pObj.ddy = _random()*30;
+            pObj.ddx = _random()*50;
+            pObj.ddy = _random()*50;
         }
     };
 
@@ -67,14 +67,14 @@ exports = Class(ui.ParticleEngine, function(supr) {
         for(var i = 0; i < _numCrumbs; i++) {
             ttl = (type === 'burnt') 
                 ? _random()* 500 + 1800 
-                : _random() * 1000 + 1800;
+                : _random() * 500 + 1800;
             deltaY = (type === 'burnt') 
                 ? -_random()*200 + _random()*200
-                : _random()*(this._character.getParent().style.height*0.75 + 200);
+                : _random()*(this._character.getParent().style.height*2 + 400);
             pObj = _data[i];
             pObj.dy = deltaY;
             pObj.image = imageData.food.base_path + type + '/crumbs/crumb_' + ~~(_random() * imageData.food.num_crumbs) + '.png';
-            pObj.x = at.x + this._character.style.width/10;
+            pObj.x = at.x + this._character.style.width/9;
             pObj.y = at.y + 40;
             pObj.dx = -_random()*300 - wind;
             pObj.ttl = ttl;
