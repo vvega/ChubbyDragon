@@ -37,6 +37,10 @@
     "portrait960": "resources/splash/640x960.png",
     "universal": "resources/splash/2048x1536.png"
   },
+  "ttf": [
+    "resources/fonts/tiptoe.ttf",
+    "resources/fonts/bigbottom.ttf"
+  ],
   "studio": {
     "domain": "saucygames.com",
     "name": "Saucy Games",
@@ -44,10 +48,6 @@
   },
   "supportedOrientations": [
     "landscape"
-  ],
-  "ttf": [
-        "resources/fonts/tiptoe.ttf",
-        "resources/fonts/bigbottom.ttf"
   ],
   "title": "Chubby Dragon"
 }
