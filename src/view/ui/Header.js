@@ -30,6 +30,8 @@ exports = Class(ImageScaleView, function(supr) {
 
         this.scoreText = new TextView({
             superview: this,
+            width: this.style.width,
+            height: this.style.height*.8,
             layout: 'box',
             horizontalAlign: 'left',
             verticalAlign: 'top',

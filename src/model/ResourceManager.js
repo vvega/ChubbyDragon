@@ -98,7 +98,7 @@ exports.getSoundData = function() {
                 volume: .7
             },
             running: {
-                volume: .4
+                volume: .2
             },
             hop: {
                 volume: .6

@@ -8,14 +8,14 @@ import src.controller.SoundController as SoundController;
 import src.model.StorageManager as StorageManager;
 import src.model.ResourceManager as ResourceManager;
 import src.view.ui.RootView as RootView;
-//import plugins.leadbolt.leadBolt as leadBolt;
+import amplitude;
 
 exports = Class(GC.Application, function() {
 
     Z_CURRENT = 2;
     Z_PREV = 1;
     TRANSITION_TIME = 300;
-    //LEADBOLT = leadBolt;
+    AMP = amplitude;
 
 	this.initUI = function() {
         this._initDimensions();
@@ -56,6 +56,7 @@ exports = Class(GC.Application, function() {
 
     this.launchUI = function () {
         //go to the title screen
+        GC.app.sound.play('menu');
         this.transitionViews(this.titleScreen);
     };
 

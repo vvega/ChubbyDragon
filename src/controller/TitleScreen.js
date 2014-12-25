@@ -127,7 +127,6 @@ exports = Class(BaseView, function (supr) {
 
         _textPosX = _logoView.style.x;
         _textPosY = _logoView.style.y;
-        GC.app.sound.isPlaying('menu') || GC.app.sound.play('menu');
     };
 
     this._runLogoAnimation = function() {

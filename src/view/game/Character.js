@@ -57,16 +57,16 @@ exports = Class(SpriteView, function(supr) {
         supr(this, 'init', [opts]);
 
         SCORE_TEXT_DATA = {
-            x: this.getPosition().x,
-            y: this.style.y - this.style.height/4
+            x: this.getPosition().x + this.style.width*.85,
+            y: this.style.y + this.style.height*.8
         };
 
         this.ORIG_X = 0;
         this.ORIG_Y = _parent.style.height + this.style.height;
 
         SPEED_TEXT_DATA = {
-            x: -this.style.width/15,
-            y: -this.style.height/3
+            x: this.style.width/5,
+            y: 0
         };
 
         this.build(opts);
@@ -113,6 +113,8 @@ exports = Class(SpriteView, function(supr) {
         _scoreText = new TextView({
             superview: _parent,
             layout: 'box',
+            width: 400,
+            height: 200,
             fontFamily: 'bigbottom',
             size: HEIGHT/4,
             color: "#ffc600",
@@ -126,28 +128,33 @@ exports = Class(SpriteView, function(supr) {
 
         _plusSpeed = new TextView({
             superview: this,
+            text: "+speed",
             layout: 'box',
             fontFamily: 'bigbottom',
             size: HEIGHT/6,
+            width: 400,
+            height: 200,
             strokeColor: "#FFF",
             color: '#8cb453',
             strokeWidth: HEIGHT/25,
             opacity: 0,
-            visible: true,
             x: SPEED_TEXT_DATA.x,
             y: SPEED_TEXT_DATA.y
         });
 
         _minusSpeed = new TextView({
             superview: this,
+            text: "-speed",
             layout: 'box',
             fontFamily: 'bigbottom',
             size: HEIGHT/6,
+            width: 400,
+            height: 200,
             strokeColor: "#FFF",
             color: '#d8632a',
             strokeWidth: HEIGHT/25,
             opacity: 0,
-            visible: true,
+            visible: false,
             x: SPEED_TEXT_DATA.x,
             y: SPEED_TEXT_DATA.y
         });
@@ -244,10 +251,9 @@ exports = Class(SpriteView, function(supr) {
     this._showSpeedMessage = function(value) {
         if(value > 0) {
             _plusSpeed.style.visible = true;
-            _plusSpeed.style.opacity = 1;
             animate(_plusSpeed)
                 .now({opacity: 1}, 300, animate.linear)
-                .then({opacity: 0, x:500, y: 500}, 400, animate.easeOut)
+                .then({opacity: 0, x: -this.style.height/10}, 400, animate.easeOut)
                 .then(function() {
                     _plusSpeed.updateOpts({
                         x: SPEED_TEXT_DATA.x,
@@ -257,8 +263,8 @@ exports = Class(SpriteView, function(supr) {
         } else {
             _minusSpeed.style.visible = true;
             animate(_minusSpeed)
-                .now({opacity: 1, y: 0}, 600, animate.linear)
-                .then({opacity: 0}, 300, animate.linear)
+                .now({opacity: 1}, 300, animate.linear)
+                .then({opacity: 0, y: this.style.height/4}, 400, animate.linear)
                 .then(function() {
                     _minusSpeed.updateOpts({
                         x: SPEED_TEXT_DATA.x,
@@ -277,8 +283,8 @@ exports = Class(SpriteView, function(supr) {
         _scoreText.style.visible = true;
         animate(_scoreText)
             .now({opacity: 1}, 100, animate.linear)
-            .then({y: (GC.app.isTablet) ? -this.style.height/3 : -this.style.height/2}, 300, animate.linear)
-            .then({opacity: 0 }, 200, animate.linear)
+            .then({y: HEIGHT/2.5}, 250, animate.linear)
+            .then({opacity: 0 }, 400, animate.linear)
             .then(function() {
                 _scoreText.updateOpts({
                     visible: false,
@@ -308,15 +314,21 @@ exports = Class(SpriteView, function(supr) {
 
     this._showFireBreathText = function() {
         _parent.boostText.style.visible = true;
-        var origY = _parent.boostText.style.y;
+        var scale = 1.2;
+        var orig = {
+            y: _parent.boostText.style.y,
+            x: _parent.boostText.style.x
+        };
         animate(_parent.boostText)
-            .now({ y: -_parent.style.height/3, opacity: 1 }, 700, animate.easeIn)
+            .now({ y: HEIGHT/4, opacity: 1 }, 500, animate.easeIn)
+            .then({ scale: scale, y: _parent.boostText.style.y*scale - _parent.boostText.style.y, x: _parent.boostText.style.x*scale - _parent.boostText.style.x  }, 600, animate.easeInOut)
             .then({ opacity: 0 }, 1000, animate.easeOut)
             .then(function() {
                 _parent.boostText.style.scale = 1;
                 _parent.boostText.style.opacity = 0;
                 _parent.boostText.style.visible = false;
-                _parent.boostText.style.y = origY;
+                _parent.boostText.style.y = orig.y;
+                _parent.boostText.style.x = orig.x;
             });
     };
 

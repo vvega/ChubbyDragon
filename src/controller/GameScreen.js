@@ -97,7 +97,7 @@ exports = Class(BaseView, function(supr) {
         this.gameStarted = true;
         this._showUI();
         this.character.activate();
-        GC.app.sound.isPlaying('game') || GC.app.sound.play('game');
+        GC.app.sound.play('game');
     }
 
     this._stopGame = function() {
@@ -202,7 +202,9 @@ exports = Class(BaseView, function(supr) {
             superview: this,
             layout: 'linear',
             fontFamily: 'bigbottom',
-            text: "Fire Breath!",
+            text: "Flame Boost!",
+            width: WIDTH*.8,
+            height: HEIGHT/8,
             size: HEIGHT/8,
             strokeColor: '#e99338',
             strokeWidth: HEIGHT/18,
@@ -210,6 +212,9 @@ exports = Class(BaseView, function(supr) {
             color: "#FFF",
             wrap: true
         });
+
+        this.boostText.style.x = WIDTH/2 - this.boostText.style.width/2;
+        this.boostText.style.y = HEIGHT/2;
 
         this.boostBar = new BoostBar({
             superview: this,
