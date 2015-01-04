@@ -9,6 +9,18 @@ import src.model.StorageManager as StorageManager;
 import src.model.ResourceManager as ResourceManager;
 import src.view.ui.RootView as RootView;
 import amplitude;
+import leadbolt;
+import facebook;
+
+facebook.onReady.run(function () {
+    facebook.init({
+        appId           : CONFIG.modules.facebook.facebookAppID,
+        displayName     : CONFIG.modules.facebook.facebookDisplayName,
+        status          : true,
+        xfbml           : true,
+        version         : 'v2.2'
+    });
+});
 
 exports = Class(GC.Application, function() {
 
@@ -16,6 +28,8 @@ exports = Class(GC.Application, function() {
     Z_PREV = 1;
     TRANSITION_TIME = 300;
     AMP = amplitude;
+    LB = leadbolt;
+    FB = facebook;
 
 	this.initUI = function() {
         this._initDimensions();
@@ -52,6 +66,7 @@ exports = Class(GC.Application, function() {
             GC.app.engine.stopLoop();
             return false;
         });
+        LB.cacheInterstitial();        
     };
 
     this.launchUI = function () {
@@ -83,14 +98,6 @@ exports = Class(GC.Application, function() {
             }, TRANSITION_TIME);
             this.activeView = nextView;
         }
-    };
-
-    this.onPause = function() {
-        //GC.app.sound.muteAll(true);
-    };
-
-    this.onPause = function() {
-        //GC.app.sound.muteAll(false);
     };
 
     //initialize dimensions based on device dimensions. Check for iPad and large ~4:3 WxH ratios.

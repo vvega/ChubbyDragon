@@ -1,22 +1,53 @@
 {
-  "appID": "e0fe6d06937542118a4ff8fb90b2d611",
+  "addons": {
+    "leadbolt" :{},
+    "facebook" : {
+      "facebookAppID": "756089061145898",
+      "facebookDisplayName": "Chubby Dragon"
+    }
+  },
+  "android": {
+    "ampKey": "0dcf8e3ad7cde066f50f62b92b665753",
+    "ampKeyStaging": "0dcf8e3ad7cde066f50f62b92b665753",
+    "appFireworksKey": "nmVRLRkhTpEh3rSBhxO7lYbCFIRU9XNa",
+    "icons": {
+      "36": "resources/icons/android36.png",
+      "48": "resources/icons/android48.png",
+      "72": "resources/icons/android72.png",
+      "96": "resources/icons/android96.png"
+    },
+    "leadBoltPackage": "com.bfqkczljbrotgcvpfh",
+    "leadBoltSectionId": "682322649",
+    "versionCode": 2
+  },
+  "appID": "0b415fceb281434ca9fdac40d5433169",
   "dependencies": {
     "devkit-amplitude": "https://github.com/gameclosure/amplitude#v2.0.1",
-    "devkit-core": "https://github.com/gameclosure/devkit-core#v2.0.13"
+    "devkit-core": "https://github.com/gameclosure/devkit-core#v2.0.16",
+    "devkit-facebook": "https://github.com/gameclosure/facebook#v2.0.0",
+    "devkit-leadbolt": "https://github.com/vvega/leadbolt#v0.0.1"
   },
   "description": "",
   "icon": "resources/icons/icon512.png",
-   "sdkVersion": "release-0.1.46",
+  "ios": {
+    "icons": {
+      "114": "resources/icons/ios114.png",
+      "144": "resources/icons/ios144.png",
+      "57": "resources/icons/ios57.png",
+      "72": "resources/icons/ios72.png",
+      "renderGloss": false
+    }
+  },
+  "sdkVersion": "release-0.1.46",
   "shortName": "ChubbyDragon",
   "splash": {
     "autoHide": true,
-    "music": "resources/audio/menu.mp3",
     "landscape1536": "resources/splash/2048x1536.png",
-    "landscape768": "resources/splash/1024x768.png",
     "landscape640": "resources/splash/640x1136.png",
+    "landscape768": "resources/splash/1024x768.png",
+    "music": "resources/audio/menu.mp3",
     "portrait1024": "resources/splash/768x1024.png",
     "portrait1136": "resources/splash/640x1136.png",
-    //galaxy s3 opts for portrait2048 splash screen (whhyyyyy)
     "portrait2048": "resources/splash/640x1136.png",
     "portrait480": "resources/splash/320x480.png",
     "portrait960": "resources/splash/640x960.png",
@@ -34,25 +65,5 @@
   "ttf": [
     "resources/fonts/tiptoe.ttf",
     "resources/fonts/bigbottom.ttf"
-  ],
-  "android": {
-    "icons": {
-      "36": "resources/icons/android36.png",
-      "48": "resources/icons/android48.png",
-      "72": "resources/icons/android72.png",
-      "96": "resources/icons/android96.png"
-    },
-    "ampKey": "0dcf8e3ad7cde066f50f62b92b665753",
-    "ampKeyStaging": "0dcf8e3ad7cde066f50f62b92b665753",
-    "versionCode": 2
-  },
-  "ios": {
-    "icons": {
-      "114": "resources/icons/ios114.png",
-      "144": "resources/icons/ios144.png",
-      "57": "resources/icons/ios57.png",
-      "72": "resources/icons/ios72.png",
-      "renderGloss": false
-    }
-  }
+  ]
 }

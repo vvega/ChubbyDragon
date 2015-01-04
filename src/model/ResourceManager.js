@@ -5,6 +5,7 @@ exports.getImageData = function() {
             header: "resources/images/ui/header.png",
             scoreFont: "resources/fonts/scoreboard/",
             life: "resources/images/ui/life.png",
+            fb: "resources/images/ui/fb.png",
             guideBG: "resources/images/ui/guide/guide_bg.png",
             boostBar: {
                 frame: "resources/images/ui/boost_frame.png",

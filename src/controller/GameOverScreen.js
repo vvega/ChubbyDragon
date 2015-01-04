@@ -1,6 +1,6 @@
 import ui.View as View;
 import ui.TextView as TextView;
-import ui.ImageView;
+import ui.ImageView as ImageView;
 import ui.widget.GridView as GridView;
 import ui.widget.ButtonView as ButtonView;
 import src.view.BaseView as BaseView;
@@ -15,17 +15,24 @@ exports = Class(BaseView, function (supr){
     var _highScoreView;
     var _replayButton;
     var _exitButton;
+    var _shareButton;
+    var _fbIcon;
+    var _score;
 
     this.constructView = function(score) {
         supr(this, 'constructView');
 
         var height = (GC.app.isTablet) ? HEIGHT/7 : HEIGHT/6;
-
+        _score = score;
+        
         animate(_textView)
             .now({ y: -HEIGHT/9, opacity: 1 }, 500, animate.easeIn)
             .then(function() {
                 _replayButton.startButtonAnim();
                 _exitButton.startButtonAnim();
+
+                LB.showInterstitial();
+                LB.cacheInterstitial();
 
                 //insert high score view
                 if(score > GC.app.highScore) {
@@ -36,6 +43,10 @@ exports = Class(BaseView, function (supr){
                     _highScoreView.setText("Your score: "+score);
                 }
 
+                AMP.setUserProperties({
+                    "highestScore": GC.app.highScore
+                });
+
                 animate(_highScoreView)
                     .now({ y: HEIGHT/2 - height*1.3, opacity: 1 }, 300, animate.easeIn)
                     .then(function() {
@@ -45,9 +56,7 @@ exports = Class(BaseView, function (supr){
             }.bind(this));
 
         GC.app.sound.play('menu');
-        AMP.setUserProperties({
-            "score": score
-        });
+        console.log(_highScoreView.style.width);
     };
 
     this.resetView = function() {
@@ -86,6 +95,7 @@ exports = Class(BaseView, function (supr){
             layout: 'box',
             fontFamily: 'bigbottom',
             text: "New High Score!",
+            zIndex: this.style.zIndex,
             height: HEIGHT/15,
             width: WIDTH*.8,
             size: HEIGHT/15,
@@ -99,8 +109,8 @@ exports = Class(BaseView, function (supr){
             superview: this,
             text: { text: "Replay" },
             opacity: 1,
-            x: WIDTH/2 - BUTTON_WIDTH/2,
-            y: HEIGHT/2,
+            x: WIDTH/3 - BUTTON_WIDTH/2,
+            y: HEIGHT/2 + BUTTON_HEIGHT,
             on: {
                up: function () {
                     GC.app.sound.play('startButton', {loop: false});
@@ -113,8 +123,8 @@ exports = Class(BaseView, function (supr){
             superview: this,
             text: { text: "Menu" },
             opacity: 1,
-            x: WIDTH/2 - BUTTON_WIDTH/2,
-            y: HEIGHT/2 + BUTTON_HEIGHT + 25,
+            x: WIDTH/3 + BUTTON_WIDTH/2 + WIDTH/100,
+            y: HEIGHT/2 + BUTTON_HEIGHT,
             on: {
                up: function () {
                  GC.app.transitionViews(GC.app.titleScreen);
@@ -122,9 +132,32 @@ exports = Class(BaseView, function (supr){
             }
         });
 
-        _textView.style.x = WIDTH/2 - _textView.style.width/2;
+        _shareButton = new BaseButton({
+            superview: this,
+            text: { text: "Share" },
+            opacity: 1,
+            width: WIDTH/4,
+            height: HEIGHT/7,
+            on: {
+                up: this._doShare          
+            }
+        });
+
+        _fbIcon = new ImageView({
+            superview: _shareButton,
+            image: imageData.ui.fb, 
+            x: _shareButton.style.height*.2,
+            y: _shareButton.style.height*.15,
+            width: _shareButton.style.height*.7, 
+            height: _shareButton.style.height*.7
+        });
+
+        _shareButton._text.style._padding.left = _shareButton.style.height*.5;
+        _shareButton.style.x = WIDTH/2 - _shareButton.style.width/2;
+        _shareButton.style.y = HEIGHT/2;
         _highScoreView.style.x = WIDTH/2 - _highScoreView.style.width/2;
-        _textView.style.y, _highScoreView.style.y = HEIGHT/2;
+        _textView.style.x = WIDTH/2 - _textView.style.width/2;
+        _textView.style.y, _highScoreView.style.y = HEIGHT/1.5;
 
         _textPosX = {
             gameOver : _textView.style.x,
@@ -148,5 +181,35 @@ exports = Class(BaseView, function (supr){
             .then(function() {
                 this.style.visible && this._runBounceAnimation(origStyle);
             }.bind(this));
+    };
+
+    this._fbLogin = function() {
+        FB.getLoginStatus(function(response) {
+            if(response == "connected") {
+                this._doShare();
+            } else {
+                FB.login(function(response) {
+                    if (response.authResponse) {
+                        this._doShare();
+                    } else {
+                        console.log('User cancelled login or did not fully authorize.');
+                    }
+                }, {
+                    scope: 'publish_actions',
+                    return_scopes: true
+                });
+            }
+        }).bind(this);
+    };
+
+    this._doShare = function() {
+        FB.ui({
+          method: 'share',
+          href: 'https://play.google.com/store/apps/details?id=com.saucygames.ChubbyDragon',
+          name: 'I just burned '+_score+' calories in Chubby Dragon!',
+          description: 'Can you beat my score?',
+          caption: 'Download Chubby Dragon on Google Play!',
+          picture: 'http://www.designethereal.com/cd/icon512.png'
+        }, function(response){});
     };
 });
