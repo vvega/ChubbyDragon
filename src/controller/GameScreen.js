@@ -67,25 +67,6 @@ exports = Class(BaseView, function(supr) {
 
     this.adjustSpeed = function(value) {
         this.speed = GC.app.rootView.BASE_SPEED + value;
-        this.speed % 2 === 0 && this.adjustPlaybackSpeed(value);
-    };
-
-    this.adjustPlaybackSpeed = function(value) {
-        if(value) {
-            GC.app.sound.play('plusSpeed', {loop: false}); 
-        } else {
-            GC.app.sound.play('minusSpeed', {loop: false}); 
-        }   
-        var pbr = BASE_MUSIC_SPEED + value/(this.speed*2);
-        GC.app.sound.setPlaybackRate('game', pbr);
-        GC.app.sound.setPlaybackRate('death', pbr);
-        GC.app.sound.setPlaybackRate('running', pbr);
-    };
-
-    this.resetPlaybackSpeed = function() {
-        GC.app.sound.setPlaybackRate('game', 1);
-        GC.app.sound.setPlaybackRate('death', 1);
-        GC.app.sound.setPlaybackRate('running', 1);
     };
 
     this.updateScoreBoard = function(value) {
@@ -108,7 +89,6 @@ exports = Class(BaseView, function(supr) {
 
     this.constructView = function() {
         supr(this, 'constructView');
-        this.resetPlaybackSpeed();
         this._startGame();
     };
 

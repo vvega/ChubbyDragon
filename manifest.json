@@ -9,7 +9,7 @@
   "android": {
     "ampKey": "0dcf8e3ad7cde066f50f62b92b665753",
     "ampKeyStaging": "0dcf8e3ad7cde066f50f62b92b665753",
-    "appFireworksKey": "nmVRLRkhTpEh3rSBhxO7lYbCFIRU9XNa",
+    "appFireworksKey": "AxbRrxdNDbVG2s2HqXJszD21QuV58Xxo",
     "icons": {
       "36": "resources/icons/android36.png",
       "48": "resources/icons/android48.png",
@@ -17,7 +17,7 @@
       "96": "resources/icons/android96.png"
     },
     "leadBoltPackage": "com.bfqkczljbrotgcvpfh",
-    "leadBoltSectionId": "682322649",
+    "leadBoltSectionId": "396250228",
     "versionCode": 2
   },
   "appID": "0b415fceb281434ca9fdac40d5433169",
@@ -42,16 +42,16 @@
   "shortName": "ChubbyDragon",
   "splash": {
     "autoHide": true,
+    "music": "resources/audio/menu.mp3",
+    "universal": "resources/splash/640x1136.png",
     "landscape1536": "resources/splash/2048x1536.png",
     "landscape640": "resources/splash/640x1136.png",
     "landscape768": "resources/splash/1024x768.png",
-    "music": "resources/audio/menu.mp3",
     "portrait1024": "resources/splash/768x1024.png",
     "portrait1136": "resources/splash/640x1136.png",
     "portrait2048": "resources/splash/640x1136.png",
     "portrait480": "resources/splash/320x480.png",
-    "portrait960": "resources/splash/640x960.png",
-    "universal": "resources/splash/splash_default.png"
+    "portrait960": "resources/splash/640x960.png"
   },
   "studio": {
     "domain": "saucygames.com",
