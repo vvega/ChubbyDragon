@@ -115,7 +115,7 @@ exports = Class(SpriteView, function(supr) {
             layout: 'box',
             width: 400,
             height: 200,
-            fontFamily: 'bigbottom',
+            fontFamily: GC.app.device.isIOS ? "big bottom cartoon" : 'bigbottom',
             size: HEIGHT/4,
             color: "#ffc600",
             strokeColor: "#FFF",
@@ -130,7 +130,7 @@ exports = Class(SpriteView, function(supr) {
             superview: this,
             text: "+speed",
             layout: 'box',
-            fontFamily: 'bigbottom',
+            fontFamily: GC.app.device.isIOS ? "big bottom cartoon" : 'bigbottom',
             size: HEIGHT/6,
             width: 400,
             height: 200,
@@ -146,7 +146,7 @@ exports = Class(SpriteView, function(supr) {
             superview: this,
             text: "-speed",
             layout: 'box',
-            fontFamily: 'bigbottom',
+            fontFamily: GC.app.device.isIOS ? "big bottom cartoon" : 'bigbottom',
             size: HEIGHT/6,
             width: 400,
             height: 200,
@@ -243,7 +243,6 @@ exports = Class(SpriteView, function(supr) {
                     });
                     this.resume();
                     this.initImmunityTimeout();
-                    GC.app.sound.play('running', {loop: true});
                 }
         }));  
     };

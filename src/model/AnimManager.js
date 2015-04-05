@@ -24,7 +24,6 @@ exports = new Class(function(){
 
     this.runHalfJump = function() {
         GC.app.sound.play('hop');
-        GC.app.sound.stop('running');
 
         var jumpAnim = (_sprite.fireBoostActive) ? 'boostJump' : 'jump';
         _sprite.isPlaying && _sprite.stopAnimation();
@@ -48,16 +47,13 @@ exports = new Class(function(){
 
     this.killChar = function() {
         GC.app.sound.play('death');
-        GC.app.sound.stop('running');
-
+        
         _sprite.isPlaying && _sprite.stopAnimation();
         _sprite.startAnimation('die', {loop: false});
         _sprite.pause();
     };
 
     this.resumeRun = function() {
-        GC.app.sound.isPlaying('running') || GC.app.sound.play('running', {loop: true});
-
         _sprite.resume();
         _sprite.updateFramerate();
         _sprite.fireBoostActive && _sprite.startAnimation('boostRun', {loop: true});

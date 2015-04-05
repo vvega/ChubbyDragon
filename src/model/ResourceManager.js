@@ -84,22 +84,19 @@ exports.getSoundData = function() {
                 volume: .5
             },
             eat_1: {
-                volume: .7
+                volume: .4
             },
             eat_2: {
-                volume: .7
+                volume: .4
             },
             eat_3: {
-                volume: .7
+                volume: .4
             },
             eat_4: {
-                volume: .7
+                volume: .4
             },
             fire: {
-                volume: .7
-            },
-            running: {
-                volume: .2
+                volume: .4
             },
             hop: {
                 volume: .6
@@ -111,9 +108,6 @@ exports.getSoundData = function() {
                 volume: .6
             },
             plusSpeed: {
-                volume: .6
-            },
-            minusSpeed: {
                 volume: .6
             },
             menu : {

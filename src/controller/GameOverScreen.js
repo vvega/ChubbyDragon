@@ -56,7 +56,6 @@ exports = Class(BaseView, function (supr){
             }.bind(this));
 
         GC.app.sound.play('menu');
-        console.log(_highScoreView.style.width);
     };
 
     this.resetView = function() {
@@ -79,7 +78,7 @@ exports = Class(BaseView, function (supr){
         _textView = new TextView({
             superview: this,
             layout: 'box',
-            fontFamily: 'bigbottom',
+            fontFamily: GC.app.device.isAndroid ? 'bigbottom' : 'big_bottom_cartoon',
             text: "Game Over!",
             height: (GC.app.isTablet) ? HEIGHT/7 : HEIGHT/6,
             width: WIDTH*.8,
@@ -93,7 +92,7 @@ exports = Class(BaseView, function (supr){
         _highScoreView = new TextView({
             superview: this,
             layout: 'box',
-            fontFamily: 'bigbottom',
+            fontFamily: GC.app.device.isAndroid ? 'bigbottom' : 'big_bottom_cartoon',
             text: "New High Score!",
             zIndex: this.style.zIndex,
             height: HEIGHT/15,
@@ -132,29 +131,33 @@ exports = Class(BaseView, function (supr){
             }
         });
 
-        _shareButton = new BaseButton({
-            superview: this,
-            text: { text: "Share" },
-            opacity: 1,
-            width: WIDTH/4,
-            height: HEIGHT/7,
-            on: {
-                up: this._doShare          
-            }
-        });
+        if(!GC.app.device.isIOS) {
+            _shareButton = new BaseButton({
+                superview: this,
+                text: { text: "Share" },
+                opacity: 1,
+                width: WIDTH/4,
+                height: HEIGHT/7,
+                on: {
+                    up: this._doShare          
+                }
+            });
 
-        _fbIcon = new ImageView({
-            superview: _shareButton,
-            image: imageData.ui.fb, 
-            x: _shareButton.style.height*.2,
-            y: _shareButton.style.height*.15,
-            width: _shareButton.style.height*.7, 
-            height: _shareButton.style.height*.7
-        });
+            _fbIcon = new ImageView({
+                superview: _shareButton,
+                image: imageData.ui.fb, 
+                x: _shareButton.style.height*.2,
+                y: _shareButton.style.height*.15,
+                width: GC.app.isTablet ? _shareButton.style.height*.55 : _shareButton.style.height*.7, 
+                height: GC.app.isTablet ? _shareButton.style.height*.55 : _shareButton.style.height*.7
+            });
 
-        _shareButton._text.style._padding.left = _shareButton.style.height*.5;
-        _shareButton.style.x = WIDTH/2 - _shareButton.style.width/2;
-        _shareButton.style.y = HEIGHT/2;
+
+            _shareButton._text.style._padding.left = _shareButton.style.height*.5;
+            _shareButton.style.x = WIDTH/2 - _shareButton.style.width/2;
+            _shareButton.style.y = HEIGHT/2;
+        }
+
         _highScoreView.style.x = WIDTH/2 - _highScoreView.style.width/2;
         _textView.style.x = WIDTH/2 - _textView.style.width/2;
         _textView.style.y, _highScoreView.style.y = HEIGHT/1.5;
@@ -183,23 +186,25 @@ exports = Class(BaseView, function (supr){
             }.bind(this));
     };
 
-    this._fbLogin = function() {
-        FB.getLoginStatus(function(response) {
-            if(response == "connected") {
-                this._doShare();
-            } else {
-                FB.login(function(response) {
-                    if (response.authResponse) {
-                        this._doShare();
-                    } else {
-                        console.log('User cancelled login or did not fully authorize.');
-                    }
-                }, {
-                    scope: 'publish_actions',
-                    return_scopes: true
-                });
-            }
-        }).bind(this);
+    this._fbLogin = function() { 
+        if(!GC.app.device.isIOS) {
+            FB.getLoginStatus(function(response) {
+                if(response == "connected") {
+                    this._doShare();
+                } else {
+                    FB.login(function(response) {
+                        if (response.authResponse) {
+                            this._doShare();
+                        } else {
+                            console.log('User cancelled login or did not fully authorize.');
+                        }
+                    }, {
+                        scope: 'publish_actions',
+                        return_scopes: true
+                    });
+                }
+            }).bind(this);
+        }
     };
 
     this._doShare = function() {

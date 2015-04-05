@@ -81,8 +81,12 @@ exports = Class(AudioManager, function(supr) {
 
 	this.setMusicMuted = function(muted) {
 		var vol = muted ? 0 : soundData.files.game.volume;
-		supr(this, 'setVolume', ['game', vol]);
-		supr(this, 'setVolume', ['menu', vol]);
+		if(GC.app.device.isAndroid) {
+			supr(this, 'setVolume', ['game', vol]);
+			supr(this, 'setVolume', ['menu', vol]);
+		} else {
+			supr(this, 'setMusicMuted', [muted]);
+		}
 		GC.app.music = !muted;
 		storageManager.setData(KEY_MUSIC, GC.app.music);
 	};

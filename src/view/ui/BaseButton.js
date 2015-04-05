@@ -15,7 +15,7 @@ exports = Class(ButtonView, function(supr){
 			width: BUTTON_WIDTH,
 			height: BUTTON_HEIGHT,
 			text: merge(opts.text, {
-				fontFamily: 'tiptoe',
+				fontFamily: GC.app.device.isIOS ? "d puntillas b to tiptoe" : 'tiptoe',
 				verticalAlign: "middle",
 				horizontalAlign: "center",
 				padding: [0,0,65,0],

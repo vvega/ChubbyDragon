@@ -1,10 +1,10 @@
 {
   "addons": {
-    "leadbolt" :{},
-    "facebook" : {
+    "facebook": {
       "facebookAppID": "756089061145898",
       "facebookDisplayName": "Chubby Dragon"
-    }
+    },
+    "leadbolt": {}
   },
   "android": {
     "ampKey": "0dcf8e3ad7cde066f50f62b92b665753",
@@ -23,35 +23,45 @@
   "appID": "0b415fceb281434ca9fdac40d5433169",
   "dependencies": {
     "devkit-amplitude": "https://github.com/gameclosure/amplitude#v2.0.1",
-    "devkit-core": "https://github.com/gameclosure/devkit-core#v2.0.16",
+    "devkit-core": "https://github.com/gameclosure/devkit-core#v2.3.0",
     "devkit-facebook": "https://github.com/gameclosure/facebook#v2.0.0",
+    "devkit-gamecenter": "https://github.com/gameclosure/gamekit#v0.2.0",
     "devkit-leadbolt": "https://github.com/vvega/leadbolt#v0.0.1"
   },
   "description": "",
   "icon": "resources/icons/icon512.png",
   "ios": {
+    "ampKey": "0dcf8e3ad7cde066f50f62b92b665753",
+    "ampKeyStaging": "0dcf8e3ad7cde066f50f62b92b665753",
+    "appleID": "975072703",
+    "bundleID": "com.saucygames.chubbydragon",
     "icons": {
       "114": "resources/icons/ios114.png",
+      "120": "resources/icons/ios114.png",
       "144": "resources/icons/ios144.png",
+      "152": "resources/icons/ios152.png",
       "57": "resources/icons/ios57.png",
       "72": "resources/icons/ios72.png",
-      "renderGloss": false
-    }
+      "76": "resources/icons/ios76.png",
+      "renderGloss": true
+    },
+    "leadBoltFireworksKey": "nh8KNw0LiJbZlSlWlyhbDE2Pn4U3W4Z7",
+    "leadBoltSectionId": "218664018"
   },
   "sdkVersion": "release-0.1.46",
   "shortName": "ChubbyDragon",
   "splash": {
     "autoHide": true,
-    "music": "resources/audio/menu.mp3",
-    "universal": "resources/splash/640x1136.png",
     "landscape1536": "resources/splash/2048x1536.png",
     "landscape640": "resources/splash/640x1136.png",
     "landscape768": "resources/splash/1024x768.png",
+    "music": "resources/audio/menu.mp3",
     "portrait1024": "resources/splash/768x1024.png",
     "portrait1136": "resources/splash/640x1136.png",
     "portrait2048": "resources/splash/640x1136.png",
     "portrait480": "resources/splash/320x480.png",
-    "portrait960": "resources/splash/640x960.png"
+    "portrait960": "resources/splash/640x960.png",
+    "universal": "resources/splash/640x1136.png"
   },
   "studio": {
     "domain": "saucygames.com",

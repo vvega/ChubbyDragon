@@ -34,6 +34,7 @@ exports = Class(GC.Application, function() {
 	this.initUI = function() {
         this._initDimensions();
         this._obtainData();
+        this.device = device;
         this.rootView = new RootView({
             superview: this.view
         });
@@ -61,10 +62,6 @@ exports = Class(GC.Application, function() {
         this.rootView.constructView();
         this.sound = new SoundController({
             superview: this.rootView
-        });
-        device.setBackButtonHandler(function() {
-            GC.app.engine.stopLoop();
-            return false;
         });
         LB.cacheInterstitial();        
     };

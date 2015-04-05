@@ -59,12 +59,12 @@ exports = Class(ImageView, function(supr) {
 
             if(intersect.circleAndLine(_boundingCircle, _character.collisionLine) === true) {
                 var pointValue = (_flameEngine.active) ? this._opts._pointValue*BOOST_MULTIPLIER : this._opts._pointValue;
+                _character.addToScore(pointValue);
                 this._opts.type = (_flameEngine.active) ? 'burnt' : this._opts.type;
 
                 _flameEngine.active || _character.increaseBoostLevel(this._opts._boostValue);
                 (_flameEngine.active && this._opts._value < 0) || _character.addToSpeed(this._opts._value);
                 
-                _character.addToScore(pointValue);
                 this._opts.type && _crumbEngine.emitParticles(this._opts.type, _boundingCircle);
                 this.activeAnim = false;
                 this._opts._flaggedForRemoval = true;

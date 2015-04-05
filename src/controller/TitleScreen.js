@@ -38,6 +38,8 @@ exports = Class(BaseView, function (supr) {
                 //_startButton.startButtonAnim();
                 //_guideButton.startButtonAnim();
         }.bind(this));
+
+        this._runBounceAnimation(_highScoreView.style);
     };
 
     this.resetView = function() {
@@ -47,13 +49,7 @@ exports = Class(BaseView, function (supr) {
             visibile: false,
             opacity: 0
         });
-        _highScoreView.updateOpts({
-            x: WIDTH - 300,
-            y: 0,
-            visibile: false,
-            opacity: 0
-        });
-        _highScoreView.setText("Current High Score: "+GC.app.highScore);
+        _highScoreView.setText("High Score: "+GC.app.highScore);
     };
 
     this.build = function() {
@@ -85,19 +81,6 @@ exports = Class(BaseView, function (supr) {
             }
         });
 
-        _highScoreView = new TextView({
-            superview: this,
-            layout: 'box',
-            fontFamily: 'tiptoe',
-            text: "Current High Score: "+GC.app.highScore,
-            size: HEIGHT/12,
-            strokeColor: "#fff",
-            strokeWidth: HEIGHT/40,
-            opacity: 0,
-            color: "#ffc600",
-            wrap: true
-        });
-
         _startButton = new BaseButton({
             superview: this,
             text: { text: "Start" },
@@ -125,6 +108,22 @@ exports = Class(BaseView, function (supr) {
             }
         });
 
+        _highScoreView = new TextView({
+            superview: this,
+            layout: 'box',
+            fontFamily: GC.app.device.isAndroid ? 'bigbottom' : 'big_bottom_cartoon',
+            text: "High Score: "+GC.app.highScore,
+            zIndex: this.style.zIndex,
+            size: HEIGHT/15,
+            width: WIDTH/3,
+            height: HEIGHT/10,
+            strokeColor: "#ffc600",
+            strokeWidth: (GC.app.isTablet) ? HEIGHT/90 : HEIGHT/65,
+            color: "#FFF"            
+        });
+
+        _highScoreView.style.x = WIDTH/40;
+        _highScoreView.style.y = HEIGHT - HEIGHT/5;
         _textPosX = _logoView.style.x;
         _textPosY = _logoView.style.y;
     };
@@ -136,6 +135,15 @@ exports = Class(BaseView, function (supr) {
             .then({y: -20}, 300, animate.easeOut)
             .then(function() {
                 this.style.visible && this._runLogoAnimation();
+            }.bind(this));
+    };
+
+    this._runBounceAnimation = function(origStyle) {
+        animate(_highScoreView)
+            .now({y: origStyle.y-10}, 500, animate.easeIn)
+            .then({y: origStyle.y}, 500, animate.easeOut)
+            .then(function() {
+                this.style.visible && this._runBounceAnimation(origStyle);
             }.bind(this));
     };
 
