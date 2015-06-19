@@ -33,6 +33,20 @@ exports = Class(ImageView, function(supr) {
 	this.build = function() {
 		this._populateGuide();
 		this._createGestureHandlers();
+		this.exitButton = new ButtonView({
+			superview: this,
+			width: HEIGHT/10,
+			height: HEIGHT/10,
+			zIndex: Z_CURRENT,
+			x: this.style.width - (HEIGHT/10 + HEIGHT/80),
+			y: HEIGHT/40,
+			backgroundColor: "#000",
+			on: {
+                up: bind(this, function(){
+                	this.closeView();
+                })
+            }
+        });
 	};
 
 	this.openView = function() {

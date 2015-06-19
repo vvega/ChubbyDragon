@@ -18,7 +18,7 @@ exports = Class(BaseView, function(supr) {
 			visible: true
 		});
 
-		this.BASE_SPEED = 7;
+		this.BASE_SPEED = 10;
 		this.MAX_DISTANCE = 6;
 		this.scrollX = 0;
 		this.speed = this.BASE_SPEED;
@@ -81,8 +81,15 @@ exports = Class(BaseView, function(supr) {
 	};
 
 	this.tick = function(dt) {
-		this.speed = GC.app.gameScreen.speed || this.BASE_SPEED;
-		this.scrollX += this.speed;
-		this.parallaxView && this.parallaxView.scrollTo(this.scrollX);
+        this.speed = GC.app.gameScreen.speed || this.BASE_SPEED; 
+        this.scrollX += this.speed;
+        this.parallaxView && this.parallaxView.scrollTo(this.scrollX);
 	};
+
+    this.reset = function() {
+        GC.app.gameScreen.speed = 100;
+        setTimeout(bind(this, function() {
+            GC.app.gameScreen.speed = this.BASE_SPEED;
+        }), 350);
+    };
 });

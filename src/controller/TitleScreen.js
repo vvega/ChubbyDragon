@@ -35,8 +35,6 @@ exports = Class(BaseView, function (supr) {
             .now({ y: -HEIGHT/50, opacity: 1 }, 700, animate.easeIn)
             .then(function() {
                 this._runLogoAnimation();
-                //_startButton.startButtonAnim();
-                //_guideButton.startButtonAnim();
         }.bind(this));
 
         this._runBounceAnimation(_highScoreView.style);
@@ -90,7 +88,6 @@ exports = Class(BaseView, function (supr) {
             on: {
                 up: bind(this, function(){
                     GC.app.transitionViews(GC.app.gameScreen);
-                    GC.app.sound.play('startButton', {loop: false});
                 })
             }
         });
@@ -108,12 +105,28 @@ exports = Class(BaseView, function (supr) {
             }
         });
 
+        _lbButton = new BaseButton({
+            superview: this,
+            text: { text: "Hi-Scores", scale: 1.1, x: 6 },
+            opacity: 1,
+            width: WIDTH/4,
+            height: HEIGHT/8,
+            on: {
+                up: bind(this, function(){
+                    if(GK.authenticated) {
+                        GK.showGameCenter();
+                    } else {
+                        GK.showAuthDialog();
+                    }
+                })
+            }
+        });
+
         _highScoreView = new TextView({
             superview: this,
             layout: 'box',
             fontFamily: GC.app.device.isAndroid ? 'bigbottom' : 'big_bottom_cartoon',
             text: "High Score: "+GC.app.highScore,
-            zIndex: this.style.zIndex,
             size: HEIGHT/15,
             width: WIDTH/3,
             height: HEIGHT/10,
@@ -124,8 +137,12 @@ exports = Class(BaseView, function (supr) {
 
         _highScoreView.style.x = WIDTH/40;
         _highScoreView.style.y = HEIGHT - HEIGHT/5;
+        _lbButton.style.x = WIDTH - (_lbButton.style.width + WIDTH/40);
+        _lbButton.style.y = HEIGHT - HEIGHT/7;
         _textPosX = _logoView.style.x;
         _textPosY = _logoView.style.y;
+
+        _startButton.startButtonAnim();
     };
 
     this._runLogoAnimation = function() {

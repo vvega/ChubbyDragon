@@ -7,6 +7,7 @@ import src.view.game.Character as Character;
 import src.view.ui.BoostBar as BoostBar;
 import src.view.ui.Header as Header;
 import src.view.BaseView as BaseView;
+import src.view.ui.BaseButton as BaseButton;
 import src.model.CrumbEngine as CrumbEngine;
 import src.model.FlameEngine as FlameEngine;
 import src.model.AnimManager as AnimManager;
@@ -27,7 +28,7 @@ exports = Class(BaseView, function(supr) {
     var _score;
     var _lives;
     var _mountainLayer;
-    var _jumpCount;
+    var _jRumpCount;
 
     this.init = function(opts) {
         GROUND_ELEVATION = HEIGHT - BLOCK_SIZE*2;
@@ -46,23 +47,23 @@ exports = Class(BaseView, function(supr) {
             x: 0,
             elevation: (GROUND_ELEVATION - CHARACTER_HEIGHT) + BLOCK_SIZE*1.7
         }));
-
-        this._setGameVariables();
     }; 
 
-    this._setGameVariables = function() {
+    this._initGameVariables = function() {
         _score = 0;
         this.lives = LIVES;
-        this.speed = GC.app.rootView.BASE_SPEED;
+        this.header.scoreText.setText(_score);
+        this.header.livesView.resetLives();
+        this.boostBar.reset();
     };
 
     this._setViews = function() {
-        this.header.scoreText.setText(_score);
         this.header.style.y = -this.header.style.height;
         this.boostBar.style.y = HEIGHT + this.boostBar.style.height;
         this.character.style.x = this.character.ORIG_X;
         this.character.style.y = this.character.ORIG_Y;
         this.itemLayer.style.visible = true;
+        this.modal.style.visible = false;
     };
 
     this.adjustSpeed = function(value) {
@@ -75,27 +76,53 @@ exports = Class(BaseView, function(supr) {
     };
 
     this._startGame = function() {
-        this.gameStarted = true;
-        this._showUI();
         this.character.activate();
-        GC.app.sound.play('game');
+        this.gameStarted = true;
     }
 
     this._stopGame = function() {
+        GC.app.sound.stop('game');
+        this.character.disable();
         this.gameStarted = false;
         this.speed = GC.app.rootView.BASE_SPEED;
         this._hideUI();
     }
 
+    this.pause = function() {
+        this.gameStarted = false;
+        this.character.disable();
+        this.modal.style.visible = true;
+    };
+
+    this.resume = function() {
+        this.character.enable();
+        this.gameStarted = true;
+        this.modal.style.visible = false;
+    };
+
+    this.exitGame = function() {
+        this.character.disable();
+        this.resume();
+        this._stopGame();
+        GC.app.sound.play('menu');
+    };
+
+    this.restart = function() {
+        this.character.immune = true;
+        this._initGameVariables();
+        this.resume();
+        this._startGame();
+        GC.app.rootView.reset();
+    };
+
     this.constructView = function() {
         supr(this, 'constructView');
-        this._startGame();
+        this._showUI();
+        this.restart();
+        GC.app.sound.play('game');
     };
 
     this.resetView = function() {
-        this.header.livesView.resetLives();
-        this.boostBar.reset();
-        this._setGameVariables();
         this._setViews();
     };
 
@@ -112,15 +139,15 @@ exports = Class(BaseView, function(supr) {
     //Following jumps will run a full jump animation followed by the first frame of the next jump.
     //Because jumps run at a constant framerate, the character framerate is reset accordingly after landing.
     this._setGameHandlers = function() {
-        this.on('InputStart', function() {
-            if(!this.character.isImmune() && this.character.numJumps > 0) {
+        this.on('InputStart', function(e) {
+            if(!this.character.immune && this.character.jumpsLeft > 0 && this.gameStarted) {
                 this.character.jumpActive = true;
-                if(this.character.numJumps === this.character.getMaxJumps()) {
+                if(this.character.jumpsLeft === this.character.getMaxJumps()) {
                     this.spriteMgr.runHalfJump();
                 } else {
                     this.spriteMgr.runFullJump();
                 }
-                this.character.numJumps--;
+                this.character.jumpsLeft--;
                 animate(this.character)
                     .now({ y: this.character.style.y - JUMP_ELEVATION }, 300, animate.easeOut)
                     .then({ y: this.character.elevation }, 550, animate.easeIn)
@@ -140,6 +167,15 @@ exports = Class(BaseView, function(supr) {
             this.character.updateCollisionPoints(dt);
         } 
     };
+
+    this.toggleMenu = function(){
+        if(GC.app.menuView.style.visible) {
+            GC.app.menuView.closeView(this.resume());
+        } else {
+            this.pause();
+            GC.app.menuView.openView();
+        }
+    }
 
     this.build = function() {
 
@@ -178,6 +214,18 @@ exports = Class(BaseView, function(supr) {
             blockEvents: true
         });
 
+        this.modal = new View({
+            superview: this,
+            width: WIDTH,
+            height: HEIGHT,
+            x:0,
+            backgroundColor: "#CCC",
+            opacity: .4,
+            zIndex: Z_CURRENT + 1,
+            visible: false,
+            canHandleEvents: false
+        });
+
         this.boostText = new TextView({
             superview: this,
             layout: 'linear',
@@ -206,6 +254,22 @@ exports = Class(BaseView, function(supr) {
             blockEvents: true
         });
 
+        this.menuButton = new BaseButton({
+            superview: GC.app.rootView,
+            text: { text: "Menu", scale: 1.1, x: 3 },
+            opacity: 1,
+            width: WIDTH/7,
+            height: HEIGHT/8,
+            x: this.header.margin/2,
+            y: -this.header.style.height,
+            zIndex: this.style.zIndex + 200,
+            on: {
+                up: bind(this, function(e){
+                    this.toggleMenu();
+                })
+            }
+        });
+
         //particle engines
         this.cEngine = new CrumbEngine({
             parent: this,
@@ -225,6 +289,7 @@ exports = Class(BaseView, function(supr) {
         this.itemLayer = GC.app.rootView.parallaxView.addLayer(itemLayer);
         GC.app.rootView.parallaxView.addSubview(this.character);
 
+        this._initGameVariables();
         this._setViews();
         this._setGameHandlers();
     };
@@ -232,6 +297,8 @@ exports = Class(BaseView, function(supr) {
     this._showUI = function() {
         this.boostBar.style.visible = true;
         this.header.style.visible = true;
+        this.menuButton.style.visible = true;
+        this.modal.style.visible = false;
 
         animate(this.boostBar)
             .now({y: HEIGHT - this.boostBar.style.height}, 500, animate.linear);
@@ -241,11 +308,15 @@ exports = Class(BaseView, function(supr) {
             .now({y: this.header.style.height + this.header.margin}, 500, animate.linear)
         animate(GC.app.sound.muteSound)
             .now({y: this.header.style.height + this.header.margin}, 500, animate.linear)
+        animate(this.menuButton)
+            .now({y: this.header.style.height + this.header.margin}, 500, animate.linear)
 
         this.itemLayer.style.visible = true;
     };
 
     this._hideUI = function() {
+        GC.app.menuView.style.visible = false;
+
         animate(this.header)
             .now({y: -this.header.style.height}, 500, animate.linear)
             .then(function() {
@@ -258,12 +329,17 @@ exports = Class(BaseView, function(supr) {
                 this.boostBar.style.visible = false;
             }.bind(this));
 
+        animate(this.menuButton)
+            .now({y: -this.header.style.height}, 500, animate.linear)
+            .then(function() {
+                this.menuButton.style.visible = false;
+            }.bind(this));
+
         animate(GC.app.sound.muteMusic)
             .now({y: 10 }, 500, animate.linear)
         animate(GC.app.sound.muteSound)
             .now({y: 10 }, 500, animate.linear)
 
-        //this.itemLayer.style.visible = false;
         this.itemLayer.clear();
     };
  });

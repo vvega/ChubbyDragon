@@ -17,17 +17,16 @@ exports = Class(ParallaxView.Layer, function(supr){
 	this.obtainView = function(ctor, viewOpts, opts) {
 
 		_badTerrainModifier = (this.character.speed > 0) ? this.character.speed/150 : 1/150;
-		viewOpts._active = (this.character.isImmune()) ? false : true;
 
-		viewOpts._harmful = ((_random() < _badTerrainModifier) && viewOpts._active) ? true : false;
+		viewOpts._harmful = ((_random() < _badTerrainModifier) && !this.character.isImmune()) ? true : false;
 		if(viewOpts._harmful) {
 			viewOpts.image = imageData.environment.terrain.brambles;
 			viewOpts.height = viewOpts.height*1.22;
 			viewOpts.y = HEIGHT - viewOpts.height;
 			viewOpts.width = viewOpts.width + viewOpts.width/4;
-		} 
+		}
 		
-        return supr(this, 'obtainView', [ctor, viewOpts, opts]);
+		return supr(this, 'obtainView', [ctor, viewOpts, opts]);
 	}
 
 	this._scrollTo = function(x, y) {

@@ -15,8 +15,11 @@ exports = Class(AudioManager, function(supr) {
 		});
 		_rootView = opts.superview;
 		supr(this, 'init', [opts]);
-		GC.app.sfx || this.setEffectsMuted(true);
-		GC.app.music || this.setMusicMuted(true);
+
+		this.music = opts.music;
+		this.sfx = opts.sfx;
+		this.sfx || this.setEffectsMuted(true);
+		this.music || this.setMusicMuted(true);
 		this.buildView();
 	};
 
@@ -36,11 +39,9 @@ exports = Class(AudioManager, function(supr) {
 			on: {
 				selected: bind(this, function() {
 					this.setMusicMuted(true);
-					GC.app.music = false;
 				}),
 				unselected: bind(this, function() {
 					this.setMusicMuted(false);
-					GC.app.music = true;
 				})
 			}
 		});
@@ -60,23 +61,18 @@ exports = Class(AudioManager, function(supr) {
 				selected: bind(this, function() {
 					this.muteAll(true);
 					this.muteMusic.setState(ButtonView.states.SELECTED);
-					GC.app.sfx = true;
-					GC.app.music = true;
 				}),
 				unselected: bind(this, function() {
 					this.muteAll(false);
 					this.muteMusic.setState(ButtonView.states.UNSELECTED);
-					GC.app.sfx = false;
-					GC.app.music = false;
 				})
 			}
 		});
 
-
 		this.muteSound.style.update({ zIndex: Z_CURRENT + 1});
 		this.muteMusic.style.update({ zIndex: Z_CURRENT + 1});
-		GC.app.music || this.muteMusic.setState(ButtonView.states.SELECTED);
-		GC.app.sfx || this.muteSound.setState(ButtonView.states.SELECTED);
+		this.music || this.muteMusic.setState(ButtonView.states.SELECTED);
+		this.sfx || this.muteSound.setState(ButtonView.states.SELECTED);
 	};
 
 	this.setMusicMuted = function(muted) {
@@ -87,14 +83,14 @@ exports = Class(AudioManager, function(supr) {
 		} else {
 			supr(this, 'setMusicMuted', [muted]);
 		}
-		GC.app.music = !muted;
-		storageManager.setData(KEY_MUSIC, GC.app.music);
+		this.music = !muted;
+		storageManager.setData(KEY_MUSIC, this.music);
 	};
 
 	this.setEffectsMuted = function(muted) {
 		supr(this, 'setEffectsMuted', [muted]);
-		storageManager.setData(KEY_SFX, GC.app.sfx);
-		GC.app.sfx = !muted;
+		this.sfx = !muted;
+		storageManager.setData(KEY_SFX, this.sfx);
 	};
 
 	this.muteAll = function(muted) {

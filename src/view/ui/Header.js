@@ -2,7 +2,9 @@ import ui.View as View;
 import ui.ImageScaleView as ImageScaleView;
 import ui.TextView as TextView;
 import ui.ScoreView as ScoreView;
+import src.view.ui.BaseButton as BaseButton;
 import src.view.ui.LivesView as LivesView;
+import src.controller.MenuView as MenuView;
 
 exports = Class(ImageScaleView, function(supr) {
 
@@ -18,6 +20,7 @@ exports = Class(ImageScaleView, function(supr) {
 
 	this.build = function() {
         this.margin = this.style.height/4;
+        this.menuView = new MenuView({});
         this.livesView = new LivesView({
             parent: this,
             numLives: this.lives,

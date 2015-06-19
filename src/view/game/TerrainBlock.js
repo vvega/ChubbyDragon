@@ -13,10 +13,8 @@ exports = Class(ImageView, function(supr) {
              image: imageData.environment.terrain.grass
         });
         _parent = opts.superview;
-        opts._active = false;
 
         supr(this, 'init', [opts]);
-
         _boundingCircle = new Circle(this.style.x, _parent.style.height - this.style.y, this.style.width/1.7);
     };
 

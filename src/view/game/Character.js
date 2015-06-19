@@ -49,7 +49,7 @@ exports = Class(SpriteView, function(supr) {
         LINE_Y_OFFSET = HEIGHT*.27;
 
         this.immune = true;
-        this.numJumps = MAX_JUMPS;
+        this.jumpsLeft = MAX_JUMPS;
         this.boostLevel = 0;
         this.fireBoostActive = false;
         this.elevation = opts.elevation;
@@ -77,7 +77,7 @@ exports = Class(SpriteView, function(supr) {
     };
 
     this.resetJumps = function() {
-        this.numJumps = MAX_JUMPS;
+        this.jumpsLeft = MAX_JUMPS;
         this.jumpActive = false;
     };
 
@@ -165,6 +165,27 @@ exports = Class(SpriteView, function(supr) {
         this.score = 0;
         this.setFramerate(BASE_FR);
         _parent.spriteMgr.activateChar();
+        GC.app.sound.play('startButton', {loop: false});
+        this.enable();
+    };
+
+    this.disable = function() {
+        this.disabled = true;
+        this.cancelFireBoost();
+        this.style.visible = false;
+    };
+
+    this.enable = function() {
+        this.style.visible = true;
+        this.disabled = false;
+    };
+
+    this._tickSprite = function(dt) {
+        if(!this.disabled) {
+            supr(this, '_tickSprite', [dt]);
+        } else {
+            if(this.style.visible) { this.style.visible = false; }
+        }
     };
 
     //Handles immunity status animation and resets associated character data
@@ -225,6 +246,7 @@ exports = Class(SpriteView, function(supr) {
     //Also calls the immunity timeout.
     this.kill = function() {
         this.immune = true;
+        this.jumpsLeft = 0;
         this.cancelFireBoost();
         this.updateFramerate();
         this.style.zIndex++;
@@ -242,6 +264,7 @@ exports = Class(SpriteView, function(supr) {
                         zIndex: this.style.zIndex - 1
                     });
                     this.resume();
+                    this.speed > GC.app.rootView.BASE_SPEED + 10 && this.addToSpeed(-10);
                     this.initImmunityTimeout();
                 }
         }));  

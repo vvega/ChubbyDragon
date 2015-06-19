@@ -17,19 +17,18 @@ exports = Class(BaseView, function (supr){
     var _exitButton;
     var _shareButton;
     var _fbIcon;
-    var _score;
+    var _lbButton;
+    var _shareButton;
 
     this.constructView = function(score) {
         supr(this, 'constructView');
 
         var height = (GC.app.isTablet) ? HEIGHT/7 : HEIGHT/6;
-        _score = score;
         
         animate(_textView)
             .now({ y: -HEIGHT/9, opacity: 1 }, 500, animate.easeIn)
             .then(function() {
-                _replayButton.startButtonAnim();
-                _exitButton.startButtonAnim();
+                _shareButton.startButtonAnim();
 
                 LB.showInterstitial();
                 LB.cacheInterstitial();
@@ -39,6 +38,7 @@ exports = Class(BaseView, function (supr){
                     GC.app.highScore = score;
                     _highScoreView.setText("New High Score! "+score);
                     this.writeToFile(score);
+                    GC.app.syncScore(null, GC.app.loggedInPlayer);
                 } else {
                     _highScoreView.setText("Your score: "+score);
                 }
@@ -131,6 +131,23 @@ exports = Class(BaseView, function (supr){
             }
         });
 
+        _lbButton = new BaseButton({
+            superview: this,
+            text: { text: "Hi-Scores", scale: 1.1, x: 6 },
+            opacity: 1,
+            width: WIDTH/4,
+            height: HEIGHT/8,
+            on: {
+                up: bind(this, function(){
+                    if(GK.authenticated) {
+                        GK.showGameCenter();
+                    } else {
+                        GK.showAuthDialog();
+                    }
+                })
+            }
+        });
+
         if(!GC.app.device.isIOS) {
             _shareButton = new BaseButton({
                 superview: this,
@@ -159,6 +176,8 @@ exports = Class(BaseView, function (supr){
         }
 
         _highScoreView.style.x = WIDTH/2 - _highScoreView.style.width/2;
+        _lbButton.style.x = WIDTH - (_lbButton.style.width + WIDTH/40);
+        _lbButton.style.y = HEIGHT - HEIGHT/7;
         _textView.style.x = WIDTH/2 - _textView.style.width/2;
         _textView.style.y, _highScoreView.style.y = HEIGHT/1.5;
 
@@ -211,7 +230,7 @@ exports = Class(BaseView, function (supr){
         FB.ui({
           method: 'share',
           href: 'https://play.google.com/store/apps/details?id=com.saucygames.ChubbyDragon',
-          name: 'I just burned '+_score+' calories in Chubby Dragon!',
+          name: 'I burned '+GC.app.highScore+' calories in Chubby Dragon!',
           description: 'Can you beat my score?',
           caption: 'Download Chubby Dragon on Google Play!',
           picture: 'http://www.designethereal.com/cd/icon512.png'

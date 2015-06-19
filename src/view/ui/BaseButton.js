@@ -28,21 +28,25 @@ exports = Class(ButtonView, function(supr){
 	};
 
 	this.startButtonAnim = function() {
-		//this._runScaleAnim(this, this.style);
+		this.origStyle = GC.app.util.cloneStyle(this.style);
+		this._runScaleAnim();
 	};
 
-	this._runScaleAnim = function(view, origStyle) {
-        animate(view)
+	this._runScaleAnim = function() {
+        animate(this)
             .now({
-                width: origStyle.width + SCALE_AMOUNT,
-                x: origStyle.x + SCALE_AMOUNT
-            }, 1000, animate.linear)
+                scale: 1.04,
+                x: this.origStyle.x - this.origStyle.x*.02,
+                y: this.origStyle.y - this.origStyle.y*.02
+            }, 1500, animate.easeOut)
             .then({
-                width: origStyle.width,
-                x: origStyle.x
-            }, 1000, animate.linear)
+                scale: .9,
+                x: this.origStyle.x * 1.04,
+                y: this.origStyle.y * 1.04
+            }, 1500, animate.easeOut)
+          
             .then(bind(this, function() {
-                this.style.visible && this._runScaleAnim(view, origStyle);
+                this.style.visible && this._runScaleAnim();
             }));
     };
 });

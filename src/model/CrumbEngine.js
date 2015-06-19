@@ -1,11 +1,11 @@
 import ui.ParticleEngine;
 
 exports = Class(ui.ParticleEngine, function(supr) {
-
-	var CRUMB_WIDTH = 70;
-	var CRUMB_HEIGHT = 70;
+    
+    var CRUMB_WIDTH = 50;
+    var CRUMB_HEIGHT = 50;
 	var CRUMB_R = -Math.PI / 18;
-    var NUM_CRUMBS = 15;
+    var NUM_CRUMBS = 10;
     var NUM_ASHES = 10;
 
     var _data = [];
@@ -67,7 +67,7 @@ exports = Class(ui.ParticleEngine, function(supr) {
         for(var i = 0; i < _numCrumbs; i++) {
             ttl = (type === 'burnt') 
                 ? _random()* 500 + 1800 
-                : _random() * 500 + 1800;
+                : _random() * 500 + 1000;
             deltaY = (type === 'burnt') 
                 ? -_random()*200 + _random()*200
                 : _random()*(this._character.getParent().style.height*2 + 400);

@@ -52,7 +52,7 @@ exports = Class(ImageView, function(supr) {
             this.activeAnim = true;
             this._runAnimation();
         }
-        if(!_character.isImmune() && !this._opts._flaggedForRemoval) {
+        if(!_character.isImmune() && !this._opts._flaggedForRemoval && !_character.disabled) {
 
             _boundingCircle.x = this.getPosition().x / this.getPosition().scale;
             _boundingCircle.y = this.getPosition().y / this.getPosition().scale;

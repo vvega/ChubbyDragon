@@ -5,9 +5,11 @@ import src.controller.TitleScreen as TitleScreen;
 import src.controller.GameOverScreen as GameOverScreen;
 import src.controller.GameScreen as GameScreen;
 import src.controller.SoundController as SoundController;
+import src.controller.MenuView as MenuView;
 import src.model.StorageManager as StorageManager;
 import src.model.ResourceManager as ResourceManager;
 import src.view.ui.RootView as RootView;
+import GameKit;
 import amplitude;
 import leadbolt;
 import facebook;
@@ -24,12 +26,14 @@ facebook.onReady.run(function () {
 
 exports = Class(GC.Application, function() {
 
+    Z_MODAL = 4;
     Z_CURRENT = 2;
     Z_PREV = 1;
     TRANSITION_TIME = 300;
     AMP = amplitude;
     LB = leadbolt;
     FB = facebook;
+    GK = GameKit;
 
 	this.initUI = function() {
         this._initDimensions();
@@ -58,12 +62,28 @@ exports = Class(GC.Application, function() {
             width: WIDTH,
             height: HEIGHT
         });
-        
+        this.menuView = new MenuView({
+            superview: this.gameScreen,
+            height: HEIGHT,
+            width: HEIGHT
+        });
         this.rootView.constructView();
         this.sound = new SoundController({
-            superview: this.rootView
+            superview: this.rootView,
+            music: this.music,
+            sfx: this.sfx
         });
-        LB.cacheInterstitial();        
+        LB.cacheInterstitial();
+        GK.registerAuthHandler(this.syncScore);  
+    };
+
+    this.syncScore = function(err, player) {
+        if(player.playerID) {
+            GC.app.highScore && GK.submitScore({leaderboard: CONFIG.modules.gamekit.android.ladders.calories_burned, score: GC.app.highScore});
+            GC.app.loggedInPlayer = player;
+        } else {
+            GK.showAuthDialog();
+        }
     };
 
     this.launchUI = function () {
@@ -122,5 +142,17 @@ exports = Class(GC.Application, function() {
         this.highScore = storageManager.getData(KEY_HIGH_SCORE);
         this.sfx = (sfx === 'undefined') ? true : sfx;
         this.music = (music === 'undefined') ? true : music;
+    };
+
+    this.util = {
+        cloneStyle: function(obj) {
+            return Object.create({
+                width: obj.width,
+                height: obj.height,
+                x: obj.x,
+                y: obj.y,
+                visible: obj.visible
+            });
+        }
     };
 });

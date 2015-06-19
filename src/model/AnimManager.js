@@ -23,7 +23,7 @@ exports = new Class(function(){
     }
 
     this.runHalfJump = function() {
-        GC.app.sound.play('hop');
+       !_sprite.immune && GC.app.sound.play('hop');
 
         var jumpAnim = (_sprite.fireBoostActive) ? 'boostJump' : 'jump';
         _sprite.isPlaying && _sprite.stopAnimation();
@@ -67,8 +67,8 @@ exports = new Class(function(){
         _sprite.startAnimation('powerJump', {loop: true});
         _sprite.style.x = -_sprite.style.width/2;
         animate(_sprite)
-            .now({y: _sprite.elevation - 150, x: 0 }, 550, animate.linear)
-            .then({y: _sprite.elevation }, 150, animate.easeOut)
+            .now({y: _sprite.elevation - 150, x: 0 }, 225, animate.linear)
+            .then({y: _sprite.elevation }, 125, animate.easeOut)
             .then(function() {
                 this.resumeRun();
                 _sprite.style.zIndex = GC.app.rootView.terrainLayer.style.zIndex - 1;

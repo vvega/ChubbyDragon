@@ -4,6 +4,14 @@
       "facebookAppID": "756089061145898",
       "facebookDisplayName": "Chubby Dragon"
     },
+    "gamekit": {
+      "android": {
+        "app_id": "116570592369",
+        "ladders": {
+          "calories_burned": "CgkI8aiYobIDEAIQAQ"
+        }
+      }
+    },
     "leadbolt": {}
   },
   "android": {
@@ -23,9 +31,9 @@
   "appID": "0b415fceb281434ca9fdac40d5433169",
   "dependencies": {
     "devkit-amplitude": "https://github.com/gameclosure/amplitude#v2.0.1",
-    "devkit-core": "https://github.com/gameclosure/devkit-core#v2.3.0",
+    "devkit-core": "https://github.com/gameclosure/devkit-core#v2.4.0",
     "devkit-facebook": "https://github.com/gameclosure/facebook#v2.0.0",
-    "devkit-gamecenter": "https://github.com/gameclosure/gamekit#v0.2.0",
+    "devkit-gamecenter": "https://github.com/gameclosure/gamekit#v0.2.1",
     "devkit-leadbolt": "https://github.com/vvega/leadbolt#v0.0.1"
   },
   "description": "",

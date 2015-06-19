@@ -53,6 +53,7 @@ exports = Class(View, function(supr){
 	this.resetLives = function() {
 		for(var idx in _lifeViews) {
 			_lifeViews[idx].style.opacity = 1;
+			_lifeViews[idx].style.y = MARGIN;
 		}
 		this._startLivesAnim();
 	};
