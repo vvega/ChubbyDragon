@@ -47,7 +47,7 @@ exports = Class(BaseView, function (supr) {
             visibile: false,
             opacity: 0
         });
-        _highScoreView.setText("High Score: "+GC.app.highScore);
+        _highScoreView.setText("Local High Score: "+GC.app.highScore);
     };
 
     this.build = function() {
@@ -114,7 +114,7 @@ exports = Class(BaseView, function (supr) {
             on: {
                 up: bind(this, function(){
                     if(GK.authenticated) {
-                        GK.showGameCenter();
+                        GK.openGC();
                     } else {
                         GK.showAuthDialog();
                     }
@@ -122,15 +122,29 @@ exports = Class(BaseView, function (supr) {
             }
         });
 
+        _billingButton = new BaseButton({
+            superview: this,
+            text: { text: 'Shop'},
+            width: WIDTH/4,
+            height: HEIGHT/8,
+            on: {
+                up: bind(this, function(){
+                    BL.purchase("no_ads");
+                })
+            }
+
+        });
+
         _highScoreView = new TextView({
             superview: this,
             layout: 'box',
             fontFamily: GC.app.device.isAndroid ? 'bigbottom' : 'big_bottom_cartoon',
-            text: "High Score: "+GC.app.highScore,
+            text: "Local High Score: "+GC.app.highScore,
             size: HEIGHT/15,
             width: WIDTH/3,
             height: HEIGHT/10,
             strokeColor: "#ffc600",
+            visible : false,
             strokeWidth: (GC.app.isTablet) ? HEIGHT/90 : HEIGHT/65,
             color: "#FFF"            
         });
@@ -139,6 +153,8 @@ exports = Class(BaseView, function (supr) {
         _highScoreView.style.y = HEIGHT - HEIGHT/5;
         _lbButton.style.x = WIDTH - (_lbButton.style.width + WIDTH/40);
         _lbButton.style.y = HEIGHT - HEIGHT/7;
+        _billingButton.style.x = 25;
+        _billingButton.style.y = HEIGHT - HEIGHT/7;
         _textPosX = _logoView.style.x;
         _textPosY = _logoView.style.y;
 

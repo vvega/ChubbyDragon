@@ -1,11 +1,13 @@
 import device;
 import animate;
 import ui.ImageView as ImageView;
+import ui.TextView as TextView;
 import src.controller.TitleScreen as TitleScreen;
 import src.controller.GameOverScreen as GameOverScreen;
 import src.controller.GameScreen as GameScreen;
 import src.controller.SoundController as SoundController;
 import src.controller.MenuView as MenuView;
+import src.model.BillingManager as BillingManager;
 import src.model.StorageManager as StorageManager;
 import src.model.ResourceManager as ResourceManager;
 import src.view.ui.RootView as RootView;
@@ -13,6 +15,7 @@ import GameKit;
 import amplitude;
 import leadbolt;
 import facebook;
+import billing;
 
 facebook.onReady.run(function () {
     facebook.init({
@@ -34,6 +37,7 @@ exports = Class(GC.Application, function() {
     LB = leadbolt;
     FB = facebook;
     GK = GameKit;
+    BL = billing;
 
 	this.initUI = function() {
         this._initDimensions();
@@ -73,15 +77,18 @@ exports = Class(GC.Application, function() {
             music: this.music,
             sfx: this.sfx
         });
-        LB.cacheInterstitial();
-        GK.registerAuthHandler(this.syncScore);  
+        this.ads && LB.cacheInterstitial();
+        GK.openGC = function() {
+            this.showGameCenter(GC.app.syncScore(GC.app.loggedInPlayer));
+        };
     };
 
     this.syncScore = function(err, player) {
-        if(player.playerID) {
+        if(player && player.playerID) {
             GC.app.highScore && GK.submitScore({leaderboard: CONFIG.modules.gamekit.android.ladders.calories_burned, score: GC.app.highScore});
             GC.app.loggedInPlayer = player;
         } else {
+            GK.registerAuthHandler(this.syncScore); 
             GK.showAuthDialog();
         }
     };
@@ -135,13 +142,13 @@ exports = Class(GC.Application, function() {
     this._obtainData = function() {
         imageData = ResourceManager.getImageData();
         soundData = ResourceManager.getSoundData();
+        billingManager = new BillingManager();
         storageManager = new StorageManager();
-        var sfx = storageManager.getData(KEY_SFX);
-        var music = storageManager.getData(KEY_MUSIC);
         
         this.highScore = storageManager.getData(KEY_HIGH_SCORE);
-        this.sfx = (sfx === 'undefined') ? true : sfx;
-        this.music = (music === 'undefined') ? true : music;
+        this.sfx = storageManager.getData(KEY_SFX) === 'undefined' ? true : storageManager.getData(KEY_SFX);
+        this.music = storageManager.getData(KEY_MUSIC) === 'undefined' ? true : storageManager.getData(KEY_SFX);
+        this.ads = storageManager.getData(KEY_ADS) === 'undefined' ? true : storageManager.getData(KEY_ADS);
     };
 
     this.util = {

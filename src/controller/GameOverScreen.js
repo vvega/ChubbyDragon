@@ -30,8 +30,8 @@ exports = Class(BaseView, function (supr){
             .then(function() {
                 _shareButton.startButtonAnim();
 
-                LB.showInterstitial();
-                LB.cacheInterstitial();
+                this.ads && LB.showInterstitial();
+                this.ads && LB.cacheInterstitial();
 
                 //insert high score view
                 if(score > GC.app.highScore) {
@@ -140,7 +140,7 @@ exports = Class(BaseView, function (supr){
             on: {
                 up: bind(this, function(){
                     if(GK.authenticated) {
-                        GK.showGameCenter();
+                        GK.openGC();
                     } else {
                         GK.showAuthDialog();
                     }
