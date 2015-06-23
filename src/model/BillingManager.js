@@ -16,6 +16,8 @@ exports = Class(function() {
         "no_ads" : function() {
             GC.app.ads = false;
             storageManager.setData(KEY_ADS, false);
+            GC.app.titleScreen.restoreButton.style.visible = false;
+            GC.app.gameOverScreen.purchaseButton.style.visible = false;
             GC.app.popup.openView({
                 image: imageData.popups.no_ads
             });

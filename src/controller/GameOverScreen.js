@@ -38,7 +38,6 @@ exports = Class(BaseView, function (supr){
                     GC.app.highScore = score;
                     _highScoreView.setText("New High Score! "+score);
                     this.writeToFile(score);
-                    GC.app.syncScore(null, GC.app.loggedInPlayer);
                 } else {
                     _highScoreView.setText("Your score: "+score);
                 }
@@ -71,6 +70,7 @@ exports = Class(BaseView, function (supr){
             visibility: false,
             opacity: 0
         });
+        this.purchaseButton.style.visible = GC.app.ads;
     };
 
     this.build = function() {
@@ -173,28 +173,28 @@ exports = Class(BaseView, function (supr){
             }
         });
 
-        if(GC.app.ads) { 
-            _purchaseButton = new BaseButton({
-                    superview: this,
-                    text: { text: "Ads", x: HEIGHT/32, y: HEIGHT/70, wrap: true },
-                    icon: {
-                        image: imageData.ui.icons.not,
-                        height: HEIGHT/16,
-                        width: HEIGHT/16,
-                        x: HEIGHT/32,
-                        y: HEIGHT/32
-                    },
-                    width: WIDTH/6,
-                    height: HEIGHT/8,
-                    on: {
-                        up: bind(this, function() {
-                            BL.purchase("no_ads");
-                        })
-                    }
-                });
-            _purchaseButton.style.x = WIDTH/40;
-            _purchaseButton.style.y = HEIGHT - HEIGHT/7;
-        }
+        this.purchaseButton = new BaseButton({
+            superview: this,
+            text: { text: "Ads", x: HEIGHT/32, y: HEIGHT/70, wrap: true },
+            visible: GC.app.ads,
+            icon: {
+                image: imageData.ui.icons.not,
+                height: HEIGHT/16,
+                width: HEIGHT/16,
+                x: HEIGHT/32,
+                y: HEIGHT/32
+            },
+            width: WIDTH/6,
+            height: HEIGHT/8,
+            on: {
+                up: bind(this, function() {
+                    BL.purchase("no_ads");
+                })
+            }
+        });
+        this.purchaseButton.style.x = WIDTH/40;
+        this.purchaseButton.style.y = HEIGHT - HEIGHT/7;
+
 
         _shareButton._text.style._padding.left = _shareButton.style.height*.5;
         _shareButton.style.x = WIDTH/2 - _shareButton.style.width/2;

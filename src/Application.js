@@ -158,11 +158,11 @@ exports = Class(GC.Application, function() {
         soundData = ResourceManager.getSoundData();
         billingManager = new BillingManager();
         storageManager = new StorageManager();
-        
+   
         this.highScore = storageManager.getData(KEY_HIGH_SCORE);
-        this.sfx = storageManager.getData(KEY_SFX) === 'undefined' ? true : storageManager.getData(KEY_SFX);
-        this.music = storageManager.getData(KEY_MUSIC) === 'undefined' ? true : storageManager.getData(KEY_MUSIC);
-        this.ads = storageManager.getData(KEY_ADS) === 'undefined' ? true : storageManager.getData(KEY_ADS);
+        this.sfx = (typeof storageManager.getData(KEY_SFX) == 'undefined') ? true : storageManager.getData(KEY_SFX);
+        this.music = (typeof storageManager.getData(KEY_MUSIC) == 'undefined') ? true : storageManager.getData(KEY_MUSIC);
+        this.ads = (typeof storageManager.getData(KEY_ADS) == 'undefined') ? true : storageManager.getData(KEY_ADS);
     };
 
     this.util = {

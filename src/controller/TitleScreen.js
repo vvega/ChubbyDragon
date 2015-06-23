@@ -48,6 +48,7 @@ exports = Class(BaseView, function (supr) {
             opacity: 0
         });
         _highScoreView.setText("Local High Score: "+GC.app.highScore);
+        this.restoreButton.style.visible = GC.app.ads;
     };
 
     this.build = function() {
@@ -149,32 +150,32 @@ exports = Class(BaseView, function (supr) {
         _textPosX = _logoView.style.x;
         _textPosY = _logoView.style.y;
 
-        if(GC.app.ads) {
-            _restoreButton = new BaseButton({
-                superview: this,
-                text: { text: "Purchases", x: HEIGHT/22, y: HEIGHT/70, scale: .9 },
-                icon: {
-                    image: imageData.ui.icons.restart,
-                    height: HEIGHT/16,
-                    width: HEIGHT/16,
-                    x: HEIGHT/32,
-                    y: HEIGHT/32
-                },
-                width: WIDTH/4,
-                height: HEIGHT/8,
-                on: {
-                    up: bind(this, function(){
-                       BL.restore(function(err) {
-                            if (err) {
-                                GC.app.popup.openView({text: 'No purchases to restore.'});
-                            }
-                        });
-                    })
-                }
-            });
-            _restoreButton.style.x = WIDTH/40;
-            _restoreButton.style.y = HEIGHT - HEIGHT/7;
-        }
+        this.restoreButton = new BaseButton({
+            superview: this,
+            text: { text: "Purchases", x: HEIGHT/22, y: HEIGHT/70, scale: .9 },
+            icon: {
+                image: imageData.ui.icons.restart,
+                height: HEIGHT/16,
+                width: HEIGHT/16,
+                x: HEIGHT/32,
+                y: HEIGHT/32
+            },
+            width: WIDTH/4,
+            height: HEIGHT/8,
+            visible: GC.app.ads,
+            on: {
+                up: bind(this, function(){
+                   BL.restore(function(err) {
+                        if (err) {
+                            GC.app.popup.openView({text: 'No purchases to restore.'});
+                        }
+                    });
+                })
+            }
+        });
+        this.restoreButton.style.x = WIDTH/40;
+        this.restoreButton.style.y = HEIGHT - HEIGHT/7;
+    
         _startButton.startButtonAnim();
     };
 
