@@ -23,7 +23,7 @@ exports = new Class(function(){
     }
 
     this.runHalfJump = function() {
-       !_sprite.immune && GC.app.sound.play('hop');
+       GC.app.gameScreen.gameStarted && !_sprite.immune && GC.app.sound.play('hop');
 
         var jumpAnim = (_sprite.fireBoostActive) ? 'boostJump' : 'jump';
         _sprite.isPlaying && _sprite.stopAnimation();

@@ -5,6 +5,7 @@ import ui.widget.GridView as GridView;
 import ui.widget.ButtonView as ButtonView;
 import src.view.BaseView as BaseView;
 import src.view.ui.BaseButton as BaseButton;
+import src.view.ui.BaseModal as BaseModal;
 import animate;
 
 exports = Class(BaseView, function (supr){
@@ -28,10 +29,9 @@ exports = Class(BaseView, function (supr){
         animate(_textView)
             .now({ y: -HEIGHT/9, opacity: 1 }, 500, animate.easeIn)
             .then(function() {
-                _shareButton.startButtonAnim();
 
-                this.ads && LB.showInterstitial();
-                this.ads && LB.cacheInterstitial();
+                GC.app.ads && LB.showInterstitial();
+                GC.app.ads && LB.cacheInterstitial();
 
                 //insert high score view
                 if(score > GC.app.highScore) {
@@ -133,7 +133,14 @@ exports = Class(BaseView, function (supr){
 
         _lbButton = new BaseButton({
             superview: this,
-            text: { text: "Hi-Scores", scale: 1.1, x: 6 },
+            text: { text: "Hi-Scores", x: HEIGHT/32, y: HEIGHT/70 },
+            icon: {
+                image: imageData.ui.icons.star,
+                height: HEIGHT/16,
+                width: HEIGHT/16,
+                x: HEIGHT/32,
+                y: HEIGHT/32
+            },
             opacity: 1,
             width: WIDTH/4,
             height: HEIGHT/8,
@@ -148,33 +155,50 @@ exports = Class(BaseView, function (supr){
             }
         });
 
-        if(!GC.app.device.isIOS) {
-            _shareButton = new BaseButton({
-                superview: this,
-                text: { text: "Share" },
-                opacity: 1,
-                width: WIDTH/4,
-                height: HEIGHT/7,
-                on: {
-                    up: this._doShare          
-                }
-            });
+        _shareButton = new BaseButton({
+            superview: this,
+            text: { text: "Share" },
+            icon: { 
+                image: imageData.ui.fb,
+                width: HEIGHT/11,
+                height: HEIGHT/11,
+                x: WIDTH/60,
+                y: HEIGHT/50
+             },
+            opacity: 1,
+            width: WIDTH/4,
+            height: HEIGHT/7,
+            on: {
+                up: this._doShare          
+            }
+        });
 
-            _fbIcon = new ImageView({
-                superview: _shareButton,
-                image: imageData.ui.fb, 
-                x: _shareButton.style.height*.2,
-                y: _shareButton.style.height*.15,
-                width: GC.app.isTablet ? _shareButton.style.height*.55 : _shareButton.style.height*.7, 
-                height: GC.app.isTablet ? _shareButton.style.height*.55 : _shareButton.style.height*.7
-            });
-
-
-            _shareButton._text.style._padding.left = _shareButton.style.height*.5;
-            _shareButton.style.x = WIDTH/2 - _shareButton.style.width/2;
-            _shareButton.style.y = HEIGHT/2;
+        if(GC.app.ads) { 
+            _purchaseButton = new BaseButton({
+                    superview: this,
+                    text: { text: "Ads", x: HEIGHT/32, y: HEIGHT/70, wrap: true },
+                    icon: {
+                        image: imageData.ui.icons.not,
+                        height: HEIGHT/16,
+                        width: HEIGHT/16,
+                        x: HEIGHT/32,
+                        y: HEIGHT/32
+                    },
+                    width: WIDTH/6,
+                    height: HEIGHT/8,
+                    on: {
+                        up: bind(this, function() {
+                            BL.purchase("no_ads");
+                        })
+                    }
+                });
+            _purchaseButton.style.x = WIDTH/40;
+            _purchaseButton.style.y = HEIGHT - HEIGHT/7;
         }
 
+        _shareButton._text.style._padding.left = _shareButton.style.height*.5;
+        _shareButton.style.x = WIDTH/2 - _shareButton.style.width/2;
+        _shareButton.style.y = HEIGHT/2;
         _highScoreView.style.x = WIDTH/2 - _highScoreView.style.width/2;
         _lbButton.style.x = WIDTH - (_lbButton.style.width + WIDTH/40);
         _lbButton.style.y = HEIGHT - HEIGHT/7;
@@ -190,6 +214,8 @@ exports = Class(BaseView, function (supr){
             gameOver : _textView.style.y,
             highScore : _highScoreView.style.y
         };
+
+         _shareButton.startButtonAnim();
     };
 
     this.writeToFile = function(score) {

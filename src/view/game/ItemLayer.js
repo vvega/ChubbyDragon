@@ -25,17 +25,18 @@ exports = Class(ParallaxView.Layer, function(supr){
 		viewOpts.scale = 1;
 		viewOpts._flaggedForRemoval = false;
 
-		if (Math.random() < BAD_ITEM_MODIFIER && viewOpts._active) {
+		if (Math.random() < BAD_ITEM_MODIFIER) {
 			type = _fattyFood[~~(_random()*_fattyFood.length)];
-			viewOpts._value = -1.5;
+			viewOpts._value = -2.5;
 			viewOpts._pointValue = 0;
 			viewOpts._boostValue = 1;
 		} else {
 			type = _healthyFood[~~(_random()*_healthyFood.length)];
-			viewOpts._value = 2.5;
+			viewOpts._value = 3.5;
 			viewOpts._pointValue = 10;
 			viewOpts._boostValue = 2;
 		}
+
 
 		viewOpts.image = imageData.food.base_path + type + '/' + type +'.png';
 		viewOpts.type = type;

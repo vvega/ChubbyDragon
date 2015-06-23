@@ -14,6 +14,7 @@ import src.model.AnimManager as AnimManager;
 import ui.TextView as TextView;
 import ui.View as View;
 import ui.ImageView as ImageView;
+import ui.widget.ButtonView as ButtonView;
 import animate;
 
 exports = Class(BaseView, function(supr) {
@@ -63,7 +64,6 @@ exports = Class(BaseView, function(supr) {
         this.character.style.x = this.character.ORIG_X;
         this.character.style.y = this.character.ORIG_Y;
         this.itemLayer.style.visible = true;
-        this.modal.style.visible = false;
     };
 
     this.adjustSpeed = function(value) {
@@ -91,13 +91,11 @@ exports = Class(BaseView, function(supr) {
     this.pause = function() {
         this.gameStarted = false;
         this.character.disable();
-        this.modal.style.visible = true;
     };
 
     this.resume = function() {
         this.character.enable();
         this.gameStarted = true;
-        this.modal.style.visible = false;
     };
 
     this.exitGame = function() {
@@ -148,7 +146,7 @@ exports = Class(BaseView, function(supr) {
                     this.spriteMgr.runFullJump();
                 }
                 this.character.jumpsLeft--;
-                animate(this.character)
+                this.jumpAnim = animate(this.character)
                     .now({ y: this.character.style.y - JUMP_ELEVATION }, 300, animate.easeOut)
                     .then({ y: this.character.elevation }, 550, animate.easeIn)
                     .then(bind(this, function() {
@@ -178,7 +176,6 @@ exports = Class(BaseView, function(supr) {
     }
 
     this.build = function() {
-
         var itemLayer = new ItemLayer({
             parent: this,
             distance: GC.app.rootView.MAX_DISTANCE - 2,
@@ -214,18 +211,6 @@ exports = Class(BaseView, function(supr) {
             blockEvents: true
         });
 
-        this.modal = new View({
-            superview: this,
-            width: WIDTH,
-            height: HEIGHT,
-            x:0,
-            backgroundColor: "#CCC",
-            opacity: .4,
-            zIndex: Z_CURRENT + 1,
-            visible: false,
-            canHandleEvents: false
-        });
-
         this.boostText = new TextView({
             superview: this,
             layout: 'linear',
@@ -254,15 +239,18 @@ exports = Class(BaseView, function(supr) {
             blockEvents: true
         });
 
-        this.menuButton = new BaseButton({
+        this.menuButton = new ButtonView({
             superview: GC.app.rootView,
-            text: { text: "Menu", scale: 1.1, x: 3 },
+            images: { 
+                up: imageData.ui.menu.up,
+                down: imageData.ui.menu.down
+            },
             opacity: 1,
-            width: WIDTH/7,
-            height: HEIGHT/8,
+            height: 100,
+            width: 100,
             x: this.header.margin/2,
             y: -this.header.style.height,
-            zIndex: this.style.zIndex + 200,
+            zIndex: this.style.zIndex + 1,
             on: {
                 up: bind(this, function(e){
                     this.toggleMenu();
@@ -298,7 +286,6 @@ exports = Class(BaseView, function(supr) {
         this.boostBar.style.visible = true;
         this.header.style.visible = true;
         this.menuButton.style.visible = true;
-        this.modal.style.visible = false;
 
         animate(this.boostBar)
             .now({y: HEIGHT - this.boostBar.style.height}, 500, animate.linear);
@@ -316,6 +303,8 @@ exports = Class(BaseView, function(supr) {
 
     this._hideUI = function() {
         GC.app.menuView.style.visible = false;
+        GC.app.modalScreen.style.visible = false;
+        this.character.style.visible = false;
 
         animate(this.header)
             .now({y: -this.header.style.height}, 500, animate.linear)

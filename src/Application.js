@@ -2,6 +2,7 @@ import device;
 import animate;
 import ui.ImageView as ImageView;
 import ui.TextView as TextView;
+import ui.View as View;
 import src.controller.TitleScreen as TitleScreen;
 import src.controller.GameOverScreen as GameOverScreen;
 import src.controller.GameScreen as GameScreen;
@@ -11,6 +12,7 @@ import src.model.BillingManager as BillingManager;
 import src.model.StorageManager as StorageManager;
 import src.model.ResourceManager as ResourceManager;
 import src.view.ui.RootView as RootView;
+import src.view.ui.BaseModal as BaseModal;
 import GameKit;
 import amplitude;
 import leadbolt;
@@ -67,16 +69,28 @@ exports = Class(GC.Application, function() {
             height: HEIGHT
         });
         this.menuView = new MenuView({
-            superview: this.gameScreen,
+            superview: this.rootView,
             height: HEIGHT,
             width: HEIGHT
         });
-        this.rootView.constructView();
+        this.popup = new BaseModal({});
+        this.modalScreen = new View({
+            superview: this.rootView, 
+            width: WIDTH,
+            height: HEIGHT,
+            zIndex: Z_MODAL - 1,
+            x:0,
+            backgroundColor: "#CCC",
+            opacity: .4,
+            visible: false,
+            handleEvents: false
+        });
         this.sound = new SoundController({
             superview: this.rootView,
             music: this.music,
             sfx: this.sfx
         });
+        this.rootView.constructView();
         this.ads && LB.cacheInterstitial();
         GK.openGC = function() {
             this.showGameCenter(GC.app.syncScore(GC.app.loggedInPlayer));
@@ -147,7 +161,7 @@ exports = Class(GC.Application, function() {
         
         this.highScore = storageManager.getData(KEY_HIGH_SCORE);
         this.sfx = storageManager.getData(KEY_SFX) === 'undefined' ? true : storageManager.getData(KEY_SFX);
-        this.music = storageManager.getData(KEY_MUSIC) === 'undefined' ? true : storageManager.getData(KEY_SFX);
+        this.music = storageManager.getData(KEY_MUSIC) === 'undefined' ? true : storageManager.getData(KEY_MUSIC);
         this.ads = storageManager.getData(KEY_ADS) === 'undefined' ? true : storageManager.getData(KEY_ADS);
     };
 

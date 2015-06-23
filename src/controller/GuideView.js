@@ -1,9 +1,10 @@
 import ui.ImageView as ImageView;
 import ui.GestureView as GestureView;
 import ui.widget.ButtonView as ButtonView;
+import src.view.ui.BaseModal as BaseModal;
 import animate; 
 
-exports = Class(ImageView, function(supr) {
+exports = Class(BaseModal, function(supr) {
 	
 	var ORIG_Y;
 	var SCALE_AMOUNT = 12;
@@ -33,64 +34,7 @@ exports = Class(ImageView, function(supr) {
 	this.build = function() {
 		this._populateGuide();
 		this._createGestureHandlers();
-		this.exitButton = new ButtonView({
-			superview: this,
-			width: HEIGHT/10,
-			height: HEIGHT/10,
-			zIndex: Z_CURRENT,
-			x: this.style.width - (HEIGHT/10 + HEIGHT/80),
-			y: HEIGHT/40,
-			backgroundColor: "#000",
-			on: {
-                up: bind(this, function(){
-                	this.closeView();
-                })
-            }
-        });
-	};
-
-	this.openView = function() {
-		this.style.visible = true;
-		_currentView.style.visible = true;
-		_currentView.style.opacity = 1;
-		animate(this)
-			.now({y: -20}, 500, animate.linear)
-			.then({y: 0}, 100, animate.easeIn)
-			.then(bind(this, function() {
-        		this._runScaleAnim(this, this.style);
-			}));
-	};
-
-	this.closeView = function() {
-		animate(this)
-			.now({y: -20}, 100, animate.easeOut)
-			.then({y: ORIG_Y}, 500, animate.linear)
-			.then(function() {
-				for(idx in _guideImageViews) {
-					_guideImageViews[idx].style.visible = false;
-					_guideImageViews[idx].style.x = this.style.width + _guideImageViews[idx].style.width;
-				}
-				this.style.visible = false;
-				_currentView = _guideImageViews[0];
-				_currentView.style.x = 0;
-			}.bind(this));
-	};
-
-	this._runScaleAnim = function(view, origStyle) {
-		animate(view)
-			.now({
-				width: origStyle.width + SCALE_AMOUNT,
-				y: origStyle.y + SCALE_AMOUNT/3,
-				x: origStyle.x -SCALE_AMOUNT
-			}, 700, animate.linear)
-			.then({
-				width: origStyle.width,
-				y: origStyle.y,
-				x: origStyle.x
-			}, 700, animate.linear)
-			.then(bind(this, function() {
-				this._runScaleAnim(view, origStyle);
-			}));
+        supr(this, 'build', []);
 	};
 
 	this._createGestureHandlers = function() {

@@ -38,12 +38,12 @@ exports = Class(ButtonView, function(supr){
                 scale: 1.04,
                 x: this.origStyle.x - this.origStyle.x*.02,
                 y: this.origStyle.y - this.origStyle.y*.02
-            }, 1500, animate.easeOut)
+            }, 1000, animate.easeOut)
             .then({
-                scale: .9,
-                x: this.origStyle.x * 1.04,
-                y: this.origStyle.y * 1.04
-            }, 1500, animate.easeOut)
+                scale: 1,
+                x: this.origStyle.x,
+                y: this.origStyle.y
+            }, 700, animate.easeOut)
           
             .then(bind(this, function() {
                 this.style.visible && this._runScaleAnim();

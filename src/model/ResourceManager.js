@@ -7,6 +7,13 @@ exports.getImageData = function() {
             life: "resources/images/ui/life.png",
             fb: "resources/images/ui/fb.png",
             guideBG: "resources/images/ui/guide/guide_bg.png",
+            icons: {
+                star: "resources/images/ui/star.png",
+                restart: "resources/images/ui/restart.png",
+                home: "resources/images/ui/home.png",
+                play: "resources/images/ui/play.png",
+                not: "resources/images/ui/not.png"
+            },
             boostBar: {
                 frame: "resources/images/ui/boost_frame.png",
                 bar: "resources/images/ui/boost_bar.png"
@@ -16,9 +23,21 @@ exports.getImageData = function() {
                 "resources/images/ui/guide/guide_2.png",
                 "resources/images/ui/guide/guide_3.png"
             ],
+            popups: {
+                no_ads: "resources/images/ui/no_ads_popup.png",
+                purchases_restored: "resourdes/images/ui/purchases_restored.png",
+                blank: "resources/images/ui/menu_bg.png"
+            },
             button: {
                 up: "resources/images/ui/button.png",
                 down: "resources/images/ui/button_selected.png"
+            },
+            menu: {
+                up: "resources/images/ui/menu.png",
+                down: "resources/images/ui/menu_pressed.png"
+            },
+            exit: {
+                up: "resources/images/ui/exit.png"
             },
             sound : {
                 sfx: {

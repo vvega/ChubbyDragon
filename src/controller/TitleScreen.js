@@ -107,7 +107,14 @@ exports = Class(BaseView, function (supr) {
 
         _lbButton = new BaseButton({
             superview: this,
-            text: { text: "Hi-Scores", scale: 1.1, x: 6 },
+            text: { text: "Hi-Scores", x: HEIGHT/32, y: HEIGHT/70 },
+            icon: {
+                image: imageData.ui.icons.star,
+                height: HEIGHT/16,
+                width: HEIGHT/16,
+                x: HEIGHT/32,
+                y: HEIGHT/32
+            },
             opacity: 1,
             width: WIDTH/4,
             height: HEIGHT/8,
@@ -122,19 +129,6 @@ exports = Class(BaseView, function (supr) {
             }
         });
 
-        _billingButton = new BaseButton({
-            superview: this,
-            text: { text: 'Shop'},
-            width: WIDTH/4,
-            height: HEIGHT/8,
-            on: {
-                up: bind(this, function(){
-                    BL.purchase("no_ads");
-                })
-            }
-
-        });
-
         _highScoreView = new TextView({
             superview: this,
             layout: 'box',
@@ -144,20 +138,43 @@ exports = Class(BaseView, function (supr) {
             width: WIDTH/3,
             height: HEIGHT/10,
             strokeColor: "#ffc600",
-            visible : false,
             strokeWidth: (GC.app.isTablet) ? HEIGHT/90 : HEIGHT/65,
             color: "#FFF"            
         });
 
-        _highScoreView.style.x = WIDTH/40;
-        _highScoreView.style.y = HEIGHT - HEIGHT/5;
+        _highScoreView.style.y = HEIGHT - HEIGHT/6;
+        _highScoreView.style.x = WIDTH/2 - _highScoreView.style.width/2;
         _lbButton.style.x = WIDTH - (_lbButton.style.width + WIDTH/40);
         _lbButton.style.y = HEIGHT - HEIGHT/7;
-        _billingButton.style.x = 25;
-        _billingButton.style.y = HEIGHT - HEIGHT/7;
         _textPosX = _logoView.style.x;
         _textPosY = _logoView.style.y;
 
+        if(GC.app.ads) {
+            _restoreButton = new BaseButton({
+                superview: this,
+                text: { text: "Purchases", x: HEIGHT/22, y: HEIGHT/70, scale: .9 },
+                icon: {
+                    image: imageData.ui.icons.restart,
+                    height: HEIGHT/16,
+                    width: HEIGHT/16,
+                    x: HEIGHT/32,
+                    y: HEIGHT/32
+                },
+                width: WIDTH/4,
+                height: HEIGHT/8,
+                on: {
+                    up: bind(this, function(){
+                       BL.restore(function(err) {
+                            if (err) {
+                                GC.app.popup.openView({text: 'No purchases to restore.'});
+                            }
+                        });
+                    })
+                }
+            });
+            _restoreButton.style.x = WIDTH/40;
+            _restoreButton.style.y = HEIGHT - HEIGHT/7;
+        }
         _startButton.startButtonAnim();
     };
 

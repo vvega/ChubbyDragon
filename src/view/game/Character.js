@@ -68,7 +68,6 @@ exports = Class(SpriteView, function(supr) {
             x: this.style.width/5,
             y: 0
         };
-
         this.build(opts);
     };
 
@@ -171,27 +170,26 @@ exports = Class(SpriteView, function(supr) {
 
     this.disable = function() {
         this.disabled = true;
-        this.cancelFireBoost();
-        this.style.visible = false;
+        _parent.jumpAnim && _parent.jumpAnim.pause();
     };
 
     this.enable = function() {
         this.style.visible = true;
         this.disabled = false;
+        _parent.jumpAnim && _parent.jumpAnim.resume();
     };
 
     this._tickSprite = function(dt) {
         if(!this.disabled) {
             supr(this, '_tickSprite', [dt]);
-        } else {
-            if(this.style.visible) { this.style.visible = false; }
-        }
+        } 
     };
 
     //Handles immunity status animation and resets associated character data
     this.initImmunityTimeout = function() {
         this.immune = true;
         this.resetAnimation();
+        _parent.fEngine.cancelParticles();
         //scales animation duration based upon timeout length
         animate(this)
             .now({ opacity: .4 }, IMMUNITY_TIMEOUT/4, animate.easeIn )
@@ -363,6 +361,7 @@ exports = Class(SpriteView, function(supr) {
     this.cancelFireBoost = function() {
         this.boostLevel = 0;
         this.fireBoostActive = false;
+        _parent.fEngine.active = false;
         _parent.boostBar.depletion = false;
         _parent.boostBar.reset();
         _parent.spriteMgr.cancelBoost();
