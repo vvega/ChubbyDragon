@@ -6,26 +6,18 @@ import animate;
 
 exports = Class(BaseModal, function(supr) {
 	
-	var ORIG_Y;
-	var SCALE_AMOUNT = 12;
-	var TRANSITION_TIME = 300;
-
 	var _surface;
 	var _guideImages = [];
 	var _guideImageViews = [];
 	var _currentView;
 
 	this.init = function(opts) {
+		if(!opts) { opts = {}; }
 		opts.image = imageData.ui.guideBG;
-		opts.y = HEIGHT + opts.height;
-		opts.x = (WIDTH - opts.width)/2;
-		opts.zIndex = Z_CURRENT;
-		opts.visible = false;
 		opts.clip = true;
 
 		supr(this, 'init', [opts]);
 
-		ORIG_Y = opts.y;
 		_guideImages = imageData.ui.guideImages;
 
 		this.build();
@@ -79,7 +71,6 @@ exports = Class(BaseModal, function(supr) {
 	};
 
 	this._transition = function(direction) {
-
 		var hideX = (direction === 'left') ? -_currentView.style.width : WIDTH + _currentView.style.width;
 		var nextView = (direction === 'left') ? _currentView.next : _currentView.previous;
 

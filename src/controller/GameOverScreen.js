@@ -30,8 +30,8 @@ exports = Class(BaseView, function (supr){
             .now({ y: -HEIGHT/9, opacity: 1 }, 500, animate.easeIn)
             .then(function() {
 
-                GC.app.ads && LB.showInterstitial();
-                GC.app.ads && LB.cacheInterstitial();
+                GC.app.ads && CB.showInterstitial();
+                GC.app.ads && CB.cacheInterstitial();
 
                 //insert high score view
                 if(score > GC.app.highScore) {

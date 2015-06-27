@@ -5,19 +5,10 @@ import ui.widget.ButtonView as ButtonView;
 import animate; 
 
 exports = Class(BaseModal, function(supr) {
-	
-	var SCALE_AMOUNT = 12;
-	var TRANSITION_TIME = 300;
 
 	this.init = function(opts) {
-		opts = merge(opts, {
-			image: imageData.ui.popups.blank,
-			x: WIDTH/4,
-			y: HEIGHT + opts.height,
-			zIndex : Z_MODAL,
-			visible : false,
-			scale : 1
-		});
+        if(!opts) { opts = {}; }
+        opts.image = imageData.ui.popups.blank;
 		
 		supr(this, 'init', [opts]);
 		this.build();

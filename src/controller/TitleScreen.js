@@ -52,11 +52,7 @@ exports = Class(BaseView, function (supr) {
     };
 
     this.build = function() {
-        _guideView = new GuideView({
-            superview: this,
-            height: HEIGHT,
-            width: HEIGHT
-        });
+        _guideView = new GuideView();
 
         _logoView = new ImageScaleView({
             superview: this,

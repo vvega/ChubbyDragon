@@ -20,7 +20,7 @@ exports = Class(ImageScaleView, function(supr) {
 
 	this.build = function() {
         this.margin = this.style.height/4;
-        this.menuView = new MenuView({});
+        this.menuView = new MenuView();
         this.livesView = new LivesView({
             parent: this,
             numLives: this.lives,

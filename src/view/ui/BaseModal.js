@@ -9,6 +9,7 @@ exports = Class(ImageView, function(supr){
 	var TRANSITION_TIME = 300;
 
 	this.init = function(opts) {
+		if(!opts) { opts = {}; }
 		opts = merge(opts, {
 			superview: GC.app.rootView,
 			image: imageData.ui.popups.blank,

@@ -15,7 +15,7 @@ import src.view.ui.RootView as RootView;
 import src.view.ui.BaseModal as BaseModal;
 import GameKit;
 import amplitude;
-import leadbolt;
+import chartboost;
 import facebook;
 import billing;
 
@@ -36,7 +36,7 @@ exports = Class(GC.Application, function() {
     Z_PREV = 1;
     TRANSITION_TIME = 300;
     AMP = amplitude;
-    LB = leadbolt;
+    CB = chartboost;
     FB = facebook;
     GK = GameKit;
     BL = billing;
@@ -73,7 +73,7 @@ exports = Class(GC.Application, function() {
             height: HEIGHT,
             width: HEIGHT
         });
-        this.popup = new BaseModal({});
+        this.popup = new BaseModal();
         this.modalScreen = new View({
             superview: this.rootView, 
             width: WIDTH,
@@ -91,8 +91,9 @@ exports = Class(GC.Application, function() {
             sfx: this.sfx
         });
         this.rootView.constructView();
-        this.ads && LB.cacheInterstitial();
+        this.ads && CB.cacheInterstitial();
         GK.openGC = function() {
+            AMP.track("openGameCenter", { player: GC.app.loggedInPlayer });
             this.showGameCenter(GC.app.syncScore(GC.app.loggedInPlayer));
         };
     };
@@ -104,6 +105,7 @@ exports = Class(GC.Application, function() {
         } else {
             GK.registerAuthHandler(this.syncScore); 
             GK.showAuthDialog();
+            GC.app.loggedInPlayer = false;
         }
     };
 
