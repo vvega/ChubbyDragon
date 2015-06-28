@@ -20,9 +20,12 @@ exports = Class(BaseView, function (supr){
     var _fbIcon;
     var _lbButton;
     var _shareButton;
+    var _rand;
 
     this.constructView = function(score) {
         supr(this, 'constructView');
+        GC.app.setRewardState(false);
+        _rand = Math.random;
 
         var height = (GC.app.isTablet) ? HEIGHT/7 : HEIGHT/6;
         
@@ -30,8 +33,13 @@ exports = Class(BaseView, function (supr){
             .now({ y: -HEIGHT/9, opacity: 1 }, 500, animate.easeIn)
             .then(function() {
 
-                GC.app.ads && CB.showInterstitial();
-                GC.app.ads && CB.cacheInterstitial();
+                if(_rand() > .4) { 
+                    GC.app.ads && CB.showInterstitialIfAvailable();
+                    GC.app.ads && CB.cacheInterstitial();
+                } else {
+                    CB.showRewardedVideoIfAvailable();
+                    CB.cacheRewardedVideo();
+                }
 
                 //insert high score view
                 if(score > GC.app.highScore) {

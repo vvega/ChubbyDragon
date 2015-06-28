@@ -4,6 +4,7 @@ exports = Class(function () {
 	KEY_SFX = "sfx";
 	KEY_MUSIC = "music";
 	KEY_ADS = "ads";
+	KEY_REWARD = "reward";
 
 	this.init = function(opts) {
 		this._gameData = {};

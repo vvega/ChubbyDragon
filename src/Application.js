@@ -91,11 +91,31 @@ exports = Class(GC.Application, function() {
             sfx: this.sfx
         });
         this.rootView.constructView();
-        this.ads && CB.cacheInterstitial();
+        this.setCBHandlers();
         GK.openGC = function() {
             AMP.track("openGameCenter", { player: GC.app.loggedInPlayer });
             this.showGameCenter(GC.app.syncScore(GC.app.loggedInPlayer));
         };
+    };
+
+    this.setCBHandlers = function() {
+        this.ads && CB.cacheInterstitial();
+        this.ads && CB.cacheRewardedVideo();
+        CB.on('AdDisplayed', function() {
+            this.sound.music && this.sound.tempSetMusicMuted(true);
+        }.bind(this));
+        CB.on('RewardedVideoDisplayed', function() {
+            this.sound.music && this.sound.tempSetMusicMuted(true);
+        }.bind(this));
+        CB.on('AdDismissed', function() {
+            this.sound.music && this.sound.tempSetMusicMuted(false);
+        }.bind(this));
+        CB.on('RewardedVideoDismissed', function() {
+            this.sound.music && this.sound.tempSetMusicMuted(false);
+        }.bind(this)); 
+        CB.on('RewardedVideoCompleted', function (reward) {
+            this.setRewardState(true);
+        }.bind(this));
     };
 
     this.syncScore = function(err, player) {
@@ -107,6 +127,11 @@ exports = Class(GC.Application, function() {
             GK.showAuthDialog();
             GC.app.loggedInPlayer = false;
         }
+    };
+
+    this.setRewardState = function(state) {
+        this.reward = state;
+        storageManager.setData(KEY_REWARD, state);
     };
 
     this.launchUI = function () {
@@ -165,6 +190,7 @@ exports = Class(GC.Application, function() {
         this.sfx = (typeof storageManager.getData(KEY_SFX) == 'undefined') ? true : storageManager.getData(KEY_SFX);
         this.music = (typeof storageManager.getData(KEY_MUSIC) == 'undefined') ? true : storageManager.getData(KEY_MUSIC);
         this.ads = (typeof storageManager.getData(KEY_ADS) == 'undefined') ? true : storageManager.getData(KEY_ADS);
+        this.reward = (typeof storageManager.getData(KEY_ADS) == 'undefined') ? false : storageManager.getData(KEY_REWARD);
     };
 
     this.util = {

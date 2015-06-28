@@ -52,7 +52,7 @@ exports = Class(BaseView, function(supr) {
 
     this._initGameVariables = function() {
         _score = 0;
-        this.lives = LIVES;
+        this.lives = GC.app.reward ? LIVES + 1 : LIVES;
         this.header.scoreText.setText(_score);
         this.header.livesView.resetLives();
         this.boostBar.reset();

@@ -13,11 +13,12 @@ exports = Class(View, function(supr){
 	var _lifeViews = [];
 
 	this.init = function(opts) {
-		MARGIN = opts.lifeViewProps.margin;		
+		MARGIN = opts.lifeViewProps.margin;
+		opts.numLives += 1;		
 		opts = merge(opts, {
 			width: opts.lifeViewProps.width * (opts.numLives + MARGIN),
 			height: opts.parent.height,
-			x: opts.parent.style.width - ((opts.lifeViewProps.width+MARGIN)*opts.numLives),
+			x: opts.parent.style.width - ((opts.lifeViewProps.width+MARGIN)*(opts.numLives)),
 			y: -MARGIN/2.5,
 		});
 
@@ -51,6 +52,11 @@ exports = Class(View, function(supr){
 	};
 
 	this.resetLives = function() {
+		if(!GC.app.reward) {
+			_lifeViews[_numLives - 1].style.visible = false;
+		} else {
+			_lifeViews[_numLives - 1].style.visible = true;
+		}
 		for(var idx in _lifeViews) {
 			_lifeViews[idx].style.opacity = 1;
 			_lifeViews[idx].style.y = MARGIN;
