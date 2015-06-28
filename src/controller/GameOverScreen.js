@@ -33,12 +33,14 @@ exports = Class(BaseView, function (supr){
             .now({ y: -HEIGHT/9, opacity: 1 }, 500, animate.easeIn)
             .then(function() {
 
-                if(_rand() > .4) { 
-                    GC.app.ads && CB.showInterstitialIfAvailable();
-                    GC.app.ads && CB.cacheInterstitial();
-                } else {
-                    CB.showRewardedVideoIfAvailable();
-                    CB.cacheRewardedVideo();
+                if(GC.app.ads) {
+                    if(_rand() > .4) { 
+                        CB.showInterstitialIfAvailable();
+                        CB.cacheInterstitial();
+                    } else {
+                        CB.showRewardedVideoIfAvailable();
+                        CB.cacheRewardedVideo();
+                    }
                 }
 
                 //insert high score view

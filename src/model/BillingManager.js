@@ -11,7 +11,7 @@ exports = Class(function() {
                 GC.app.titleScreen.restoreButton.style.visible = false;
                 GC.app.gameOverScreen.purchaseButton.style.visible = false;
                 GC.app.popup.openView({
-                    image: imageData.popups.no_ads
+                    image: imageData.ui.popups.no_ads
                 });
             }
         };
