@@ -46,6 +46,7 @@ exports = Class(BaseView, function (supr){
                 //insert high score view
                 if(score > GC.app.highScore) {
                     GC.app.highScore = score;
+                    GC.app.syncScore(GC.app.loggedInPlayer);
                     _highScoreView.setText("New High Score! "+score);
                     this.writeToFile(score);
                 } else {
@@ -63,7 +64,6 @@ exports = Class(BaseView, function (supr){
                     }.bind(this))
 
             }.bind(this));
-
         GC.app.sound.play('menu');
     };
 
