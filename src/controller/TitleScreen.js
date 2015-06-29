@@ -48,7 +48,7 @@ exports = Class(BaseView, function (supr) {
             opacity: 0
         });
         _highScoreView.setText("Local High Score: "+GC.app.highScore);
-        this.restoreButton.style.visible = GC.app.ads;
+        this.restoreButton.style.visible = GC.app.ads && GC.app.device.isIOS;
     };
 
     this.build = function() {
@@ -80,8 +80,8 @@ exports = Class(BaseView, function (supr) {
             superview: this,
             text: { text: "Start" },
             opacity: 1,
-            x: WIDTH/2 - BUTTON_WIDTH/2,
-            y: HEIGHT/2,
+            x: GC.app.isTablet ? WIDTH/2 - BUTTON_WIDTH/1.55 : WIDTH/2 - BUTTON_WIDTH/2,
+            y: GC.app.isTablet ? HEIGHT/2.2 : HEIGHT/2,
             on: {
                 up: bind(this, function(){
                     GC.app.transitionViews(GC.app.gameScreen);
@@ -93,8 +93,8 @@ exports = Class(BaseView, function (supr) {
             superview: this,
             text: { text: "Guide" },
             opacity: 1,
-            x: WIDTH/2 - BUTTON_WIDTH/2,
-            y: HEIGHT/2 + BUTTON_HEIGHT + 25,
+            x: GC.app.isTablet ? WIDTH/2 - BUTTON_WIDTH/1.55 : WIDTH/2 - BUTTON_WIDTH/2,
+            y: GC.app.isTablet ? HEIGHT/2.2 + BUTTON_HEIGHT + 25 : HEIGHT/2 + BUTTON_HEIGHT + 25,
             on: {
                 up: bind(this, function(){
                    _guideView.openView();
@@ -104,7 +104,12 @@ exports = Class(BaseView, function (supr) {
 
         _lbButton = new BaseButton({
             superview: this,
-            text: { text: "Hi-Scores", x: HEIGHT/32, y: HEIGHT/70 },
+            text: { 
+                text: "Hi-Scores",
+                x: GC.app.isTablet ? HEIGHT/16 : HEIGHT/32,
+                y: GC.app.isTablet ? HEIGHT/50 : HEIGHT/70,
+                scale: GC.app.isTablet ? .8 : 1 
+            },
             icon: {
                 image: imageData.ui.icons.star,
                 height: HEIGHT/16,
@@ -113,7 +118,7 @@ exports = Class(BaseView, function (supr) {
                 y: HEIGHT/32
             },
             opacity: 1,
-            width: WIDTH/4,
+            width: GC.app.isTablet ? WIDTH/3.5 : WIDTH/4,
             height: HEIGHT/8,
             on: {
                 up: bind(this, function(){
@@ -141,35 +146,46 @@ exports = Class(BaseView, function (supr) {
 
         _highScoreView.style.y = HEIGHT - HEIGHT/6;
         _highScoreView.style.x = WIDTH/2 - _highScoreView.style.width/2;
-        _lbButton.style.x = WIDTH - (_lbButton.style.width + WIDTH/40);
+        _lbButton.style.x = GC.app.isTablet 
+                            ? WIDTH - _lbButton.style.width 
+                            : WIDTH - (_lbButton.style.width + WIDTH/40);
         _lbButton.style.y = HEIGHT - HEIGHT/7;
         _textPosX = _logoView.style.x;
         _textPosY = _logoView.style.y;
 
         this.restoreButton = new BaseButton({
             superview: this,
-            text: { text: "Purchases", x: HEIGHT/22, y: HEIGHT/70, scale: .9 },
+            text: { 
+                text: "Purchases",
+                x: GC.app.isTablet ? HEIGHT/13 : HEIGHT/22,
+                y: GC.app.isTablet ? HEIGHT/40 : HEIGHT/70,
+                scale: GC.app.isTablet ? .7 : .9 
+            },
             icon: {
                 image: imageData.ui.icons.restart,
-                height: HEIGHT/16,
-                width: HEIGHT/16,
+                height: GC.app.isTablet ? HEIGHT/18 : HEIGHT/16,
+                width: GC.app.isTablet ? HEIGHT/18 : HEIGHT/16,
                 x: HEIGHT/32,
                 y: HEIGHT/32
             },
-            width: WIDTH/4,
+            width: GC.app.isTablet ? WIDTH/3.5 : WIDTH/4,
             height: HEIGHT/8,
-            visible: GC.app.ads,
+            visible: GC.app.ads && GC.app.device.isIOS,
             on: {
                 up: bind(this, function(){
-                   BL.restore(function(err) {
-                        if (err) {
-                            GC.app.popup.openView({text: 'No purchases to restore.'});
-                        }
-                    });
+                    if(!this.restoreButton.disabled) {
+                        this.restoreButton.disabled = true;
+                        BL.restore(function(err) {
+                            GC.app.restoreButton.disabled = false;
+                            if (err) {
+                                GC.app.popup.openView({text: 'No purchases to restore.'});
+                            }
+                        });
+                    }                  
                 })
             }
         });
-        this.restoreButton.style.x = WIDTH/40;
+        this.restoreButton.style.x = GC.app.isTablet ? 0 : WIDTH/40;
         this.restoreButton.style.y = HEIGHT - HEIGHT/7;
     
         _startButton.startButtonAnim();

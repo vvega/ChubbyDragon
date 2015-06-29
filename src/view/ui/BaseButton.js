@@ -12,7 +12,7 @@ exports = Class(ButtonView, function(supr){
 				up: imageData.ui.button.up,
 				down: imageData.ui.button.down
 			},
-			width: BUTTON_WIDTH,
+			width: GC.app.isTablet ? BUTTON_WIDTH*1.30 : BUTTON_WIDTH,
 			height: BUTTON_HEIGHT,
 			text: merge(opts.text, {
 				fontFamily: GC.app.device.isIOS ? "d puntillas b to tiptoe" : 'tiptoe',

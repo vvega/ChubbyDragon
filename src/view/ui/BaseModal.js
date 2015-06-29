@@ -12,8 +12,8 @@ exports = Class(ImageView, function(supr){
 		if(!opts) { opts = {}; }
 		opts = merge(opts, {
 			superview: GC.app.rootView,
-			image: imageData.ui.popups.blank,
-			x: WIDTH/4,
+			image: opts.image ? opts.image : imageData.ui.popups.blank,
+			x: (WIDTH - HEIGHT)/2,
 			y: HEIGHT*2,
 			zIndex: Z_MODAL,
 			width: HEIGHT,

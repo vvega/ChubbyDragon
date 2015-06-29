@@ -8,6 +8,7 @@ exports = Class(function() {
             "no_ads" : function() {
                 GC.app.ads = false;
                 storageManager.setData(KEY_ADS, false);
+                GC.app.gameOverScreen.purchaseButton.disabled = false;
                 GC.app.titleScreen.restoreButton.style.visible = false;
                 GC.app.gameOverScreen.purchaseButton.style.visible = false;
                 GC.app.popup.openView({
@@ -26,5 +27,6 @@ exports = Class(function() {
 
     this.handleFailure = function(reason, item) {
     	AMP.track("purchaseFailure", {reason: reason});
+        GC.app.gameOverScreen.purchaseButton.disabled = false;
     };
 });

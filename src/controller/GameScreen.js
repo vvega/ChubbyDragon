@@ -214,7 +214,7 @@ exports = Class(BaseView, function(supr) {
         this.boostText = new TextView({
             superview: this,
             layout: 'linear',
-            fontFamily: 'bigbottom',
+            fontFamily: GC.app.device.isAndroid ? 'bigbottom' : 'big_bottom_cartoon',
             text: "Flame Boost!",
             width: WIDTH*.8,
             height: HEIGHT/8,

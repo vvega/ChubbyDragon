@@ -29,7 +29,7 @@ exports = Class(BaseModal, function(supr) {
             	x: BUTTON_HEIGHT/4,
             	y: BUTTON_HEIGHT/4
             },
-            x: this.style.width/5,
+            x: (this.style.width - (HEIGHT/10+HEIGHT/80))/4,
             y: BUTTON_HEIGHT*.75,
             opacity: 1,
             on: {
@@ -52,7 +52,7 @@ exports = Class(BaseModal, function(supr) {
             	y: BUTTON_HEIGHT/4
             },
             opacity: 1,
-            x: this.style.width/5,
+            x: (this.style.width - (HEIGHT/10+HEIGHT/80))/4,
             y: BUTTON_HEIGHT*.75 + BUTTON_HEIGHT*2,
             on: {
                 up: bind(this, function(){
@@ -74,7 +74,7 @@ exports = Class(BaseModal, function(supr) {
             	y: BUTTON_HEIGHT/4
             },
             opacity: 1,
-            x: this.style.width/5,
+            x: (this.style.width - (HEIGHT/10+HEIGHT/80))/4,
             y: BUTTON_HEIGHT*4,
             on: {
                 up: bind(this, function(){

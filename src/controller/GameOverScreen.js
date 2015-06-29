@@ -57,7 +57,7 @@ exports = Class(BaseView, function (supr){
                 });
 
                 animate(_highScoreView)
-                    .now({ y: HEIGHT/2 - height*1.3, opacity: 1 }, 300, animate.easeIn)
+                    .now({ y: GC.app.isTablet ? HEIGHT/2 - height*1.7 : HEIGHT/2 - height*1.3, opacity: 1 }, 300, animate.easeIn)
                     .then(function() {
                        this._runBounceAnimation(_highScoreView.style);
                     }.bind(this))
@@ -118,7 +118,7 @@ exports = Class(BaseView, function (supr){
             superview: this,
             text: { text: "Replay" },
             opacity: 1,
-            x: WIDTH/3 - BUTTON_WIDTH/2,
+            x: GC.app.isTablet ? WIDTH/2 - BUTTON_WIDTH*1.3 : WIDTH/3 - BUTTON_WIDTH/2,
             y: HEIGHT/2 + BUTTON_HEIGHT,
             on: {
                up: function () {
@@ -136,14 +136,19 @@ exports = Class(BaseView, function (supr){
             y: HEIGHT/2 + BUTTON_HEIGHT,
             on: {
                up: function () {
-                 GC.app.transitionViews(GC.app.titleScreen);
+                    GC.app.transitionViews(GC.app.titleScreen);
                 }
             }
         });
 
         _lbButton = new BaseButton({
             superview: this,
-            text: { text: "Hi-Scores", x: HEIGHT/32, y: HEIGHT/70 },
+            text: { 
+                text: "Hi-Scores",
+                x: GC.app.isTablet ? HEIGHT/16 : HEIGHT/32,
+                y: GC.app.isTablet ? HEIGHT/50 : HEIGHT/70,
+                scale: GC.app.isTablet ? .8 : 1 
+            },
             icon: {
                 image: imageData.ui.icons.star,
                 height: HEIGHT/16,
@@ -152,7 +157,7 @@ exports = Class(BaseView, function (supr){
                 y: HEIGHT/32
             },
             opacity: 1,
-            width: WIDTH/4,
+            width: GC.app.isTablet ? WIDTH/3.5 : WIDTH/4,
             height: HEIGHT/8,
             on: {
                 up: bind(this, function(){
@@ -176,7 +181,7 @@ exports = Class(BaseView, function (supr){
                 y: HEIGHT/50
              },
             opacity: 1,
-            width: WIDTH/4,
+            width: GC.app.isTablet ? WIDTH/3 : WIDTH/4,
             height: HEIGHT/7,
             on: {
                 up: this._doShare          
@@ -194,26 +199,29 @@ exports = Class(BaseView, function (supr){
                 x: HEIGHT/32,
                 y: HEIGHT/32
             },
-            width: WIDTH/6,
+            width: GC.app.isTablet ? WIDTH/5 : WIDTH/6,
             height: HEIGHT/8,
             on: {
                 up: bind(this, function() {
-                    BL.purchase("no_ads");
+                    if(!this.purchaseButton.disabled) {
+                        this.purchaseButton.disabled = true;
+                        BL.purchase("no_ads");
+                    }
                 })
             }
         });
         this.purchaseButton.style.x = WIDTH/40;
         this.purchaseButton.style.y = HEIGHT - HEIGHT/7;
 
-
         _shareButton._text.style._padding.left = _shareButton.style.height*.5;
         _shareButton.style.x = WIDTH/2 - _shareButton.style.width/2;
         _shareButton.style.y = HEIGHT/2;
         _highScoreView.style.x = WIDTH/2 - _highScoreView.style.width/2;
+        _highScoreView.style.y = HEIGHT/1.5;
         _lbButton.style.x = WIDTH - (_lbButton.style.width + WIDTH/40);
         _lbButton.style.y = HEIGHT - HEIGHT/7;
         _textView.style.x = WIDTH/2 - _textView.style.width/2;
-        _textView.style.y, _highScoreView.style.y = HEIGHT/1.5;
+        _textView.style.y = HEIGHT/1.5;
 
         _textPosX = {
             gameOver : _textView.style.x,
@@ -225,7 +233,7 @@ exports = Class(BaseView, function (supr){
             highScore : _highScoreView.style.y
         };
 
-         _shareButton.startButtonAnim();
+        _shareButton.startButtonAnim();
     };
 
     this.writeToFile = function(score) {

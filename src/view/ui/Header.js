@@ -38,7 +38,7 @@ exports = Class(ImageScaleView, function(supr) {
             layout: 'box',
             horizontalAlign: 'left',
             verticalAlign: 'top',
-            fontFamily: GC.app.device.isIOS ? "big bottom cartoon" : 'bigbottom',
+            fontFamily: GC.app.device.isAndroid ? 'bigbottom' : 'big_bottom_cartoon',
             text: "0",
             size: this.style.height*.35,
             color: "#FFF",
