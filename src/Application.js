@@ -13,6 +13,7 @@ import src.model.StorageManager as StorageManager;
 import src.model.ResourceManager as ResourceManager;
 import src.view.ui.RootView as RootView;
 import src.view.ui.BaseModal as BaseModal;
+import ui.resource.loader as loader;
 import GameKit;
 import amplitude;
 import chartboost;
@@ -23,11 +24,11 @@ facebook.onReady.run(function () {
     facebook.init({
         appId           : CONFIG.modules.facebook.facebookAppID,
         displayName     : CONFIG.modules.facebook.facebookDisplayName,
-        status          : true,
-        xfbml           : true,
-        version         : 'v2.2'
+        status          : true
     });
 });
+
+loader.preload(['resources/images', 'resources/fonts'], function(){});
 
 exports = Class(GC.Application, function() {
 
@@ -92,10 +93,23 @@ exports = Class(GC.Application, function() {
         });
         this.rootView.constructView();
         this.setCBHandlers();
-        GK.openGC = function() {
-            AMP.track("openGameCenter", { player: GC.app.loggedInPlayer });
-            this.showGameCenter(GC.app.syncScore(GC.app.loggedInPlayer));
-        };
+        this.leaderboardID = device.isIOS 
+                                ? CONFIG.modules.gamekit.ios.ladders.calories_burned
+                                : CONFIG.modules.gamekit.android.ladders.calories_burned;
+        GK.registerAuthHandler(this.syncScore); 
+    };
+
+    this.openGC = function() {
+        if(!GC.app.loggedInPlayer || !GC.app.loggedInPlayer.playerID) {
+            try {
+                GK.showAuthDialog();
+            } catch(err) {
+                GC.app.popup.openView({ text: "Unable to access the game center." });
+            }
+        } else {
+            AMP.track("showingGameCenter", {player: GC.app.loggedInPlayer});
+            GK.showGameCenter(function(){});
+        }
     };
 
     this.setCBHandlers = function() {
@@ -119,13 +133,11 @@ exports = Class(GC.Application, function() {
     };
 
     this.syncScore = function(err, player) {
-        if(player && player.playerID) {
-            GC.app.highScore && GK.submitScore({leaderboard: CONFIG.modules.gamekit.android.ladders.calories_burned, score: GC.app.highScore});
-            GC.app.loggedInPlayer = player;
-        } else {
-            GK.registerAuthHandler(this.syncScore); 
-            GK.showAuthDialog();
-            GC.app.loggedInPlayer = false;
+        var authPlayer = player || GC.app.loggedInPlayer;
+        AMP.track("scoreSync", { error: err, syncPlayer: authPlayer, leaderboard: GC.app.leaderboardID });
+        if(!err && authPlayer && authPlayer.playerID) {
+            GC.app.highScore && GK.submitScore({leaderboard: GC.app.leaderboardID, score: GC.app.highScore});
+            GC.app.loggedInPlayer = authPlayer;
         }
     };
 
@@ -191,6 +203,16 @@ exports = Class(GC.Application, function() {
         this.music = (typeof storageManager.getData(KEY_MUSIC) == 'undefined') ? true : storageManager.getData(KEY_MUSIC);
         this.ads = (typeof storageManager.getData(KEY_ADS) == 'undefined') ? true : storageManager.getData(KEY_ADS);
         this.reward = (typeof storageManager.getData(KEY_ADS) == 'undefined') ? false : storageManager.getData(KEY_REWARD);
+    };
+
+    this.showInterstitial = function() {
+        CB.showInterstitial();
+        CB.cacheInterstitial();
+    };
+
+    this.showRewardedVideo = function() {
+        CB.showRewardedVideoIfAvailable();
+        CB.cacheRewardedVideo();
     };
 
     this.util = {

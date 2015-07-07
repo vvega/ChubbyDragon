@@ -121,13 +121,7 @@ exports = Class(BaseView, function (supr) {
             width: GC.app.isTablet ? WIDTH/3.5 : WIDTH/4,
             height: HEIGHT/8,
             on: {
-                up: bind(this, function(){
-                    if(GK.authenticated) {
-                        GK.openGC();
-                    } else {
-                        GK.showAuthDialog();
-                    }
-                })
+                up: GC.app.openGC
             }
         });
 
@@ -176,9 +170,10 @@ exports = Class(BaseView, function (supr) {
                     if(!this.restoreButton.disabled) {
                         this.restoreButton.disabled = true;
                         BL.restore(function(err) {
-                            GC.app.restoreButton.disabled = false;
+                            GC.app.titleScreen.restoreButton.disabled = false;
                             if (err) {
-                                GC.app.popup.openView({text: 'No purchases to restore.'});
+                                AMP.track('restoreError', {err: err});
+                                !GC.app.gameScreen.gameStarted && GC.app.popup.openView({text: 'No purchases to restore.'});
                             }
                         });
                     }                  

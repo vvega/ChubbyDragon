@@ -8,12 +8,13 @@ exports = Class(function() {
             "no_ads" : function() {
                 GC.app.ads = false;
                 storageManager.setData(KEY_ADS, false);
-                GC.app.gameOverScreen.purchaseButton.disabled = false;
                 GC.app.titleScreen.restoreButton.style.visible = false;
                 GC.app.gameOverScreen.purchaseButton.style.visible = false;
-                GC.app.popup.openView({
+                GC.app.gameOverScreen.purchaseButton.disabled = false;
+                !GC.app.gameScreen.gameStarted && GC.app.popup.openView({
                     image: imageData.ui.popups.no_ads
                 });
+                AMP.track("purchaseSuccess", {player: GC.app.loggedInPlayer, ads: GC.app.ads});
             }
         };
 	};
@@ -27,6 +28,9 @@ exports = Class(function() {
 
     this.handleFailure = function(reason, item) {
     	AMP.track("purchaseFailure", {reason: reason});
+        !GC.app.gameScreen.gameStarted && GC.app.popup.openView({
+            text: "Unable to purchase item."
+        });
         GC.app.gameOverScreen.purchaseButton.disabled = false;
     };
 });

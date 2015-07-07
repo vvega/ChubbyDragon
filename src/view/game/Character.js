@@ -160,12 +160,12 @@ exports = Class(SpriteView, function(supr) {
     };
 
     this.activate = function() {
+        GC.app.sound.play('startButton', {loop: false});
         this.speed = 1;
         this.score = 0;
         this.setFramerate(BASE_FR);
-        _parent.spriteMgr.activateChar();
-        GC.app.sound.play('startButton', {loop: false});
         this.enable();
+        _parent.spriteMgr.activateChar();
     };
 
     this.disable = function() {

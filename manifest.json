@@ -10,6 +10,11 @@
         "ladders": {
           "calories_burned": "CgkI8aiYobIDEAIQAQ"
         }
+      },
+      "ios": {
+        "ladders": {
+          "calories_burned": "calories_burned"
+        }
       }
     }
   },

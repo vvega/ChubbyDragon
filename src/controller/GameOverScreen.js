@@ -17,7 +17,6 @@ exports = Class(BaseView, function (supr){
     var _replayButton;
     var _exitButton;
     var _shareButton;
-    var _fbIcon;
     var _lbButton;
     var _shareButton;
     var _rand;
@@ -28,25 +27,28 @@ exports = Class(BaseView, function (supr){
         _rand = Math.random;
 
         var height = (GC.app.isTablet) ? HEIGHT/7 : HEIGHT/6;
+        _highScoreView.style.visible = true;
+        _textView.style.visible = true;
         
         animate(_textView)
             .now({ y: -HEIGHT/9, opacity: 1 }, 500, animate.easeIn)
             .then(function() {
-
                 if(GC.app.ads) {
                     if(_rand() > .4) { 
-                        CB.showInterstitialIfAvailable();
-                        CB.cacheInterstitial();
+                        GC.app.showInterstitial();
                     } else {
-                        CB.showRewardedVideoIfAvailable();
-                        CB.cacheRewardedVideo();
+                        try{
+                            GC.app.showRewardedVideo();
+                        } catch (err) { 
+                            GC.app.showInterstitial(); 
+                        }
                     }
                 }
 
                 //insert high score view
                 if(score > GC.app.highScore) {
                     GC.app.highScore = score;
-                    GC.app.syncScore(GC.app.loggedInPlayer);
+                    GC.app.syncScore(false, GC.app.loggedInPlayer);
                     _highScoreView.setText("New High Score! "+score);
                     this.writeToFile(score);
                 } else {
@@ -62,7 +64,6 @@ exports = Class(BaseView, function (supr){
                     .then(function() {
                        this._runBounceAnimation(_highScoreView.style);
                     }.bind(this))
-
             }.bind(this));
         GC.app.sound.play('menu');
     };
@@ -71,13 +72,13 @@ exports = Class(BaseView, function (supr){
         _textView.updateOpts({
             x: _textPosX.gameOver,
             y: _textPosY.gameOver,
-            visibility: false,
+            visible: false,
             opacity: 0
         });
         _highScoreView.updateOpts({
             x: _textPosX.highScore,
             y: _textPosY.highScore,
-            visibility: false,
+            visible: false,
             opacity: 0
         });
         this.purchaseButton.style.visible = GC.app.ads;
@@ -117,7 +118,6 @@ exports = Class(BaseView, function (supr){
         _replayButton = new BaseButton({
             superview: this,
             text: { text: "Replay" },
-            opacity: 1,
             x: GC.app.isTablet ? WIDTH/2 - BUTTON_WIDTH*1.3 : WIDTH/3 - BUTTON_WIDTH/2,
             y: HEIGHT/2 + BUTTON_HEIGHT,
             on: {
@@ -131,7 +131,6 @@ exports = Class(BaseView, function (supr){
         _exitButton = new BaseButton({
             superview: this,
             text: { text: "Menu" },
-            opacity: 1,
             x: WIDTH/3 + BUTTON_WIDTH/2 + WIDTH/100,
             y: HEIGHT/2 + BUTTON_HEIGHT,
             on: {
@@ -156,17 +155,10 @@ exports = Class(BaseView, function (supr){
                 x: HEIGHT/32,
                 y: HEIGHT/32
             },
-            opacity: 1,
             width: GC.app.isTablet ? WIDTH/3.5 : WIDTH/4,
             height: HEIGHT/8,
             on: {
-                up: bind(this, function(){
-                    if(GK.authenticated) {
-                        GK.openGC();
-                    } else {
-                        GK.showAuthDialog();
-                    }
-                })
+                up: GC.app.openGC
             }
         });
 
@@ -179,12 +171,11 @@ exports = Class(BaseView, function (supr){
                 height: HEIGHT/11,
                 x: WIDTH/60,
                 y: HEIGHT/50
-             },
-            opacity: 1,
+            },
             width: GC.app.isTablet ? WIDTH/3 : WIDTH/4,
             height: HEIGHT/7,
             on: {
-                up: this._doShare          
+                up: bind(this, this._fbShare)          
             }
         });
 
@@ -202,12 +193,12 @@ exports = Class(BaseView, function (supr){
             width: GC.app.isTablet ? WIDTH/5 : WIDTH/6,
             height: HEIGHT/8,
             on: {
-                up: bind(this, function() {
-                    if(!this.purchaseButton.disabled) {
-                        this.purchaseButton.disabled = true;
-                        BL.purchase("no_ads");
+                up: function() {
+                        if(!this.disabled) {
+                            BL.purchase("no_ads");
+                            this.disabled = true;
+                        }
                     }
-                })
             }
         });
         this.purchaseButton.style.x = WIDTH/40;
@@ -249,35 +240,44 @@ exports = Class(BaseView, function (supr){
             }.bind(this));
     };
 
-    this._fbLogin = function() { 
-        if(!GC.app.device.isIOS) {
+    this._fbShare = function() {
+        var share = GC.app.gameOverScreen._doShare;
+        try {
             FB.getLoginStatus(function(response) {
-                if(response == "connected") {
-                    this._doShare();
+                if(response && response.status == "connected") {
+                    share();
                 } else {
                     FB.login(function(response) {
+                        AMP.track("facebookLogin", {response: response});
                         if (response.authResponse) {
-                            this._doShare();
+                            share();
                         } else {
+                            !GC.app.gameScreen.gameStarted && GC.app.popup.openView({text: "Unable to share to Facebook."});
                             console.log('User cancelled login or did not fully authorize.');
                         }
-                    }, {
-                        scope: 'publish_actions',
-                        return_scopes: true
                     });
                 }
-            }).bind(this);
+            });
+        } catch (err) {
+            GC.app.popup.openView({ text: "Unable to open Facebook."});
         }
     };
 
     this._doShare = function() {
+        var url = GC.app.device.isIOS 
+                ? "https://itunes.apple.com/us/app/chubby-dragon/id975072703?mt=8"
+                : "https://play.google.com/store/apps/details?id=com.saucygames.ChubbyDragon";
+        var store = GC.app.device.isIOS 
+                ? "iTunes!"
+                : "Google Play!";
         FB.ui({
-          method: 'share',
-          href: 'https://play.google.com/store/apps/details?id=com.saucygames.ChubbyDragon',
-          name: 'I burned '+GC.app.highScore+' calories in Chubby Dragon!',
-          description: 'Can you beat my score?',
-          caption: 'Download Chubby Dragon on Google Play!',
-          picture: 'http://www.designethereal.com/cd/icon512.png'
-        }, function(response){});
-    };
+            method: "feed",
+            name: "Chubby Dragon",
+            link: url,
+            picture: "http://www.designethereal.com/cd/icon512.png",
+            caption: "I burned "+GC.app.highScore+" calories in Chubby Dragon! Can you beat my score?",
+            description: "Download Chubby Dragon on "+store,
+            message: "Check this out!"
+        });
+    }
 });
